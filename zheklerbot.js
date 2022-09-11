@@ -717,14 +717,14 @@ bot.on('chat', async (channel, tags, message) => {
       // Get user's duel score.
       case '!duelscore':
         if (!userIds[channel.substring(1)].duel) break;
-        str = await duel.duelScore(tags["username"], channel.substring(1));
+        str = await duel.duelScore(tags["username"]?.toLowerCase(), channel.substring(1));
         if (str) say(channel.substring(1), str);
         break;
 
       // Get another user's duel score.
       case '!duelscoreother':
         if (!userIds[channel.substring(1)].duel || !splits[1]) break;
-        str = await duel.duelScore(splits[1], channel.substring(1));
+        str = await duel.duelScore(splits[1].toLowerCase(), channel.substring(1));
         if (str) say(channel.substring(1), str);
         break;
 
