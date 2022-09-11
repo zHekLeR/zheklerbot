@@ -1075,7 +1075,7 @@ app.use(bodyParserErrorHandler());
 app.use(express.static(__dirname));
 app.use(express.static(path.join(__dirname, 'node_modules')));
 app.use(cookieParser());
-app.use(favicon(path.join(__dirname, 'favicon.ico')));
+app.use(favicon(path.join(__dirname, 'images/favicon.ico')));
 
 
 // Home page.
