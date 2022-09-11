@@ -1,10 +1,10 @@
 {
-  "name": "huskerrsapi",
+  "name": "zheklerbot",
   "version": "1.0.0",
-  "description": "API for Warzone commands in Twitch and other stuff.",
-  "main": "HusKerrsAPI.js",
+  "description": "Twitch bot for warzone stats, scorekeeping, and other stuff.",
+  "main": "zheklerbot.js",
   "scripts": {
-    "start": "node HusKerrsAPI.js"
+    "start": "node zheklerbot.js"
   },
   "engines": {
     "node": "16.13.2",
