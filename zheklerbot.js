@@ -78,6 +78,10 @@ const bot = new tmi.Client({
  * @param {string} message
  */
 function say(channel, message) {
+  if (profanity.isProfane(message)) {
+    helper.dumpError(message, "Bot.say: channel " + channel);
+    return;
+  }
   bot.say(channel, message)
   .catch(err => {
     helper.dumpError(err, "Say: " + message);
