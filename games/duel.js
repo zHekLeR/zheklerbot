@@ -95,7 +95,7 @@ async function accept(pOne, stream) {
 
 async function duelScore(pOne, stream) {
     try {
-        let res = await helper.dbQueryPromise(`SELECT * FROM duelduel WHERE userid = '${pOne}' AND stream = '${stream}';`);
+        let res = await helper.dbQueryPromise(`SELECT * FROM duelduel WHERE userid = '${pOne.toLowerCase()}' AND stream = '${stream}';`);
         if (res.length && (res[0].wins || res[0].losses)) {
           return `${pOne} has won ${res[0].wins} duels and lost ${res[0].losses} for a ${(100*res[0].wins/(res[0].wins+res[0].losses)).toFixed(2)}% win rate.
             They're on a ${res[0].streak} win streak and their longest streak is ${res[0].longest} wins!`;
