@@ -11,7 +11,6 @@ import crypto from 'node:crypto';
 
 // HTTP utility.
 import axios from 'axios';
-import got from 'got';
 import url from 'url';
 
 // Twitch and Discord bots.
@@ -923,10 +922,6 @@ let symAxios = axios.create({
 console.log("Created symAxios.");
 
 
-// Axios for the Twitch app access tokens. 
-let twitchAxios = axios.create();
-
-
 // Handle errors from the COD API.
 function apiErrorHandling(error) {
   if (!!error) {
@@ -1088,13 +1083,12 @@ app.get('/', async (request, response) => {
   let cookies = request.cookies;
   let page;
   if (cookies["auth"]) {
-    await got('https://id.twitch.tv/oauth2/validate', {
-      method: "GET",
+    await axios.get('https://id.twitch.tv/oauth2/validate', {
       headers: {
         "Authorization": `Bearer ${cookies["auth"]}`
       }
     }).then(async res => {
-      if (res.statusCode === 200) {
+      if (res.status === 200) {
         let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
 
         if (rows.length) {
@@ -1208,13 +1202,12 @@ app.get('/edit/:channel', async (request, response) => {
       return;
     }
 
-    await got('https://id.twitch.tv/oauth2/validate', {
-      method: "GET",
+    await axios.get('https://id.twitch.tv/oauth2/validate', {
       headers: {
         "Authorization": `Bearer ${cookies['auth']}`
       }
     }).then(async res => {
-      if (res.statusCode === 200) {
+      if (res.status === 200) {
         let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies['auth']}';`);
 
         if (rows.length && rows[0].perms.split(',').includes(request.params.channel.toLowerCase())) {
@@ -1650,34 +1643,33 @@ app.get('/verify', (request, response) => {
     }
     
     if (Object.keys(states).includes(request.get("state") || '')) {
-      got('https://id.twitch.tv/oauth2/token', {
-        method: "POST",
+      axios.post('https://id.twitch.tv/oauth2/token', 
+        `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&grant_type=client_credentials`, 
+      {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
-        body: `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&grant_type=client_credentials`
       }).then(resp => {
-        got('https://api.twitch.tv/helix/users?', {
-          method: "GET",
+        axios.get('https://api.twitch.tv/helix/users?', {
           headers: {
             'Authorization': `Bearer ${request.get("access_token")}`,
-            'Client-Id': process.env.CLIENT_ID
+            'Client-Id': process.env.CLIENT_ID || ''
           }
         }).then(async res => {
-          let details = JSON.parse(res.body).data;
+          let details = JSON.parse(res.data).data;
           let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE userid = '${details[0]["display_name"].toLowerCase()}';`);
           
           // @ts-ignore
           if (rows.length && (rows[0].perms > 0 && rows[0].perms.split(',').includes(states[request.get("state")]) || details[0]["display_name"].toLowerCase() === states[request.get("state")] || states[request.get("state")] === "#login#")) {
-            helper.dbQuery(`UPDATE permissions SET bearer = '${JSON.parse(resp.body)["access_token"]}' WHERE userid = '${details[0]["display_name"].toLowerCase()}';`);
-            response.cookie("auth", JSON.parse(resp.body)["access_token"], { maxAge: 1000*JSON.parse(resp.body).expires_in, secure: true, httpOnly: true, domain: `.zhekbot.com` });
+            helper.dbQuery(`UPDATE permissions SET bearer = '${JSON.parse(resp.data)["access_token"]}' WHERE userid = '${details[0]["display_name"].toLowerCase()}';`);
+            response.cookie("auth", JSON.parse(resp.data)["access_token"], { maxAge: 1000*JSON.parse(resp.data).expires_in, secure: true, httpOnly: true, domain: `.zhekbot.com` });
             response.send("Success.");
           } else {
             
             // @ts-ignore
             if (details[0]["display_name"].toLowerCase() === states[request.get("state")] || states[request.get("state")] === '#login#') {
-              helper.dbQuery(`INSERT INTO permissions(userid, bearer) VALUES ('${details[0]["display_name"].toLowerCase()}', '${JSON.parse(resp.body)["access_token"]}');`);
-              response.cookie("auth", JSON.parse(resp.body)["access_token"], { maxAge: 1000*JSON.parse(resp.body).expires_in, secure: true, httpOnly: true, domain: `.zhekbot.com` });
+              helper.dbQuery(`INSERT INTO permissions(userid, bearer) VALUES ('${details[0]["display_name"].toLowerCase()}', '${JSON.parse(resp.data)["access_token"]}');`);
+              response.cookie("auth", JSON.parse(resp.data)["access_token"], { maxAge: 1000*JSON.parse(resp.data).expires_in, secure: true, httpOnly: true, domain: `.zhekbot.com` });
               response.send("Success.");
             } else { 
               response.send("Login request failed."); 
@@ -2515,7 +2507,7 @@ app.get('/twitch/redirect', async (req, response) => {
     let query = url.parse(req.url, true).query;
     let code = query["code"];
 
-    await twitchAxios.post(`https://id.twitch.tv/oauth2/token`,
+    await axios.post(`https://id.twitch.tv/oauth2/token`,
     `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&code=${code}&grant_type=authorization_code&redirect_uri=https://localhost:6969/redirect`,
     {
       headers: {
@@ -2524,7 +2516,7 @@ app.get('/twitch/redirect', async (req, response) => {
     }).then(async resp => {
       let data = resp.data;
 
-      await twitchAxios.get('https://id.twitch.tv/oauth2/validate',
+      await axios.get('https://id.twitch.tv/oauth2/validate',
       {
         headers: {
           'Authorization': 'OAuth ' + data.access_token
@@ -2640,17 +2632,8 @@ async function update(matches, user, lastTimestamp) {
     if (!matches) return;
     for (let i = 0; i < matches.length; i++) {
 
-      // Lobby KD (broken rn) and timestamp.
-      lobby_kd = 0;
-
-      await apiAxios.get(`https://app.wzstats.gg/v2/?matchId=${matches[i].matchID}`)
-      .then(resp => {
-        let data = resp.data;
-        lobby_kd = data.matchStatData.playerAverage?data.matchStatData.playerAverage:0;
-      })
-      .catch(err => {
-        helper.dumpError(err, `Match ID ${matches[i].matchID}.`);
-      })
+      let data = (await apiAxios.get(`https://app.wzstats.gg/v2/?matchId=${matches[i].matchID}`)).data;
+      lobby_kd = data.matchStatData.playerAverage?data.matchStatData.playerAverage:0;
 
       timestamp = matches[i].utcStartSeconds;
       if (timestamp <= lastTimestamp) continue;
@@ -2691,13 +2674,13 @@ async function update(matches, user, lastTimestamp) {
       }
       
       // Get all players for this match.
-      let players = (await matchInfo(match_id)).allPlayers || [];
+      let players = data.players || [];
       
       // Find user's team name.
-      let teamName;
+      let teamName = '';
       for (let j = 0; j < players.length; j++) {
-        if (players[j].player.uno === user.uno_id) {
-          teamName = players[j].player.team;
+        if (players[j].playerMatchStat.player.uno === user.uno_id) {
+          teamName = players[j].playerMatchStat.player.team;
           break;
         }
       }
@@ -2705,8 +2688,12 @@ async function update(matches, user, lastTimestamp) {
       // Teammates?
       let teammates = [];
       for (let j = 0; j < players.length; j++) {
-        if (players[j].player.team === teamName && players[j].player.uno !== user.uno_id) {
-          let player = { name: players[j].player.username, kills: players[j].playerStats.kills, deaths: players[j].playerStats.deaths };
+        if (players[j].playerMatchStat.player.team === teamName && players[j].playerMatchStat.player.uno !== user.uno_id) {
+          let player = { 
+            name: players[j].playerMatchStat.player.username, 
+            kills: players[j].playerMatchStat.playerStats.playerStats.kills, 
+            deaths: players[j].playerMatchStat.playerStats.deaths 
+          };
           teammates.push(player);
           if (teammates.length == 3) break;
         }
@@ -2714,21 +2701,6 @@ async function update(matches, user, lastTimestamp) {
 
       // Replace longest streak?
       streak = matches[i].playerStats.longestStreak;
-
-      // Create JSON object to add to cache.
-      let body = { 
-        'timestamp': timestamp,
-        'match_id': match_id,
-        'placement': placement,
-        'kills': kills,
-        'deaths': deaths,
-        'gulag_kills': gulag_kills,
-        'gulag_deaths': gulag_deaths,
-        'streak': streak,
-        'lobby_kd': lobby_kd,
-        'game_mode': game_mode,
-        'teammates': teammates,
-      };
 
       // Add match stats to cache and prepare them for insertion into the database.
       addStr.push(`(${timestamp}, '${match_id}', '${placement}', ${kills}, ${deaths}, ${gulag_kills}, ${gulag_deaths}, ${streak}, ${lobby_kd}, '${JSON.stringify(teammates)}'::json, '${game_mode}', '${user.acti_id}')`);
@@ -2924,20 +2896,14 @@ async function authenticate() {
 
 // Regenerate Twitch API token.
 function regenerate() {
-  got({
-    url: 'https://id.twitch.tv/oauth2/token',
-    method: 'POST',
-    searchParams: {
-      grant_type: 'refresh_token',
-      refresh_token: account_config.refresh_token,
-      client_id: client_config.client_id,
-      client_secret: client_config.client_secret
-    },
-    responseType: 'json'
+  axios.post('https://id.twitch.tv/oauth2/token',
+    `grant_type=refresh_token&refresh_token=${account_config.refresh_token}&client_id=${client_config.client_id}&client_secret=${client_config.client_secret}`,
+    { 
+      headers: { responseType: 'json' }
   })
   .then(resp => {
-    for (var k in resp.body) {
-      account_config[k] = resp.body[k];
+    for (var k in resp.data) {
+      account_config[k] = resp.data[k];
     }
     symAxios.defaults.headers.common["Authorization"] = "Bearer " + account_config.access_token;
 
