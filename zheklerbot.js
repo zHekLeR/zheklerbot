@@ -1828,7 +1828,7 @@ app.get('/post/:channel/reset', async (request, response) => {
     }
 
     helper.dbQuery(`UPDATE twovtwo SET hKills = 0, tKills = 0, o1Kills = 0, o2Kills = 0 WHERE userid = '${request.params.channel}';`);
-    if (userIds[request.get('tname')] && userIds[request.get('tname')]["two_v_two"] && rows[0].perms.split(',').includes(request.params.channel.toLowerCase()) {
+    if (userIds[request.get('tname')] && userIds[request.get('tname')]["two_v_two"] && rows[0].perms.split(',').includes(request.params.channel.toLowerCase())) {
       helper.dbQuery(`UPDATE twovtwo SET hKills = 0, tKills = 0, o1Kills = 0, o2Kills = 0 WHERE userid = '${request.get('tname')}';`)
     }
     if (userIds[request.get('o1name')] && userIds[request.get('o1name')]["two_v_two"] && rows[0].perms.split(',').includes(request.params.channel.toLowerCase())) {
