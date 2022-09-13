@@ -1825,9 +1825,9 @@ app.get ('/twovtwoscores/:channel', async (request, response) => {
       ${res[0].o1name} 
       ${res[0].o2name} 
       ${userIds[res[0].userid] && userIds[res[0].userid]["two_v_two"]} 
-      ${userIds[res[0].tname] && userIds[res[0].tname]["two_v_two"] && rows[0].perms.split(',').includes(request.params.channel.toLowerCase())} 
-      ${userIds[res[0].o1name] && userIds[res[0].o1name]["two_v_two"] && rows[0].perms.split(',').includes(request.params.channel.toLowerCase())} 
-      ${userIds[res[0].o2name] && userIds[res[0].o2name]["two_v_two"] && rows[0].perms.split(',').includes(request.params.channel.toLowerCase())} 
+      ${userIds[res[0].tname] && userIds[res[0].tname]["two_v_two"] && rows[0].perms.split(',').includes(res[0].tname.toLowerCase())} 
+      ${userIds[res[0].o1name] && userIds[res[0].o1name]["two_v_two"] && rows[0].perms.split(',').includes(res[0].o1name.toLowerCase())} 
+      ${userIds[res[0].o2name] && userIds[res[0].o2name]["two_v_two"] && rows[0].perms.split(',').includes(res[0].o2name.toLowerCase())} 
       ${res[0].mapreset}`);
   } catch (err) {
     helper.dumpError(err, `2v2 scores.`);
