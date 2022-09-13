@@ -1769,9 +1769,9 @@ app.get ('/twovtwoscores/:channel', async (request, response) => {
   try {
     request.params.channel = request.params.channel.toLowerCase();
     
-    let cookies = request.cookies;
+    let cookies = request.cookies, rows;
     if (cookies["auth"]) {
-      let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
+      rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
         response.status(401);
         response.redirect('/');
@@ -1798,7 +1798,19 @@ app.get ('/twovtwoscores/:channel', async (request, response) => {
       helper.dbQuery(`INSERT INTO twovtwo(userid, hkills, tkills, o1kills, o2kills, tname, o1name, o2name, mapreset) VALUES ('${request.params.channel}', 0, 0, 0, 0, '', '', '', 0);`);
     }
 
-    response.send(`${res[0].hkills} ${res[0].tkills} ${res[0].o1kills} ${res[0].o2kills} ${res[0].tname} ${res[0].o1name} ${res[0].o2name} ${userIds[res[0].userid] && userIds[res[0].userid]["two_v_two"]} ${userIds[res[0].tname] && userIds[res[0].tname]["two_v_two"]} ${userIds[res[0].o1name] && userIds[res[0].o1name]["two_v_two"]} ${userIds[res[0].o2name] && userIds[res[0].o2name]["two_v_two"]} ${res[0].mapreset}`);
+    response.send(`
+      ${res[0].hkills} 
+      ${res[0].tkills} 
+      ${res[0].o1kills} 
+      ${res[0].o2kills} 
+      ${res[0].tname} 
+      ${res[0].o1name} 
+      ${res[0].o2name} 
+      ${userIds[res[0].userid] && userIds[res[0].userid]["two_v_two"]} 
+      ${userIds[res[0].tname] && userIds[res[0].tname]["two_v_two"] && rows[0].perms.split(',').includes(request.params.channel.toLowerCase())} 
+      ${userIds[res[0].o1name] && userIds[res[0].o1name]["two_v_two"] && rows[0].perms.split(',').includes(request.params.channel.toLowerCase())} 
+      ${userIds[res[0].o2name] && userIds[res[0].o2name]["two_v_two"] && rows[0].perms.split(',').includes(request.params.channel.toLowerCase())} 
+      ${res[0].mapreset}`);
   } catch (err) {
     helper.dumpError(err, `2v2 scores.`);
     response.send(err.message);
