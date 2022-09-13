@@ -1662,15 +1662,15 @@ app.get('/verify', (request, response) => {
           
           // @ts-ignore
           if (rows.length && (rows[0].perms > 0 && rows[0].perms.split(',').includes(states[request.get("state")]) || details[0]["display_name"].toLowerCase() === states[request.get("state")] || states[request.get("state")] === "#login#")) {
-            helper.dbQuery(`UPDATE permissions SET bearer = '${JSON.parse(resp.data)["access_token"]}' WHERE userid = '${details[0]["display_name"].toLowerCase()}';`);
-            response.cookie("auth", JSON.parse(resp.data)["access_token"], { maxAge: 1000*JSON.parse(resp.data).expires_in, secure: true, httpOnly: true, domain: `.zhekbot.com` });
+            helper.dbQuery(`UPDATE permissions SET bearer = '${resp.data["access_token"]}' WHERE userid = '${details[0]["display_name"].toLowerCase()}';`);
+            response.cookie("auth", resp.data["access_token"], { maxAge: 1000*resp.data.expires_in, secure: true, httpOnly: true, domain: `.zhekbot.com` });
             response.send("Success.");
           } else {
             
             // @ts-ignore
             if (details[0]["display_name"].toLowerCase() === states[request.get("state")] || states[request.get("state")] === '#login#') {
               helper.dbQuery(`INSERT INTO permissions(userid, bearer) VALUES ('${details[0]["display_name"].toLowerCase()}', '${resp.data["access_token"]}');`);
-              response.cookie("auth", JSON.parse(resp.data)["access_token"], { maxAge: 1000*JSON.parse(resp.data).expires_in, secure: true, httpOnly: true, domain: `.zhekbot.com` });
+              response.cookie("auth", resp.data["access_token"], { maxAge: 1000*resp.data.expires_in, secure: true, httpOnly: true, domain: `.zhekbot.com` });
               response.send("Success.");
             } else { 
               response.send("Login request failed."); 
