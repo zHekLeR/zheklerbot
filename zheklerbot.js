@@ -1656,7 +1656,6 @@ app.get('/verify', (request, response) => {
             'Client-Id': process.env.CLIENT_ID || ''
           }
         }).then(async res => {
-          console.log(res.data);
           let details = res.data.data;
           let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE userid = '${details[0]["display_name"].toLowerCase()}';`);
           
@@ -1816,9 +1815,9 @@ app.get('/post/:channel/reset', async (request, response) => {
       return;
     }
     
-    let cookies = request.cookies;
+    let cookies = request.cookies, rows;
     if (cookies["auth"]) {
-      let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
+      rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
         response.sendStatus(401);
         return;
@@ -1829,13 +1828,13 @@ app.get('/post/:channel/reset', async (request, response) => {
     }
 
     helper.dbQuery(`UPDATE twovtwo SET hKills = 0, tKills = 0, o1Kills = 0, o2Kills = 0 WHERE userid = '${request.params.channel}';`);
-    if (userIds[request.get('tname')] && userIds[request.get('tname')]["two_v_two"]) {
+    if (userIds[request.get('tname')] && userIds[request.get('tname')]["two_v_two"] && rows[0].perms.split(',').includes(request.params.channel.toLowerCase()) {
       helper.dbQuery(`UPDATE twovtwo SET hKills = 0, tKills = 0, o1Kills = 0, o2Kills = 0 WHERE userid = '${request.get('tname')}';`)
     }
-    if (userIds[request.get('o1name')] && userIds[request.get('o1name')]["two_v_two"]) {
+    if (userIds[request.get('o1name')] && userIds[request.get('o1name')]["two_v_two"] && rows[0].perms.split(',').includes(request.params.channel.toLowerCase())) {
       helper.dbQuery(`UPDATE twovtwo SET hKills = 0, tKills = 0, o1Kills = 0, o2Kills = 0 WHERE userid = '${request.get('tname')}';`)
     }
-    if (userIds[request.get('o2name')] && userIds[request.get('o2name')]["two_v_two"]) {
+    if (userIds[request.get('o2name')] && userIds[request.get('o2name')]["two_v_two"] && rows[0].perms.split(',').includes(request.params.channel.toLowerCase())) {
       helper.dbQuery(`UPDATE twovtwo SET hKills = 0, tKills = 0, o1Kills = 0, o2Kills = 0 WHERE userid = '${request.get('tname')}';`)
     }
 
@@ -1889,9 +1888,9 @@ app.get('/send/:channel/:hKills/:tKills/:o1Kills/:o2Kills', async (request, resp
       response.sendStatus(405);
       return;
     }
-    let cookies = request.cookies;
+    let cookies = request.cookies, rows;
     if (cookies["auth"]) {
-      let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
+      rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
         response.sendStatus(401);
         return;
@@ -1904,15 +1903,15 @@ app.get('/send/:channel/:hKills/:tKills/:o1Kills/:o2Kills', async (request, resp
     await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.hKills}, tkills = ${request.params.tKills}, o1kills = ${request.params.o1Kills}, o2kills = ${request.params.o2Kills}, tname = '${request.get('tname')}', o1name = '${request.get('o1name')}', o2name = '${request.get('o2name')}', mapreset = ${parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.params.channel}';`);
     await tvtscores(request.params.channel.toLowerCase());
 
-    if (userIds[request.get('tname')] && userIds[request.get('tname')]["two_v_two"]) {
+    if (userIds[request.get('tname')] && userIds[request.get('tname')]["two_v_two"] && rows[0].perms.split(',').includes(request.params.channel.toLowerCase())) {
       await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.tKills}, tkills = ${request.params.hKills}, o1kills = ${request.params.o1Kills}, o2kills = ${request.params.o2Kills}, mapreset = ${parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.get('tname')}';`)
       await tvtscores('' + request.get('tname'));
     }
-    if (userIds[request.get('o1name')] && userIds[request.get('o1name')]["two_v_two"]) {
+    if (userIds[request.get('o1name')] && userIds[request.get('o1name')]["two_v_two"] && rows[0].perms.split(',').includes(request.params.channel.toLowerCase())) {
       await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.o1Kills}, tkills = ${request.params.o2Kills}, o1kills = ${request.params.hKills}, o2kills = ${request.params.tKills}, mapreset = ${-1*parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.get('o1name')}';`)
       await tvtscores('' + request.get('o1name'));
     }
-    if (userIds[request.get('o2name')] && userIds[request.get('o2name')]["two_v_two"]) {
+    if (userIds[request.get('o2name')] && userIds[request.get('o2name')]["two_v_two"] && rows[0].perms.split(',').includes(request.params.channel.toLowerCase())) {
       await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.o2Kills}, tkills = ${request.params.o1Kills}, o1kills = ${request.params.hKills}, o2kills = ${request.params.tKills}, mapreset = ${-1*parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.get('o2name')}';`)
       await tvtscores('' + request.get('o2name'));
     }
