@@ -151,7 +151,7 @@ img {
                 method: "GET"
             }).then(res => res.text())
             .then(body => {
-                scores = body.split(' ');
+                scores = body.split(',');
                 console.log(body);
                 if (scores.length == 12) {
                     document.getElementById('hKills').innerHTML = parseInt(scores[0]);
