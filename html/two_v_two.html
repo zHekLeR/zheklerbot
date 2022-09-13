@@ -207,14 +207,14 @@ img {
                         tname: document.getElementById('tName').value.toLowerCase(),
                         o1name: document.getElementById('o1Name').value.toLowerCase(),
                         o2name: document.getElementById('o2Name').value.toLowerCase(),
-                        mapreset: resetvalue
+                        mapreset: resetvalue,
+                        tstatus: document.getElementsByClassName(`tStatus`)[0].checked,
+                        o1status: document.getElementsByClassName(`o1Status`)[0].checked,
+                        o2status: document.getElementsByClassName(`o2Status`)[0].checked
                     }
                 });
                 console.log('2v2 send success.');
             } catch (err) {
-                if (sInt) {
-                    clearInterval(sInt);
-                }
                 console.log(`Error during send function: ${err}`);
             }
         }

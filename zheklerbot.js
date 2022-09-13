@@ -1925,15 +1925,15 @@ app.get('/send/:channel/:hKills/:tKills/:o1Kills/:o2Kills', async (request, resp
     await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.hKills}, tkills = ${request.params.tKills}, o1kills = ${request.params.o1Kills}, o2kills = ${request.params.o2Kills}, tname = '${request.get('tname')}', o1name = '${request.get('o1name')}', o2name = '${request.get('o2name')}', mapreset = ${parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.params.channel}';`);
     await tvtscores(request.params.channel.toLowerCase());
 
-    if (userIds[request.get('tname')] && userIds[request.get('tname')]["two_v_two"] && rows[0].perms.split(',').includes(request.params.channel.toLowerCase())) {
+    if (request.get('tstatus') === 'true' && userIds[request.get('tname')] && userIds[request.get('tname')]["two_v_two"] && rows[0].perms.split(',').includes(request.params.channel.toLowerCase())) {
       await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.tKills}, tkills = ${request.params.hKills}, o1kills = ${request.params.o1Kills}, o2kills = ${request.params.o2Kills}, mapreset = ${parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.get('tname')}';`)
       await tvtscores('' + request.get('tname'));
     }
-    if (userIds[request.get('o1name')] && userIds[request.get('o1name')]["two_v_two"] && rows[0].perms.split(',').includes(request.params.channel.toLowerCase())) {
+    if (request.get('o1status') === 'true' && userIds[request.get('o1name')] && userIds[request.get('o1name')]["two_v_two"] && rows[0].perms.split(',').includes(request.params.channel.toLowerCase())) {
       await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.o1Kills}, tkills = ${request.params.o2Kills}, o1kills = ${request.params.hKills}, o2kills = ${request.params.tKills}, mapreset = ${-1*parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.get('o1name')}';`)
       await tvtscores('' + request.get('o1name'));
     }
-    if (userIds[request.get('o2name')] && userIds[request.get('o2name')]["two_v_two"] && rows[0].perms.split(',').includes(request.params.channel.toLowerCase())) {
+    if (request.get('o2status') === 'true' && userIds[request.get('o2name')] && userIds[request.get('o2name')]["two_v_two"] && rows[0].perms.split(',').includes(request.params.channel.toLowerCase())) {
       await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.o2Kills}, tkills = ${request.params.o1Kills}, o1kills = ${request.params.hKills}, o2kills = ${request.params.tKills}, mapreset = ${-1*parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.get('o2name')}';`)
       await tvtscores('' + request.get('o2name'));
     }
