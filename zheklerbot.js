@@ -1656,7 +1656,8 @@ app.get('/verify', (request, response) => {
             'Client-Id': process.env.CLIENT_ID || ''
           }
         }).then(async res => {
-          let details = JSON.parse(res.data).data;
+          console.log(res.data);
+          let details = res.data.data;
           let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE userid = '${details[0]["display_name"].toLowerCase()}';`);
           
           // @ts-ignore
