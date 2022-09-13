@@ -1886,11 +1886,15 @@ app.get('/post/:channel/enable', jsonParser, async (request, response) => {
       return;
     }
 
-    helper.dbQuery(`UPDATE allusers SET two_v_two = ${!userIds[request.params.channel].two_v_two}::bool WHERE user_id = '${request.params.channel}';`);
+    if (request.get('enabled') === userIds[request.params.channel].two_v_two) {
+      response.sendStatus(201);
+    } else {
+      helper.dbQuery(`UPDATE allusers SET two_v_two = ${!userIds[request.params.channel].two_v_two}::bool WHERE user_id = '${request.params.channel}';`);
 
-    userIds[request.params.channel].two_v_two = !userIds[request.params.channel].two_v_two;
+      userIds[request.params.channel].two_v_two = !userIds[request.params.channel].two_v_two;
 
-    response.sendStatus(200);
+      response.sendStatus(200);
+    }
   } catch (err) {
     helper.dumpError(err, `2v2 enable.`);
     response.sendStatus(500);

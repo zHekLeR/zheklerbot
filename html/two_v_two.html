@@ -182,7 +182,11 @@ img {
             }
             elem.disabled = true;
             setTimeout(function () { elem.disabled = false; }, 2000)
-            await fetch(`/post/${document.getElementById(setStat).value.toLowerCase()}/enable`)
+            await fetch(`/post/${document.getElementById(setStat).value.toLowerCase()}/enable`, {
+                headers: {
+                    enabled: elem.checked
+                }
+            })
             .then(resp => {
                 if (resp.status !== 200) {
                     elem.checked = !elem.checked;
