@@ -2,7 +2,25 @@
 // ...
 'use strict';
 import 'dotenv/config';
-import * as helper from "./helper.js"; 
+import * as helper from "./helper.js";
+ 
+// Loadout command for Discord.
+const prefix = "!loadout";
+helper.discord.on("messageCreate", (message) => {
+    if (message.channel.id === "775090169417826326") {
+      if (message.content.startsWith(prefix)) {
+        message.author.send("HusKerrs' Loadouts (favorite guns at the top): https://www.kittr.gg/channel/HusKerrs/warzone\n"+
+        "If you're having trouble accessing the loadout site, please DM @zHekLeR on Twitch or Discord.")
+        .catch(err => {
+          helper.dumpError(err, "Discord setUsername.");
+        });
+      }
+      } else if (message.channel.id === "860699279017639936") {
+      if (message.content.indexOf('/ban ') >= 0) {
+        say('huskerrs', message.content.substring(message.content.indexOf('/ban ')) + ' | Global ban');
+      } 
+    }
+});
 
 // COD API stuff.
 import express from "express";
