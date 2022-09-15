@@ -250,7 +250,7 @@ bot.on('chat', async (channel, tags, message) => {
 
       // Play Coinflip.
       case '!coin':
-        if (!userIds[channel.substring(1)].coinflip) break;
+        if (!userIds[channel.substring(1)].coinflip || splits.length < 2) break;
         if (!cfcd[tags["username"] || ''] || cfcd[tags["username"] || ''] < Date.now()) {
           say(channel, await coinflip.coinflip(tags["display-name"]?tags["display-name"]:tags["username"], message.split(' ')[1], channel));
           rrcd[tags["username"] || ''] = Date.now() + 15000;
@@ -288,9 +288,9 @@ bot.on('chat', async (channel, tags, message) => {
 
       // Play Rock Paper Scissors.
       case '!rps': 
-        if (!userIds[channel.substring(1)].rps) break;
+        if (!userIds[channel.substring(1)].rps || splits.length < 2) break;
         if (!rpscd[tags["username"] || ''] || rpscd[tags["username"] || ''] < Date.now()) {
-          say(channel, await rps.rps(tags["display-name"]?tags["display-name"]:tags["username"], message.split(' ')[1], channel));
+          say(channel, await rps.rps(tags["display-name"]?tags["display-name"]:tags["username"], splits[1], channel));
           rrcd[tags["username"] || ''] = Date.now() + 15000;
         }
         break;
@@ -1922,11 +1922,6 @@ app.get('/send/:channel/:hKills/:tKills/:o1Kills/:o2Kills', async (request, resp
       return;
     }
 
-    console.log(request.get('tstatus') === 'true');
-    console.log(userIds[request.get('tname')]);
-    console.log(userIds[request.get('tname')]["two_v_two"]); 
-    console.log(rows[0].perms.split(',').includes(request.get('tname')));
-
     await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.hKills}, tkills = ${request.params.tKills}, o1kills = ${request.params.o1Kills}, o2kills = ${request.params.o2Kills}, tname = '${request.get('tname')}', o1name = '${request.get('o1name')}', o2name = '${request.get('o2name')}', mapreset = ${parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.params.channel}';`);
     await tvtscores(request.params.channel.toLowerCase());
 
@@ -2155,7 +2150,7 @@ async function stats(username, platform) {
 
       // Cache in database.
       helper.dbQuery(`INSERT INTO stats(acti_id, time_played, life_kd, weekly_kd, wins, kills, timeout) VALUES ('${username}', ${time}, ${lk}, ${wk}, ${wins}, ${kills}, ${(Date.now()/1000) + 3600})
-        ON CONFLICT (acti_id) DO UPDATE SET time_played = ${time}, life_kd = ${lk}, weekly_kd = ${wk}, wins = ${wins}, kills = ${kills}, timeout = ${(Date.now()/1000) + 3600};`);
+        ON CONFLICT (acti_id) DO UPDATE SET time_played = ${time}, life_kd = ${lk}, weekly_kd = ${wk==='-'?0:wk}, wins = ${wins}, kills = ${kills}, timeout = ${(Date.now()/1000) + 3600};`);
 
     } else {
       time = rows[0].time_played;
