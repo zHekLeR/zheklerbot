@@ -29,7 +29,7 @@ async function rps(id, input, channel) {
         }
 
         // Determine result.
-        let shoot = `${result>=0?('/me Streamlabs got ' + spr[rand] + '. ' + id + (result==0?' tied.':' won!')):'/timeout '+id+' 60 Streamlabs got ' + spr[rand] + '. You lost!'}`;
+        let shoot = `${result>=0?('/me I got ' + spr[rand] + '. ' + id + (result==0?' tied.':' won!')):'/timeout '+id+' 60 I got ' + spr[rand] + '. You lost!'}`;
     
         // Pull user from the database.
         let person = (await helper.dbQueryPromise(`SELECT * FROM rockpaperscissors WHERE user_id = '${id}' AND stream = '${channel.substring(1)}';`))[0];
