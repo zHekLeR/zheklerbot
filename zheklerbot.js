@@ -612,7 +612,7 @@ bot.on('chat', async (channel, tags, message) => {
         }
         helper.dbQuery(`UPDATE allusers SET two_v_two = true WHERE user_id = '${channel.substring(1)}';`);
         helper.dbQuery(`INSERT INTO twovtwo(hkills, tkills, o1kills, o2kills, userid) VALUES (0, 0, 0, 0, '${channel.substring(1)}')
-          ON CONFLICT (userid) DO UPDATE SET hkills = 0, tkills = 0, o1kills = 0, o2kills = 0 WHERE twovtwo.userid = '${channel.substring(1)}';`);
+          ON CONFLICT (userid) DO UPDATE SET hkills = 0, tkills = 0, o1kills = 0, o2kills = 0;`);
         userIds[channel.substring(1)]["two_v_two"] = true;
         tvtUpdate[channel.substring(1)] = Date.now();
         break;

@@ -16,7 +16,7 @@ async function rps(id, input, channel) {
         if (Object.keys(accepted).includes(input.toLowerCase())) {
             choice = accepted[input.toLowerCase()];
         } else {
-            return `@${id}: ${input} is not valid input.`;
+            return `@${id}: Valid input is like this -> !rps [rock / paper / scissors / r / p / s]`;
         }
 
         // Determine bot choice.

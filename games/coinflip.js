@@ -17,7 +17,7 @@ async function coinflip(id, input, channel) {
     if (Object.keys(choices).includes(input.toLowerCase())) {
       choice = choices[input.toLowerCase()];
     } else {
-      return `@${id}: ${input} is not a correct input.`;
+      return `@${id}: valid input is like this -> !coin [heads / tails / h / t]`;
     }
 
     // Determine outcome.
