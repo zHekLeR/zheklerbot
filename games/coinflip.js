@@ -7,7 +7,7 @@ const choices = { "h": 1, "heads": 1, "t": 0, "tails": 0 };
 
 
 // Function to flip a coin. If the user guesses the result incorrectly, they get timed out for 1 minute.
-async function coinflip(id, input, channel) {
+async function coinflip(id, input, stream) {
   try {
 
     // Declare variable..
@@ -26,20 +26,20 @@ async function coinflip(id, input, channel) {
     let shoot = rand==choice?`/me ${id} has guessed correctly!`:`/timeout ${id} ${timeout[0].timeout} You did NOT guess correctly!`;
 
     // Pull user from the database.
-    let person = (await helper.dbQueryPromise(`SELECT * FROM coinflip WHERE user_id = '${id}' AND stream = '${channel.substring(1)}';`))[0];
+    let person = (await helper.dbQueryPromise(`SELECT * FROM coinflip WHERE user_id = '${id}' AND stream = '${stream.substring(1)}';`))[0];
 
     if (!person) {
 
       // User has not played before. Add stats to database.
       person = { user_id: id, correct: rand==choice?1:0, wrong: rand==choice?0:1 };
-      helper.dbQuery(`INSERT INTO coinflip(user_id, correct, wrong, stream)VALUES('${person.user_id}', ${person.correct}, ${person.wrong}, '${channel.substring(1)}');`);
+      helper.dbQuery(`INSERT INTO coinflip(user_id, correct, wrong, stream)VALUES('${person.user_id}', ${person.correct}, ${person.wrong}, '${stream.substring(1)}');`);
 
     } else {
 
       // Update user's stats in database.
       person.correct += rand==choice?1:0;
       person.wrong += rand==choice?0:1;
-      helper.dbQuery(`UPDATE coinflip SET ${rand==choice?'correct':'wrong'} = ${rand==choice?person.correct:person.wrong} WHERE user_id = '${id}' AND stream = '${channel.substring(1)}';`);
+      helper.dbQuery(`UPDATE coinflip SET ${rand==choice?'correct':'wrong'} = ${rand==choice?person.correct:person.wrong} WHERE user_id = '${id}' AND stream = '${stream.substring(1)}';`);
 
     }
 

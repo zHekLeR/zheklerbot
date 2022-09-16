@@ -8,7 +8,7 @@ const spr = ["rock", "paper", "scissors"];
 
 
 // Function to play rock paper scissors. User is timed out for 1 minute if they lose.
-async function rps(id, input, channel, timeout) {
+async function rps(id, input, stream) {
     try {
 
         // Determine if input is valid.
@@ -33,13 +33,13 @@ async function rps(id, input, channel, timeout) {
         let shoot = `${result>=0?(`/me I got ${spr[rand]}. ${id} ${(result==0?' tied.':' won!')}`):`/timeout ${id} ${timeout[0].timeout} I got ${spr[rand]}. You lost!`}`;
     
         // Pull user from the database.
-        let person = (await helper.dbQueryPromise(`SELECT * FROM rockpaperscissors WHERE user_id = '${id}' AND stream = '${channel.substring(1)}';`))[0];
+        let person = (await helper.dbQueryPromise(`SELECT * FROM rockpaperscissors WHERE user_id = '${id}' AND stream = '${stream.substring(1)}';`))[0];
 
         if (!person) {
 
             // User is not in the database. Add them to it.
             person = { user_id: id, win: result==1?1:0, loss: result==-1?1:0, tie: result==0?1:0 };
-            helper.dbQuery(`INSERT INTO rockpaperscissors(user_id, win, loss, tie, stream)VALUES('${person.user_id}', ${person.win}, ${person.loss}, ${person.tie}, '${channel.substring(1)}');`);
+            helper.dbQuery(`INSERT INTO rockpaperscissors(user_id, win, loss, tie, stream)VALUES('${person.user_id}', ${person.win}, ${person.loss}, ${person.tie}, '${stream.substring(1)}');`);
 
         } else {
 
@@ -47,7 +47,7 @@ async function rps(id, input, channel, timeout) {
             person.win += (result==1?1:0);
             person.loss += (result==-1?1:0);
             person.tie += (result==0?1:0);
-            helper.dbQuery(`UPDATE rockpaperscissors SET ${result==1?'win':result==0?'tie':'loss'} = ${result==1?person.win:result==0?person.tie:person.loss} WHERE user_id = '${id}' AND stream = '${channel.substring(1)}';`);
+            helper.dbQuery(`UPDATE rockpaperscissors SET ${result==1?'win':result==0?'tie':'loss'} = ${result==1?person.win:result==0?person.tie:person.loss} WHERE user_id = '${id}' AND stream = '${stream.substring(1)}';`);
 
         }
     
