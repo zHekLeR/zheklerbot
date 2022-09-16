@@ -702,6 +702,7 @@ bot.on('chat', async (channel, tags, message) => {
           say(channel.substring(1), `@${tags["username"]} : You cannot duel yourself.`);
           break;
         }
+        console.log(userIds[channel.substring(1)].timeout);
         if (splits[1].charAt(0) === '@') splits[1] = splits[1].substring(1);
         str = await duel.duel(tags["username"], splits[1], channel.substring(1), userIds[channel.substring(1)].timeout);
         if (str) say(channel.substring(1), str);

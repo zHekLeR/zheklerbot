@@ -4,6 +4,7 @@ import * as helper from "../helper.js";
 
 async function duel(pOne, pTwo, stream, timeout) {
     try {
+        console.log(timeout);
         let res = await helper.dbQueryPromise(`SELECT * FROM duelduel WHERE oppid = '${pTwo.toLowerCase()}' AND stream = '${stream}';`);
         let res2 = await helper.dbQueryPromise(`SELECT * FROM duelduel WHERE userid = '${pTwo.toLowerCase()}' AND stream = '${stream}';`);
 
