@@ -2157,7 +2157,7 @@ async function stats(username, platform) {
       kills = data.lifetime.mode.br.properties.kills;
 
       // Cache in database.
-      helper.dbQuery(`INSERT INTO stats(acti_id, time_played, life_kd, weekly_kd, wins, kills, timeout) VALUES ('${username}', ${time}, ${lk}, ${wk}, ${wins}, ${kills}, ${(Date.now()/1000) + 3600})
+      helper.dbQuery(`INSERT INTO stats(acti_id, time_played, life_kd, weekly_kd, wins, kills, timeout) VALUES ('${username}', ${time}, ${lk}, ${wk==='-'?0:wk}, ${wins}, ${kills}, ${(Date.now()/1000) + 3600})
         ON CONFLICT (acti_id) DO UPDATE SET time_played = ${time}, life_kd = ${lk}, weekly_kd = ${wk==='-'?0:wk}, wins = ${wins}, kills = ${kills}, timeout = ${(Date.now()/1000) + 3600};`);
 
     } else {
