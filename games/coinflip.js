@@ -22,7 +22,7 @@ async function coinflip(id, input, stream) {
 
     // Determine outcome.
     let rand = Math.floor(Math.random()*2);
-    if (rand == choice) timeout = await helper.dbQueryPromise(`SELECT timeout FROM allusers WHERE user_id = '${stream}';`); 
+    if (rand == choice) timeout = await helper.dbQueryPromise(`SELECT timeout FROM allusers WHERE user_id = '${stream.substring(1)}';`); 
     let shoot = rand==choice?`/me ${id} has guessed correctly!`:`/timeout ${id} ${timeout[0].timeout} You did NOT guess correctly!`;
 
     // Pull user from the database.
