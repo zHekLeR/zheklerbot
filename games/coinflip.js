@@ -7,7 +7,7 @@ const choices = { "h": 1, "heads": 1, "t": 0, "tails": 0 };
 
 
 // Function to flip a coin. If the user guesses the result incorrectly, they get timed out for 1 minute.
-async function coinflip(id, input, channel, timeout) {
+async function coinflip(id, input, channel) {
   try {
 
     // Declare variable..
@@ -22,7 +22,8 @@ async function coinflip(id, input, channel, timeout) {
 
     // Determine outcome.
     let rand = Math.floor(Math.random()*2);
-    let shoot = `${rand==choice?`/me ${id} has guessed correctly!`:`/timeout ${id} ${timeout} You did NOT guess correctly!`}`;
+    if (rand == choice) timeout = await helper.dbQueryPromise(`SELECT timeout FROM allusers WHERE user_id = '${stream}';`); 
+    let shoot = rand==choice?`/me ${id} has guessed correctly!`:`/timeout ${id} ${timeout[0].timeout} You did NOT guess correctly!`;
 
     // Pull user from the database.
     let person = (await helper.dbQueryPromise(`SELECT * FROM coinflip WHERE user_id = '${id}' AND stream = '${channel.substring(1)}';`))[0];

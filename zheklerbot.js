@@ -252,7 +252,7 @@ bot.on('chat', async (channel, tags, message) => {
       case '!coin':
         if (!userIds[channel.substring(1)].coinflip || splits.length < 2) break;
         if (!cfcd[tags["username"] || ''] || cfcd[tags["username"] || ''] < Date.now()) {
-          say(channel, await coinflip.coinflip(tags["display-name"]?tags["display-name"]:tags["username"], message.split(' ')[1], channel, userIds[channel.substring(1)].timeout));
+          say(channel, await coinflip.coinflip(tags["display-name"]?tags["display-name"]:tags["username"], message.split(' ')[1]));
           rrcd[tags["username"] || ''] = Date.now() + 15000;
         }
         break;
@@ -290,7 +290,7 @@ bot.on('chat', async (channel, tags, message) => {
       case '!rps': 
         if (!userIds[channel.substring(1)].rps || splits.length < 2) break;
         if (!rpscd[tags["username"] || ''] || rpscd[tags["username"] || ''] < Date.now()) {
-          say(channel, await rps.rps(tags["display-name"]?tags["display-name"]:tags["username"], splits[1], channel, userIds[channel.substring(1)].timeout));
+          say(channel, await rps.rps(tags["display-name"]?tags["display-name"]:tags["username"], splits[1], channel));
           rrcd[tags["username"] || ''] = Date.now() + 15000;
         }
         break;
@@ -704,7 +704,7 @@ bot.on('chat', async (channel, tags, message) => {
         }
         console.log(userIds[channel.substring(1)]);
         if (splits[1].charAt(0) === '@') splits[1] = splits[1].substring(1);
-        str = await duel.duel(tags["username"], splits[1], channel.substring(1), userIds[channel.substring(1)].timeout);
+        str = await duel.duel(tags["username"], splits[1], channel.substring(1));
         if (str) say(channel.substring(1), str);
         break;
 
@@ -725,7 +725,7 @@ bot.on('chat', async (channel, tags, message) => {
       // Accept another user's challenge.
       case '!accept': 
         if (!userIds[channel.substring(1)].duel) break;
-        str = await duel.accept(tags["username"], channel.substring(1), userIds[channel.substring(1)].timeout);
+        str = await duel.accept(tags["username"], channel.substring(1));
         if (str) {
           say(channel.substring(1), str[0]);
           say(channel.substring(1), str[1]);

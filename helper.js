@@ -25,14 +25,14 @@ const discord = new Client({
 // Logs the Discord bot being initialized.
 discord.once('ready', () => {
       console.log('Discord bot logged on.');
-    discord.user?.setUsername('zHekBot')
-    .catch(err => {
-      dumpError(err, "Discord setUsername.");
-    });
-    discord.user?.setAvatar('./images/Logo.png')
-    .catch(err => {
-      dumpError(err, "Discord setAvatar.");
-    });
+    // discord.user?.setUsername('zHekBot')
+    // .catch(err => {
+    //   dumpError(err, "Discord setUsername.");
+    // });
+    // discord.user?.setAvatar('./images/Logo.png')
+    // .catch(err => {
+    //   dumpError(err, "Discord setAvatar.");
+    // });
 });
   
     

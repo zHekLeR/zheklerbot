@@ -29,7 +29,8 @@ async function rps(id, input, channel, timeout) {
         }
 
         // Determine result.
-        let shoot = `${result>=0?(`/me I got ${spr[rand]}. ${id} ${(result==0?' tied.':' won!')}`):`/timeout ${id} ${timeout} I got ${spr[rand]}. You lost!`}`;
+        let timeout = await helper.dbQueryPromise(`SELECT timeout FROM allusers WHERE user_id = '${stream}';`);
+        let shoot = `${result>=0?(`/me I got ${spr[rand]}. ${id} ${(result==0?' tied.':' won!')}`):`/timeout ${id} ${timeout[0].timeout} I got ${spr[rand]}. You lost!`}`;
     
         // Pull user from the database.
         let person = (await helper.dbQueryPromise(`SELECT * FROM rockpaperscissors WHERE user_id = '${id}' AND stream = '${channel.substring(1)}';`))[0];
