@@ -252,7 +252,7 @@ bot.on('chat', async (channel, tags, message) => {
       case '!coin':
         if (!userIds[channel.substring(1)].coinflip || splits.length < 2) break;
         if (!cfcd[tags["username"] || ''] || cfcd[tags["username"] || ''] < Date.now()) {
-          say(channel, await coinflip.coinflip(tags["display-name"]?tags["display-name"]:tags["username"], message.split(' ')[1]));
+          say(channel, await coinflip.coinflip(tags["display-name"]?tags["display-name"]:tags["username"], message.split(' ')[1], channel));
           rrcd[tags["username"] || ''] = Date.now() + 15000;
         }
         break;
