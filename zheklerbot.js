@@ -252,7 +252,7 @@ bot.on('chat', async (channel, tags, message) => {
       case '!coin':
         if (!userIds[channel.substring(1)].coinflip || splits.length < 2) break;
         if (!cfcd[tags["username"] || ''] || cfcd[tags["username"] || ''] < Date.now()) {
-          say(channel, await coinflip.coinflip(tags["display-name"]?tags["display-name"]:tags["username"], message.split(' ')[1], channel));
+          say(channel, await coinflip.coinflip(tags["display-name"]?tags["display-name"]:tags["username"], message.split(' ')[1], channel, userIds[channel.substring(1)].timeout));
           rrcd[tags["username"] || ''] = Date.now() + 15000;
         }
         break;
@@ -290,7 +290,7 @@ bot.on('chat', async (channel, tags, message) => {
       case '!rps': 
         if (!userIds[channel.substring(1)].rps || splits.length < 2) break;
         if (!rpscd[tags["username"] || ''] || rpscd[tags["username"] || ''] < Date.now()) {
-          say(channel, await rps.rps(tags["display-name"]?tags["display-name"]:tags["username"], splits[1], channel));
+          say(channel, await rps.rps(tags["display-name"]?tags["display-name"]:tags["username"], splits[1], channel, userIds[channel.substring(1)].timeout));
           rrcd[tags["username"] || ''] = Date.now() + 15000;
         }
         break;
@@ -703,7 +703,7 @@ bot.on('chat', async (channel, tags, message) => {
           break;
         }
         if (splits[1].charAt(0) === '@') splits[1] = splits[1].substring(1);
-        str = await duel.duel(tags["username"], splits[1], channel.substring(1));
+        str = await duel.duel(tags["username"], splits[1], channel.substring(1), userIds[channel.substring(1)].timeout);
         if (str) say(channel.substring(1), str);
         break;
 
@@ -724,7 +724,7 @@ bot.on('chat', async (channel, tags, message) => {
       // Accept another user's challenge.
       case '!accept': 
         if (!userIds[channel.substring(1)].duel) break;
-        str = await duel.accept(tags["username"], channel.substring(1));
+        str = await duel.accept(tags["username"], channel.substring(1), userIds[channel.substring(1)].timeout);
         if (str) {
           say(channel.substring(1), str[0]);
           say(channel.substring(1), str[1]);
@@ -1051,6 +1051,14 @@ function last20(gamertag, platform) {
       sendRequest(urlInput).then(data => resolve(data)).catch(e => reject(e));
   });
 };
+
+// 20 matches from date.
+function date20(gamertag, platform, date) {
+  return new Promise((resolve, reject) => {
+    let urlInput = defaultBaseURL + `crm/cod/v2/title/mw/platform/${platform}/gamer/${gamertag}/matches/wz/start/0/end/${date*1000}/details`;
+    sendRequest(urlInput).then(data => resolve(data)).catch(e => reject(e));
+  })
+}
 
 // Pull match info from match ID.
 function matchInfo(matchID) {
@@ -2565,7 +2573,6 @@ app.get('/twitch/redirect', async (req, response) => {
 
 
 // Default not found page.
-
 app.get("*", (req, response) => {
   response.status(404);
   let page = fs.readFileSync("./html/not_found.html").toString('utf-8');
@@ -2574,6 +2581,34 @@ app.get("*", (req, response) => {
   }
   response.send(page);
 });
+
+
+// Pull all matches in the last week.
+async function weekMatches(userid) {
+  try {
+    let matches = [];
+
+    let timestamp = parseInt((await helper.dbQueryPromise(`SELECT MIN(timestamp) FROM matches WHERE user_id = '${userIds[userid].acti_id}';`))[0].min) || DateTime.now().toSeconds();
+    let weekAgo = DateTime.now().minus({weeks:1}).toSeconds();
+
+    while (timestamp > weekAgo) {
+      let data = (await date20(encodeURIComponent(userIds[userid].acti_id), userIds[userid].platform, timestamp)).matches;
+      for (let i = 0; i < data.length; i++) {
+        timestamp = data[i].utcStartSeconds; 
+        if (timestamp < weekAgo) break;
+
+        matches.push(data[i]);
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 5000));
+    }
+
+    await update(matches, userIds[userid], 0);
+    console.log(`Updated all matches for ${userid}.`);
+  } catch (err) {
+    helper.dumpError(err, 'Week Matches.');
+  }
+};
 
 
 // Pull matches from codtracker between every 5 and store in database.

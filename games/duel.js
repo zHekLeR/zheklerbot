@@ -2,7 +2,7 @@
 import * as helper from "../helper.js"; 
 
 
-async function duel(pOne, pTwo, stream) {
+async function duel(pOne, pTwo, stream, timeout) {
     try {
         let res = await helper.dbQueryPromise(`SELECT * FROM duelduel WHERE oppid = '${pTwo.toLowerCase()}' AND stream = '${stream}';`);
         let res2 = await helper.dbQueryPromise(`SELECT * FROM duelduel WHERE userid = '${pTwo.toLowerCase()}' AND stream = '${stream}';`);
@@ -13,13 +13,13 @@ async function duel(pOne, pTwo, stream) {
             if (res3.length) {
             if (!res3[0].oppid || res3[0].oppid === ' ') {
                 helper.dbQuery(`UPDATE duelduel SET oppid = '${pTwo.toLowerCase()}', expiration = ${Date.now()/1000 + 120} WHERE userid = '${pOne}' AND stream = '${stream}';`);
-                return `@${pTwo.toLowerCase()} : You've been challenged to a duel by ${pOne}! Type !accept to accept or !coward to deny. Loser is timed out for 1 minute.`;
+                return `@${pTwo.toLowerCase()} : You've been challenged to a duel by ${pOne}! Type !accept to accept or !coward to deny. Loser is timed out for ${timeout} seconds.`;
             } else {
                 return `@${pOne} : You have already challenged someone to a duel. Type !cancel to cancel it.`;
             }
             } else {
             helper.dbQuery(`INSERT INTO duelduel(oppid, expiration, userid, stream) VALUES ('${pTwo.toLowerCase()}', ${Date.now()/1000 + 120}, '${pOne}', '${stream}');`);
-            return `@${pTwo.toLowerCase()} : You've been challenged to a duel by ${pOne}! Type !accept to accept or !coward to deny. Loser is timed out for 1 minute.`;
+            return `@${pTwo.toLowerCase()} : You've been challenged to a duel by ${pOne}! Type !accept to accept or !coward to deny. Loser is timed out for ${timeout} seconds.`;
             }
         } else {
             return `@${pOne} : This person has already challenged someone / been challenged.`;
@@ -59,7 +59,7 @@ async function coward(pOne, stream) {
 }
 
 
-async function accept(pOne, stream) {
+async function accept(pOne, stream, timeout) {
     try {
         let res = await helper.dbQueryPromise(`SELECT * FROM duelduel WHERE oppid = '${pOne}' AND stream = '${stream}';`);
 
@@ -71,7 +71,7 @@ async function accept(pOne, stream) {
             helper.dbQuery(`INSERT INTO duelduel(userid, losses, stream) VALUES ('${pOne}', 1, '${stream}')
               ON CONFLICT (userid, stream) DO UPDATE SET losses = duelduel.losses + 1, streak = 0;`);
             
-            return [ `/timeout ${pOne} 60 You lost the duel to ${res[0].userid}. Hold this L`, 
+            return [ `/timeout ${pOne} ${timeout} You lost the duel to ${res[0].userid}. Hold this L`, 
                 `${res[0].userid} has won the duel against ${pOne}! They are on a ${res[0].streak + 1} win streak!` ];
           } else {
             let res2 = await helper.dbQueryPromise(`SELECT * FROM duelduel WHERE userid = '${pOne}' AND stream = '${stream}';`);
@@ -82,7 +82,7 @@ async function accept(pOne, stream) {
               helper.dbQuery(`INSERT INTO duelduel(userid, wins, stream, streak, longest) VALUES ('${pOne}', 1, '${stream}', 1, 1);`);
             }
             helper.dbQuery(`UPDATE duelduel SET oppid = ' ', expiration = 2147483647, losses = losses + 1, streak = 0 WHERE userid = '${res[0].userid}' AND stream = '${stream}';`);
-            return [ `/timeout ${res[0].userid} 60 You lost the duel to ${pOne}. Hold this L`,
+            return [ `/timeout ${res[0].userid} ${timeout} You lost the duel to ${pOne}. Hold this L`,
                 `${pOne} has won the duel against ${res[0].userid}! They are on a ${(res2.length?res2[0].streak:0) + 1} win streak!` ];
           }
         }

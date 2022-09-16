@@ -8,7 +8,7 @@ const spr = ["rock", "paper", "scissors"];
 
 
 // Function to play rock paper scissors. User is timed out for 1 minute if they lose.
-async function rps(id, input, channel) {
+async function rps(id, input, channel, timeout) {
     try {
 
         // Determine if input is valid.
@@ -29,7 +29,7 @@ async function rps(id, input, channel) {
         }
 
         // Determine result.
-        let shoot = `${result>=0?('/me I got ' + spr[rand] + '. ' + id + (result==0?' tied.':' won!')):'/timeout '+id+' 60 I got ' + spr[rand] + '. You lost!'}`;
+        let shoot = `${result>=0?(`/me I got ${spr[rand]}. ${id} ${(result==0?' tied.':' won!')}`):`/timeout ${id} ${timeout} I got ${spr[rand]}. You lost!`}`;
     
         // Pull user from the database.
         let person = (await helper.dbQueryPromise(`SELECT * FROM rockpaperscissors WHERE user_id = '${id}' AND stream = '${channel.substring(1)}';`))[0];
