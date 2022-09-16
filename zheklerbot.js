@@ -2163,7 +2163,7 @@ async function stats(username, platform) {
     } else {
       time = rows[0].time_played;
       lk = rows[0].life_kd;
-      wk = rows[0].weekly_kd;
+      wk = rows[0].weekly_kd?rows[0].weekly_kd:'-';
       wins = rows[0].wins;
       kills = rows[0].kills;
     }
