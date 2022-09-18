@@ -652,6 +652,12 @@ bot.on('chat', async (channel, tags, message) => {
         say(channel, await stats(message.substring(message.indexOf(' ') + 1), 'uno'));
         break;
 
+      // Check the stats of a user, Battlenet.
+      case '!checkbattle': 
+        if (!tags['mod'] && !vips.includes(tags['username'] || '') && channel.substring(1) !== tags["username"]) break;
+        say(channel, await stats(message.substring(message.indexOf(' ') + 1), 'battle'));
+        break;
+
 
       // Timeout command for VIPs mainly.
       case '!timeout':
