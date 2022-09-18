@@ -2754,7 +2754,7 @@ async function update(matches, user, lastTimestamp) {
         if (players[j].playerMatchStat.player.team === teamName && players[j].playerMatchStat.player.uno !== user.uno_id) {
           let player = { 
             name: players[j].playerMatchStat.player.username, 
-            kills: players[j].playerMatchStat.playerStats.playerStats.kills, 
+            kills: players[j].playerMatchStat.playerStats.kills, 
             deaths: players[j].playerMatchStat.playerStats.deaths 
           };
           teammates.push(player);
