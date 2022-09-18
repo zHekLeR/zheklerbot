@@ -2737,7 +2737,7 @@ async function update(matches, user, lastTimestamp) {
       }
       
       // Get all players for this match.
-      let players = data.players || [];
+      let players = data.data.players || [];
       
       // Find user's team name.
       let teamName = '';
