@@ -2254,7 +2254,7 @@ async function lastGames(username) {
 async function daily(username) {
   try {
     // Midnight of current day.
-    let midnight = (DateTime.now().setZone('America/Los_Angeles').startOf('day').toMillis()/1000) - userIds[username].time_offset;
+    let midnight = DateTime.now().setZone('America/Los_Angeles').startOf('day').toSeconds() - userIds[username].time_offset;
 
     let rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${userIds[username].acti_id}' AND timestamp > ${midnight};`);
 
@@ -2296,7 +2296,7 @@ async function daily(username) {
 async function bombs(username) {
   try {
     // Midnight of current day.
-    let midnight = (DateTime.now().setZone('America/Los_Angeles').startOf('day').toMillis()/1000) - userIds[username].time_offset;
+    let midnight = DateTime.now().setZone('America/Los_Angeles').startOf('day').toSeconds() - userIds[username].time_offset;
 
     let rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${userIds[username].acti_id}' AND timestamp > ${midnight} AND kills > ${userIds[username].bomb};`);
 
@@ -2322,7 +2322,7 @@ async function bombs(username) {
 async function wins(username) {
   try {
     // Midnight of current day.
-    let midnight = (DateTime.now().setZone('America/Los_Angeles').startOf('day').toMillis()/1000) - userIds[username].time_offset;
+    let midnight = DateTime.now().setZone('America/Los_Angeles').startOf('day').toSeconds() - userIds[username].time_offset;
 
     let rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${userIds[username].acti_id}' AND timestamp > ${midnight};`);
 
@@ -2348,7 +2348,7 @@ async function wins(username) {
 async function gulag(username) {
   try {
     // Midnight of current day.
-    let midnight = (DateTime.now().setZone('America/Los_Angeles').startOf('day').millisecond/1000) - userIds[username].time_offset;
+    let midnight = DateTime.now().setZone('America/Los_Angeles').startOf('day').toSeconds() - userIds[username].time_offset;
 
     let rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${userIds[username].acti_id}' AND timestamp > ${midnight};`);
 
@@ -2629,7 +2629,7 @@ async function updateMatches() {
             // Get time from a week ago and set base timestamp.
             console.log("Updating matches for " + userIds[onTwitch[i].user_id].acti_id);
             
-            let weekAgo = ((DateTime.now().minus({weeks:1}).toMillis() + userIds[onTwitch[i].user_id].time_offset)/1000) || (DateTime.now().minus({weeks:1}).toMillis()/1000);
+            let weekAgo = (DateTime.now().minus({weeks:1}).toSeconds() + userIds[onTwitch[i].user_id].time_offset) || DateTime.now().minus({weeks:1}).toSeconds();
             let lastTimestamp = 0;
             
             // Clear matches which are older than a week.
