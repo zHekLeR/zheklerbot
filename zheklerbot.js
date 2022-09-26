@@ -2629,11 +2629,11 @@ async function updateMatches() {
             // Get time from a week ago and set base timestamp.
             console.log("Updating matches for " + userIds[onTwitch[i].user_id].acti_id);
             
-            let weekAgo = (DateTime.now().minus({weeks:1}).toMillis() + userIds[onTwitch[i].user_id].time_offset)/1000;
+            let weekAgo = ((DateTime.now().minus({weeks:1}).toMillis() + userIds[onTwitch[i].user_id].time_offset)/1000) || (DateTime.now().minus({weeks:1}).toMillis()/1000);
             let lastTimestamp = 0;
             
             // Clear matches which are older than a week.
-            helper.dbQuery(`DELETE FROM matches WHERE timestamp < ${weekAgo} AND user_id = '${onTwitch[i].user_id}';`);
+            helper.dbQuery(`DELETE FROM matches WHERE timestamp < ${weekAgo} AND user_id = '${onTwitch[i].acti_id}';`);
             
             // If match cache for this user is empty, set it.
             let rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${userIds[onTwitch[i].user_id].acti_id}' ORDER BY timestamp DESC;`);
