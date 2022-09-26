@@ -2763,7 +2763,7 @@ async function update(matches, user, lastTimestamp) {
       }
 
       // Replace longest streak?
-      streak = matches[i].playerStats.longestStreak;
+      streak = matches[i].playerStats.longestStreak || 0;
 
       // Add match stats to cache and prepare them for insertion into the database.
       addStr.push(`(${timestamp}, '${match_id}', '${placement}', ${kills}, ${deaths}, ${gulag_kills}, ${gulag_deaths}, ${streak}, ${lobby_kd}, '${JSON.stringify(teammates)}'::json, '${game_mode}', '${user.acti_id}')`);

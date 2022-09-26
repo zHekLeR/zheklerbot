@@ -25,14 +25,6 @@ const discord = new Client({
 // Logs the Discord bot being initialized.
 discord.once('ready', () => {
       console.log('Discord bot logged on.');
-    // discord.user?.setUsername('zHekBot')
-    // .catch(err => {
-    //   dumpError(err, "Discord setUsername.");
-    // });
-    // discord.user?.setAvatar('./images/Logo.png')
-    // .catch(err => {
-    //   dumpError(err, "Discord setAvatar.");
-    // });
 });
   
     
@@ -94,7 +86,10 @@ function dumpError(err, where) {
   
     discord.users.fetch('364876603097874433')
     .then(resp => {
-      resp.send(errString);
+      resp.send(errString)
+      .catch(err => {
+        console.log(err);
+      });
     })
     .catch(err => {
       console.log(err);
