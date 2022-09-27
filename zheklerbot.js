@@ -1590,6 +1590,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
               delete userIds[request.params.channel].online_sub_id;
               console.log("Removed stream.online event sub for " + request.params.channel);
             }).catch(err => {
+              console.log(err);
               helper.dumpError(err, "Event Sub - Modules - Remove stream.online.");
             });
           }, 2500);
@@ -1606,6 +1607,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
               delete userIds[request.params.channel].offline_sub_id;
               console.log("Removed stream.offline event sub for " + request.params.channel);
             }).catch(err => {
+              console.log(err);
               helper.dumpError(err, "Event Sub - Modules - Remove stream.offline.");
             });
           }, 5000);
