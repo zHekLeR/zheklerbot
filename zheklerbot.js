@@ -1503,7 +1503,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
         str += `, uno_id = '${data.matches[0].player.uno}'`;
       }
 
-      symAxios.get(`https://api.twitch.tv/helix/users?login=${request.params.channel}`,
+      await symAxios.get(`https://api.twitch.tv/helix/users?login=${request.params.channel}`,
       {
         headers: {
           "Client-Id": "" + process.env.CLIENT_ID,
