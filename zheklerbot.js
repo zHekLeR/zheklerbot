@@ -1503,14 +1503,14 @@ app.get('/modules/:channel/:module', async (request, response) => {
         str += `, uno_id = '${data.matches[0].player.uno}'`;
       }
 
-      if (!userIds[request.params.channel].matches && !userIds[request.params.channel].event_sub) {
-        symAxios.get(`https://api.twitch.tv/helix/users?login=${request.params.channel}`,
-        {
-          headers: {
-            "Client-Id": "" + process.env.CLIENT_ID,
-            "Authorization": "Bearer " + process.env.ACCESS_TOKEN
-          }
-        }).then(resp => {
+      symAxios.get(`https://api.twitch.tv/helix/users?login=${request.params.channel}`,
+      {
+        headers: {
+          "Client-Id": "" + process.env.CLIENT_ID,
+          "Authorization": "Bearer " + process.env.ACCESS_TOKEN
+        }
+      }).then(async resp => {
+        if (!userIds[request.params.channel].matches && !userIds[request.params.channel].event_sub) {
           setTimeout(function() {
             symAxios.post('https://api.twitch.tv/helix/eventsub/subscriptions',
             {
@@ -1564,25 +1564,57 @@ app.get('/modules/:channel/:module', async (request, response) => {
               helper.dumpError(err, "Event Sub - Modules - stream.offline.");
             });
           }, 5000);
-
-          userIds[request.params.channel].event_sub = true;
+          
           helper.dbQuery(`UPDATE allusers SET event_sub = true::bool WHERE user_id = '${request.params.channel}';`);
-        })
-        .catch(err => {
-          helper.dumpError(err, "Event Sub - Modules.");
-        })
-      }
+          userIds[request.params.channel].event_sub = true;
+
+          let mCache = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${request.params.channel}';`);
+          if (!mCache || !mCache.length) await weekMatches(request.params.channel);
+          
+        } else if (userIds[request.params.channel].matches && userIds[request.params.channel].event_sub) {
+          setTimeout(function() {
+            symAxios.delete('https://api.twitch.tv/helix/eventsub/subscriptions',
+            {
+              headers: {
+                "Client-Id": "" + process.env.CLIENT_ID,
+                "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
+              }
+            }).then(resp => {
+              console.log("Removed stream.online event sub for " + request.params.channel);
+            }).catch(err => {
+              helper.dumpError(err, "Event Sub - Modules - stream.online.");
+            });
+          }, 2500);
+
+          setTimeout(function () { 
+            symAxios.delete('https://api.twitch.tv/helix/eventsub/subscriptions',
+            {
+              headers: {
+                "Client-Id": "" + process.env.CLIENT_ID,
+                "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
+              }
+            }).then(resp => {
+              console.log("Removed stream.offline event sub for " + request.params.channel);
+            }).catch(err => {
+              helper.dumpError(err, "Event Sub - Modules - stream.offline.");
+            });
+          }, 5000);
+
+          helper.dbQuery(`UPDATE allusers SET event_sub = false::bool WHERE user_id = '${request.params.channel}';`);
+          userIds[request.params.channel].event_sub = false;
+        }
+        
+      })
+      .catch(err => {
+        helper.dumpError(err, "Event Sub - Modules.");
+      })
+    } else if (request.params.module === 'customs') {
+      helper.dbQuery(`INSERT INTO customs(maps, map_count, multipliers, user_id) VALUES ('{"placement":[],"kills":[]}'::json, 8, '1 1', '${request.params.channel}') ON CONFLICT (user_id) DO NOTHING;`);
     }
 
     userIds[request.params.channel][request.params.module] = !userIds[request.params.channel][request.params.module];
     helper.dbQuery(`UPDATE allusers SET ${request.params.module} = ${userIds[request.params.channel][request.params.module]}${str} WHERE user_id = '${request.params.channel}';`);
-    if (request.params.module === 'customs') {
-      let rows = await helper.dbQueryPromise(`SELECT * FROM customs WHERE user_id = '${request.params.channel}';`);
-      if (!rows.length) {
-        helper.dbQuery(`INSERT INTO customs(maps, map_count, multipliers, user_id) VALUES ('{"placement":[],"kills":[]}'::json, 8, '1 1', '${request.params.channel}');`);
-      }
-    }
-
+  
     response.sendStatus(200);
   } catch (err) {
     helper.dumpError(err, `Change module status.`);
@@ -3081,45 +3113,45 @@ async function brookescribers() {
         gcd[temp[i].user_id] = { };
       }
     };
+    await weekMatches('mariann1tv');
+    // // Set the 5 minute interval for each player being tracked and get their active elements.
+    // intervals["matches"] = setInterval(async() => { 
+    //   try { 
+    //     await updateMatches();
+    //   } catch (err) {
+    //     console.log(`Match intervals: ${err}`);
+    //   }
+    // }, 300000);
 
-    // Set the 5 minute interval for each player being tracked and get their active elements.
-    intervals["matches"] = setInterval(async() => { 
-      try { 
-        await updateMatches();
-      } catch (err) {
-        console.log(`Match intervals: ${err}`);
-      }
-    }, 300000);
-
-    setInterval(function() { duelExpiration(); }, 5000);
+    // setInterval(function() { duelExpiration(); }, 5000);
     
-    // Connect to Twitch channels.
-    await bot.connect()
-    .catch(err => {
-      helper.dumpError(err, "Twitch enable.");
-    });
+    // // Connect to Twitch channels.
+    // await bot.connect()
+    // .catch(err => {
+    //   helper.dumpError(err, "Twitch enable.");
+    // });
 
-    // Authenticate with Twitch API and set 2 minute interval for BrookeAB's followers.
-    await authenticate();
+    // // Authenticate with Twitch API and set 2 minute interval for BrookeAB's followers.
+    // await authenticate();
 
-    // Hourly call to verify access token.
-    intervals["access_token"] = setInterval(function() {
-      symAxios.get('https://id.twitch.tv/oauth2/validate', 
-      {
-        headers: {
-          "Client-Id": process.env.CLIENT_ID || '',
-          "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
-          "Content-Type": "application/x-www-form-urlencoded"
-        }
-      }).then(resp => {
-          console.log(JSON.stringify(resp.data));
-          if (resp.status && `${resp.status}`.includes('40')) {
-            regenerate();
-          }
-      }).catch(err => {
-          helper.dumpError(err, "Hourly Twitch validation error.");
-      });
-    }, 60*60*1000);
+    // // Hourly call to verify access token.
+    // intervals["access_token"] = setInterval(function() {
+    //   symAxios.get('https://id.twitch.tv/oauth2/validate', 
+    //   {
+    //     headers: {
+    //       "Client-Id": process.env.CLIENT_ID || '',
+    //       "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
+    //       "Content-Type": "application/x-www-form-urlencoded"
+    //     }
+    //   }).then(resp => {
+    //       console.log(JSON.stringify(resp.data));
+    //       if (resp.status && `${resp.status}`.includes('40')) {
+    //         regenerate();
+    //       }
+    //   }).catch(err => {
+    //       helper.dumpError(err, "Hourly Twitch validation error.");
+    //   });
+    // }, 60*60*1000);
 
   } catch (err) {
 
