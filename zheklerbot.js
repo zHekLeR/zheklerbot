@@ -153,11 +153,8 @@ bot.on('chat', async (channel, tags, message) => {
       // Start timer.
       case '!starttimer':
         if (tags['username'] !== 'zhekler') break;
-        console.log(1);
         if (!intArray[channel.substring(1)]) intArray[channel.substring(1)] = {};
-        console.log(1);
         if (intArray[channel.substring(1)][splits[1]]) break;
-        console.log(1);
         let time = parseInt(splits[2]);
         intArray[channel.substring(1)][splits[1]] = setInterval(function () {
           say(channel.substring(1), splits.slice(3).join(' '));
@@ -170,6 +167,7 @@ bot.on('chat', async (channel, tags, message) => {
         if (!intArray[channel.substring(1)] || !intArray[channel.substring(1)][splits[1]]) break;
         clearInterval(intArray[channel.substring(1)][splits[1]]);
         delete intArray[channel.substring(1)][splits[1]];
+        break;
 
 
       // Pause this shit.
