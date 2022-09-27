@@ -150,6 +150,25 @@ bot.on('chat', async (channel, tags, message) => {
         break;
 
 
+      // Start timer.
+      case '!starttimer':
+        if (tags['username'] !== 'zhekler') break;
+        if (!intArray[channel.substring(1)]) intArray[channel.substring(1)] = {};
+        if (intArray[channel.substring(1)][splits[1]]) break;
+        let time = parseInt(splits[2]);
+        intArray[channel.substring(1)][splits[1]] = setInterval(function () {
+          say(channel.substring(1), splits.slice(3).join(' '));
+        }, time);
+        break;
+
+      // Stop timer.
+      case '!stoptimer':
+        if (tags['username'] !== 'zhekler') break;
+        if (!intArray[channel.substring(1)] || !intArray[channel.substring(1)][splits[1]]) break;
+        clearInterval(intArray[channel.substring(1)][splits[1]]);
+        delete intArray[channel.substring(1)][splits[1]];
+
+
       // Pause this shit.
       case '!pause':
         if (tags["username"] !== 'zhekler' || pause[channel.substring(1)]) break;
@@ -1536,7 +1555,6 @@ app.get('/modules/:channel/:module', async (request, response) => {
               userIds[request.params.channel].online_sub_id = resp.data.data[0].id;
               console.log("Added stream.online event sub for " + request.params.channel);
             }).catch(err => {
-              console.log(err);
               helper.dumpError(err, "Event Sub - Modules - Add stream.online.");
             });
           }, 2500);
@@ -1566,7 +1584,6 @@ app.get('/modules/:channel/:module', async (request, response) => {
               userIds[request.params.channel].offline_sub_id = resp.data.data[0].id;
               console.log("Added stream.offline event sub for " + request.params.channel);
             }).catch(err => {
-              console.log(err);
               helper.dumpError(err, "Event Sub - Modules - Add stream.offline.");
             });
           }, 5000);
@@ -1590,7 +1607,6 @@ app.get('/modules/:channel/:module', async (request, response) => {
               delete userIds[request.params.channel].online_sub_id;
               console.log("Removed stream.online event sub for " + request.params.channel);
             }).catch(err => {
-              console.log(err);
               helper.dumpError(err, "Event Sub - Modules - Remove stream.online.");
             });
           }, 2500);
@@ -1607,7 +1623,6 @@ app.get('/modules/:channel/:module', async (request, response) => {
               delete userIds[request.params.channel].offline_sub_id;
               console.log("Removed stream.offline event sub for " + request.params.channel);
             }).catch(err => {
-              console.log(err);
               helper.dumpError(err, "Event Sub - Modules - Remove stream.offline.");
             });
           }, 5000);
@@ -1629,7 +1644,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
   
     response.sendStatus(200);
   } catch (err) {
-    helper.dumpError(err, `Change module status.`);
+    helper.dumpError(err, `Change module status: ${request.params.channel} | ${request.params.module}.`);
     response.sendStatus(err.toString().includes('not allowed')?401:err.toString().includes('Not found')?404:500);
   }
 });
