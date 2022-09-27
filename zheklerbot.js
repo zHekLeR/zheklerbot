@@ -819,7 +819,7 @@ bot.on('chat', async (channel, tags, message) => {
 
       // Set subs.
       case '!setsubs': 
-        if (channel.substring(1) !== 'unrational') break;
+        if ((channel.substring(1) !== 'unrational') || (!tags['mod'])) break;
         helper.dbQuery(`UPDATE gary_subathon SET subs = ${parseInt(splits[1])};`);
         say(channel.substring(1), `Subathon subs count set to ${splits[1]}.`);
         break;
