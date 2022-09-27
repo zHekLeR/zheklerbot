@@ -1579,7 +1579,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
 
         } else if (userIds[request.params.channel].matches && userIds[request.params.channel].event_sub) {
           if (userIds[request.params.channel].online_sub_id) setTimeout(function() {
-            symAxios.delete(`https://api.twitch.tv/helix/eventsub/subscriptions?${userIds[request.params.channel].online_sub_id}`,
+            symAxios.delete(`https://api.twitch.tv/helix/eventsub/subscriptions?id=${userIds[request.params.channel].online_sub_id}`,
             {
               headers: {
                 "Client-Id": "" + process.env.CLIENT_ID,
@@ -1596,7 +1596,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
           }, 2500);
 
           if (userIds[request.params.channel].online_sub_id) setTimeout(function () { 
-            symAxios.delete(`https://api.twitch.tv/helix/eventsub/subscriptions?${userIds[request.params.channel].offline_sub_id}`,
+            symAxios.delete(`https://api.twitch.tv/helix/eventsub/subscriptions?id=${userIds[request.params.channel].offline_sub_id}`,
             {
               headers: {
                 "Client-Id": "" + process.env.CLIENT_ID,
