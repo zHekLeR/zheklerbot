@@ -1534,7 +1534,8 @@ app.get('/modules/:channel/:module', async (request, response) => {
             }).then(resp => {
               console.log("Added stream.online event sub for " + request.params.channel);
             }).catch(err => {
-              helper.dumpError(err, "Event Sub - Modules - stream.online.");
+              console.log(err);
+              helper.dumpError(err, "Event Sub - Modules - Add stream.online.");
             });
           }, 2500);
 
@@ -1561,7 +1562,8 @@ app.get('/modules/:channel/:module', async (request, response) => {
             }).then(resp => {
               console.log("Added stream.offline event sub for " + request.params.channel);
             }).catch(err => {
-              helper.dumpError(err, "Event Sub - Modules - stream.offline.");
+              console.log(err);
+              helper.dumpError(err, "Event Sub - Modules - Add stream.offline.");
             });
           }, 5000);
           
@@ -1582,7 +1584,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
             }).then(resp => {
               console.log("Removed stream.online event sub for " + request.params.channel);
             }).catch(err => {
-              helper.dumpError(err, "Event Sub - Modules - stream.online.");
+              helper.dumpError(err, "Event Sub - Modules - Remove stream.online.");
             });
           }, 2500);
 
@@ -1596,7 +1598,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
             }).then(resp => {
               console.log("Removed stream.offline event sub for " + request.params.channel);
             }).catch(err => {
-              helper.dumpError(err, "Event Sub - Modules - stream.offline.");
+              helper.dumpError(err, "Event Sub - Modules - Remove stream.offline.");
             });
           }, 5000);
 
