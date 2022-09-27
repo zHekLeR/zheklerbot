@@ -1511,7 +1511,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
         }
       }).then(async resp => {
         if (!userIds[request.params.channel].matches && !userIds[request.params.channel].event_sub) {
-          setTimeout(function() {
+          if (!userIds[request.params.channel].online_sub_id) setTimeout(function() {
             symAxios.post('https://api.twitch.tv/helix/eventsub/subscriptions',
             {
               "type": "stream.online", 
@@ -1532,6 +1532,8 @@ app.get('/modules/:channel/:module', async (request, response) => {
                 "Content-Type": "application/json"
               }
             }).then(resp => {
+              helper.dbQuery(`UPDATE allusers SET online_sub_id = '${resp.data.data[0].id}' WHERE user_id = '${request.params.channel}';`);
+              userIds[request.params.channel].online_sub_id = resp.data.data[0].id;
               console.log("Added stream.online event sub for " + request.params.channel);
             }).catch(err => {
               console.log(err);
@@ -1539,7 +1541,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
             });
           }, 2500);
 
-          setTimeout(function () { 
+          if (!userIds[request.params.channel].offline_sub_id) setTimeout(function () { 
             symAxios.post('https://api.twitch.tv/helix/eventsub/subscriptions',
             {
               "type": "stream.offline", 
@@ -1560,6 +1562,8 @@ app.get('/modules/:channel/:module', async (request, response) => {
                 "Content-Type": "application/json"
               }
             }).then(resp => {
+              helper.dbQuery(`UPDATE allusers SET offline_sub_id = '${resp.data.data[0].id}' WHERE user_id = '${request.params.channel}';`);
+              userIds[request.params.channel].offline_sub_id = resp.data.data[0].id;
               console.log("Added stream.offline event sub for " + request.params.channel);
             }).catch(err => {
               console.log(err);
@@ -1574,28 +1578,32 @@ app.get('/modules/:channel/:module', async (request, response) => {
           if (!mCache || !mCache.length) await weekMatches(request.params.channel);
 
         } else if (userIds[request.params.channel].matches && userIds[request.params.channel].event_sub) {
-          setTimeout(function() {
-            symAxios.delete('https://api.twitch.tv/helix/eventsub/subscriptions',
+          if (userIds[request.params.channel].online_sub_id) setTimeout(function() {
+            symAxios.delete(`https://api.twitch.tv/helix/eventsub/subscriptions?${userIds[request.params.channel].online_sub_id}`,
             {
               headers: {
                 "Client-Id": "" + process.env.CLIENT_ID,
                 "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
               }
             }).then(resp => {
+              helper.dbQuery(`UPDATE allusers SET online_sub_id = NULL WHERE user_id = '${request.params.channel}';`);
+              delete userIds[request.params.channel].online_sub_id;
               console.log("Removed stream.online event sub for " + request.params.channel);
             }).catch(err => {
               helper.dumpError(err, "Event Sub - Modules - Remove stream.online.");
             });
           }, 2500);
 
-          setTimeout(function () { 
-            symAxios.delete('https://api.twitch.tv/helix/eventsub/subscriptions',
+          if (userIds[request.params.channel].online_sub_id) setTimeout(function () { 
+            symAxios.delete(`https://api.twitch.tv/helix/eventsub/subscriptions?${userIds[request.params.channel].offline_sub_id}`,
             {
               headers: {
                 "Client-Id": "" + process.env.CLIENT_ID,
                 "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
               }
             }).then(resp => {
+              helper.dbQuery(`UPDATE allusers SET offline_sub_id = NULL WHERE user_id = '${request.params.channel}';`);
+              delete userIds[request.params.channel].offline_sub_id;
               console.log("Removed stream.offline event sub for " + request.params.channel);
             }).catch(err => {
               helper.dumpError(err, "Event Sub - Modules - Remove stream.offline.");
