@@ -809,6 +809,21 @@ bot.on('chat', async (channel, tags, message) => {
         }
         break;
 
+
+      // Gary subathon.
+      case '!subcount':
+        if (channel.substring(1) !== 'unrational') break;
+        let subs = await helper.dbQueryPromise(`SELECT * FROM gary_subathon;`);
+        say(channel.substring(1), `UnRationaL has received ${subs[0].subs} subs so far in the subathon! unratSubHype`);
+        break;
+
+      // Set subs.
+      case '!setsubs': 
+        if (channel.substring(1) !== 'unrational') break;
+        helper.dbQuery(`UPDATE gary_subathon SET subs = ${parseInt(splits[1])};`);
+        say(channel.substring(1), `Subathon subs count set to ${splits[1]}.`);
+        break;
+
       
       // Exit the channel.
       case '!zhekleave':
@@ -857,6 +872,9 @@ async function duelExpiration() {
 
 // Twitch bot subscription handler.
 bot.on('subscription', (channel, username, method, message, userstate) => {
+  if (channel.substring(1) === 'unrational') {
+    helper.dbQuery(`UPDATE gary_subathon SET subs = subs + 1;`);
+  }
   if (!userIds[channel.substring(1)].subs) return;
   say(channel, `${username} Thank you for the sub, welcome to the Huskies huskHype huskLove`);
 });
@@ -864,8 +882,17 @@ bot.on('subscription', (channel, username, method, message, userstate) => {
 
 // Twitch bot resubscription handler.
 bot.on('resub', (channel, username, months, message, userstate, methods) => {
+  if (channel.substring(1) === 'unrational') {
+    helper.dbQuery(`UPDATE gary_subathon SET subs = subs + 1;`);
+  }
   if (!userIds[channel.substring(1)].subs) return;
   say(channel, `${username} Thank you for the ${userstate['msg-param-cumulative-months']} month resub huskHype huskLove`);
+});
+
+bot.on('subgift', (channel, username) => {
+  if (channel.substring(1) === 'unrational') {
+    helper.dbQuery(`UPDATE gary_subathon SET subs = subs + 1;`);
+  }
 });
 
 
