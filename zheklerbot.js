@@ -923,7 +923,8 @@ let game_modes = {
   'br_dbd_playlist_wz320/rbrthdbd_quads': 'Rebirth Iron Trials Quads',
   'br_rebirth_calderaresurgence': 'Caldera Resurgence',
   'br_buy_back_solo': 'Buy Back Solos',
-  'br_mmp_playlist_wz350/mmp': 'Sticks and Stones'
+  'br_mmp_playlist_wz350/mmp': 'Sticks and Stones',
+  "br_rebirth_cdlr:_fortune''s_keep_trios": `Fortune''s Keep Trios`
 };
 
 
