@@ -3087,6 +3087,7 @@ async function brookescribers() {
             let followed = (new Date(temp[i].followed_at)).getTime()/1000;
             if (followed > sixAgo) {
               setTimeout(async function() {
+                console.log(temp[i].from_id);
                 await symAxios.get(`https://api.twitch.tv/helix/users?id=${temp[i].from_id}`)
                 .then(res2 => {
                   if (res2.data.data[0]) {
