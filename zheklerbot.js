@@ -2997,7 +2997,7 @@ async function authenticate() {
     
     
     .then(async res => {
-        intervals.push(setInterval(() => brookescribers(), 120000));
+        intervals.push(setInterval(() => brookescribers(), 300000));
         console.log("Brookescribers");
     })
     .catch(err => {
@@ -3009,7 +3009,7 @@ async function authenticate() {
           clearInterval(intervals["brooke"]);
         }
     
-        intervals["brooke"] = setInterval(() => brookescribers(), 120000);
+        intervals["brooke"] = setInterval(() => brookescribers(), 300000);
       }
     })
   } catch (err) {
