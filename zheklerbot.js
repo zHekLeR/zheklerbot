@@ -2789,7 +2789,7 @@ async function update(matches, user, lastTimestamp) {
       // Set gulag stats.
       gulag_kills = 0;
       gulag_deaths = 0;
-      if (!game_mode.includes('Resurgence') && !game_mode.includes('Rebirth') && !game_mode.includes('respect') && !game_mode.includes('Champion') && !game_mode.includes('Fortune')) {
+      if (!game_mode.includes('Resurgence') && !game_mode.includes('Rebirth') && !game_mode.includes('respect') && !game_mode.includes('Champion') && !game_mode.includes('Fortune') && !game_mode.includes('Buy Back')) {
         if (matches[i].playerStats.gulagKills) {
           gulag_kills = 1;
         } else if (matches[i].playerStats.gulagDeaths) {
