@@ -616,11 +616,11 @@ bot.on('chat', async (channel, tags, message) => {
         break;
       
       // Get win streak.
-      case '!streak':
-      case '!winstreak':
-        if (!userIds[channel.substring(1)].matches) break;
-        say(channel, await streak(channel.substring(1)));
-        break;
+      // case '!streak':
+      // case '!winstreak':
+      //   if (!userIds[channel.substring(1)].matches) break;
+      //   say(channel, await streak(channel.substring(1)));
+      //   break;
 
       // Enable Two vs Two scoring.
       case '!2v2on':
