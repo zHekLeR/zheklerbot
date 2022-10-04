@@ -925,6 +925,7 @@ let game_modes = {
   'br_buy_back_solo': 'Buy Back Solos',
   'br_mmp_playlist_wz350/mmp': 'Sticks and Stones',
   "br_rebirth_cdlr:_fortune's_keep_trios": `Fortune''s Keep Trios`,
+  'br_playlist_wz325/br_aprl_fool_name4': 'Totally Normal Battle Royale'
 };
 
 
