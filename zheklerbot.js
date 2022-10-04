@@ -2748,7 +2748,7 @@ async function update(matches, user, lastTimestamp) {
   try {
 
     // Declarations and base values.
-    let timestamp, match_id, placement, kills, deaths, lobby_kd, game_mode;
+    let timestamp, match_id, placement, kills, deaths, lobby_kd = 0, game_mode;
     let gulag_kills = 0;
     let gulag_deaths = 0;
     let streak = 0;
@@ -2757,8 +2757,12 @@ async function update(matches, user, lastTimestamp) {
     if (!matches) return;
     for (let i = 0; i < matches.length; i++) {
 
-      let data = (await apiAxios.get(`https://app.wzstats.gg/v2/?matchId=${matches[i].matchID}`)).data;
-      lobby_kd = data.matchStatData.playerAverage?data.matchStatData.playerAverage:0;
+      try {
+        let data = (await apiAxios.get(`https://app.wzstats.gg/v2/?matchId=${matches[i].matchID}`)).data;
+        lobby_kd = data.matchStatData.playerAverage?data.matchStatData.playerAverage:0;
+      } catch (err) {
+        helper.dumpError(err, "WZStats match pull.");
+      }
 
       timestamp = matches[i].utcStartSeconds;
       if (timestamp <= lastTimestamp) continue;
