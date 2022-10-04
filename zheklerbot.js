@@ -2995,10 +2995,8 @@ let intervals = [];
 async function authenticate() {
   try {
     await symAxios.get('https://id.twitch.tv/oauth2/validate')
-    
-    
-    .then(async res => {
-        intervals.push(setInterval(() => brookescribers(), 300000));
+    .then(res => {
+        intervals.push(setInterval(() => brookescribers(), 120000));
         console.log("Brookescribers");
     })
     .catch(err => {
@@ -3092,6 +3090,8 @@ async function brookescribers() {
                 .then(res2 => {
                   if (res2.data.data[0]) {
                   let created = (new Date(res2.data.data[0].created_at)).getTime()/1000;
+                  console.log(followed);
+                  console.log(created);
                   if (created > sixAgo && !fLast.includes(res2.data.data[0].login)) them.push(`('${res2.data.data[0].login}', ${followed}, ${created})`);
                   } else {
                     console.log(`${temp[i].from_id}: ${res2.data}`);
@@ -3155,7 +3155,7 @@ async function brookescribers() {
       } catch (err) {
         console.log(`Match intervals: ${err}`);
       }
-    }, 300000);
+    }, 120000);
 
     setInterval(function() { duelExpiration(); }, 5000);
     
