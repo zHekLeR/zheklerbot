@@ -3077,7 +3077,7 @@ async function brookescribers() {
 
           // Set up temp storage.
           let temp = resp.data.data;
-          let them = await new Promise((resolve, reject) => {
+          await (new Promise((resolve, reject) => {
             try {
               let them2 = [];
               // Iterate through recent followers.
@@ -3105,21 +3105,22 @@ async function brookescribers() {
                   }, 1000*i);
                 } else continue;
               }
-              resolve(them2);
+              
+              console.log(them2);
+              resolve([them2]);
             } catch (err) {
               helper.dumpError(err, "Brookescribers Promise.");
               reject([]);
             }
-          });
+          })).then((res) => {
+            console.log(res);
+            // Add new followers to database.
+            if (res.length) {
+              helper.dbQuery(`INSERT INTO brookescribers (user_id, followed_at, created_at) VALUES ${res.join(', ')};`);
+            }
 
-          console.log(them);
-
-          // Add new followers to database.
-          if (them.length) {
-            helper.dbQuery(`INSERT INTO brookescribers (user_id, followed_at, created_at) VALUES ${them.join(', ')};`);
-          }
-
-          console.log("Updated Brookescribers.");
+            console.log("Updated Brookescribers.");
+        })
         } catch (err) {
           helper.dumpError(err, `Brookescribers user.`);
         }
