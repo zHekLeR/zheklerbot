@@ -3086,7 +3086,6 @@ async function brookescribers() {
             if (followed > sixAgo) {
               await symAxios.get(`https://api.twitch.tv/helix/users?id=${temp[i].from_id}`)
               .then(res2 => {
-                console.log(res2.data.data);
                 if (res2.data.data[0]) {
                   let created = (new Date(res2.data.data[0].created_at)).getTime()/1000;
                   if (created > sixAgo && !fLast.includes(res2.data.data[0].login)) {
@@ -3104,7 +3103,6 @@ async function brookescribers() {
             await new Promise(resolve => setTimeout(resolve, 1000));
           }
           
-          console.log(them);
           // Add new followers to database.
           if (them.length) {
             helper.dbQuery(`INSERT INTO brookescribers (user_id, followed_at, created_at) VALUES ${them.join(', ')};`);
