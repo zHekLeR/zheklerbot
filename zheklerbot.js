@@ -3077,50 +3077,40 @@ async function brookescribers() {
 
           // Set up temp storage.
           let temp = resp.data.data;
-          await (new Promise((resolve, reject) => {
-            try {
-              let them2 = [];
-              // Iterate through recent followers.
-              for (let i = 0; i < temp.length; i++) {
+          let them = [];
+          // Iterate through recent followers.
+          for (let i = 0; i < temp.length; i++) {
 
-                // If follower is more recent than those in the database and followed within six hours, check it's creation date.
-                let followed = (new Date(temp[i].followed_at)).getTime()/1000;
-                if (followed > sixAgo) {
-                  setTimeout(async function() {
-                    await symAxios.get(`https://api.twitch.tv/helix/users?id=${temp[i].from_id}`)
-                    .then(res2 => {
-                      console.log(res2.data.data);
-                      if (res2.data.data[0]) {
-                        let created = (new Date(res2.data.data[0].created_at)).getTime()/1000;
-                        if (created > sixAgo && !fLast.includes(res2.data.data[0].login)) {
-                          them2.push(`('${res2.data.data[0].login}', ${followed}, ${created})`);
-                        }
-                      } else {
-                        console.log(`${temp[i].from_id}: ${res2.data}`);
-                      }
-                    })
-                    .catch(err => {
-                      helper.dumpError(err, "Brookescribers creation age.");
-                    });
-                  }, 1000*i);
-                } else continue;
-              }
-              
-              console.log(them2);
-              resolve([them2]);
-            } catch (err) {
-              helper.dumpError(err, "Brookescribers Promise.");
-              reject([]);
+            // If follower is more recent than those in the database and followed within six hours, check it's creation date.
+            let followed = (new Date(temp[i].followed_at)).getTime()/1000;
+            if (followed > sixAgo) {
+              await symAxios.get(`https://api.twitch.tv/helix/users?id=${temp[i].from_id}`)
+              .then(res2 => {
+                console.log(res2.data.data);
+                if (res2.data.data[0]) {
+                  let created = (new Date(res2.data.data[0].created_at)).getTime()/1000;
+                  if (created > sixAgo && !fLast.includes(res2.data.data[0].login)) {
+                    them.push(`('${res2.data.data[0].login}', ${followed}, ${created})`);
+                  }
+                } else {
+                  console.log(`${temp[i].from_id}: ${res2.data}`);
+                }
+              })
+              .catch(err => {
+                helper.dumpError(err, "Brookescribers creation age.");
+              });
             }
-          })).then((res) => {
-            console.log(res);
-            // Add new followers to database.
-            if (res.length) {
-              helper.dbQuery(`INSERT INTO brookescribers (user_id, followed_at, created_at) VALUES ${res.join(', ')};`);
-            }
+            
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+          
+          console.log(them);
+          // Add new followers to database.
+          if (them.length) {
+            helper.dbQuery(`INSERT INTO brookescribers (user_id, followed_at, created_at) VALUES ${them.join(', ')};`);
+          }
 
-            console.log("Updated Brookescribers.");
-        })
+          console.log("Updated Brookescribers.");
         } catch (err) {
           helper.dumpError(err, `Brookescribers user.`);
         }
