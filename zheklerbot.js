@@ -3077,32 +3077,39 @@ async function brookescribers() {
 
           // Set up temp storage.
           let temp = resp.data.data;
-          let them = [];
+          let them = await new Promise((resolve, reject) => {
+            try {
+              let them2 = [];
+              // Iterate through recent followers.
+              for (let i = 0; i < temp.length; i++) {
 
-          // Iterate through recent followers.
-          for (let i = 0; i < temp.length; i++) {
-
-            // If follower is more recent than those in the database and followed within six hours, check it's creation date.
-            let followed = (new Date(temp[i].followed_at)).getTime()/1000;
-            if (followed > sixAgo) {
-              setTimeout(async function() {
-                await symAxios.get(`https://api.twitch.tv/helix/users?id=${temp[i].from_id}`)
-                .then(res2 => {
-                  if (res2.data.data[0]) {
-                  let created = (new Date(res2.data.data[0].created_at)).getTime()/1000;
-                  console.log(followed);
-                  console.log(created);
-                  if (created > sixAgo && !fLast.includes(res2.data.data[0].login)) them.push(`('${res2.data.data[0].login}', ${followed}, ${created})`);
-                  } else {
-                    console.log(`${temp[i].from_id}: ${res2.data}`);
-                  }
-                })
-                .catch(err => {
-                  helper.dumpError(err, "Brookescribers creation age.");
-                });
-              }, 1000*i);
-            } else break;
-          }
+                // If follower is more recent than those in the database and followed within six hours, check it's creation date.
+                let followed = (new Date(temp[i].followed_at)).getTime()/1000;
+                if (followed > sixAgo) {
+                  setTimeout(async function() {
+                    await symAxios.get(`https://api.twitch.tv/helix/users?id=${temp[i].from_id}`)
+                    .then(res2 => {
+                      if (res2.data.data[0]) {
+                        let created = (new Date(res2.data.data[0].created_at)).getTime()/1000;
+                        if (created > sixAgo && !fLast.includes(res2.data.data[0].login)) {
+                          them2.push(`('${res2.data.data[0].login}', ${followed}, ${created})`);
+                        }
+                      } else {
+                        console.log(`${temp[i].from_id}: ${res2.data}`);
+                      }
+                    })
+                    .catch(err => {
+                      helper.dumpError(err, "Brookescribers creation age.");
+                    });
+                  }, 1000*i);
+                } else continue;
+              }
+              resolve(them2);
+            } catch (err) {
+              helper.dumpError(err, "Brookescribers Promise.");
+              reject([]);
+            }
+          });
 
           console.log(them);
 
