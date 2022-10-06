@@ -1595,7 +1595,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
           userIds[request.params.channel].event_sub = true;
 
           let mCache = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${request.params.channel}';`);
-          if (!mCache || !mCache.length) await weekMatches(request.params.channel);
+          if (!mCache || !mCache.length) weekMatches(request.params.channel);
 
         } else if (userIds[request.params.channel].matches && userIds[request.params.channel].event_sub) {
           if (userIds[request.params.channel].online_sub_id) setTimeout(function() {
