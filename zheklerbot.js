@@ -1135,6 +1135,7 @@ app.use(favicon(path.join(__dirname, 'images/favicon.ico')));
 // Home page.
 app.get('/', async (request, response) => {
   let cookies = request.cookies;
+  console.log(cookies["auth"]);
   let page;
   if (cookies["auth"]) {
     await axios.get('https://id.twitch.tv/oauth2/validate', {
