@@ -1168,9 +1168,13 @@ app.get('/', async (request, response) => {
         }
         response.send(page); 
       } else {
-        page = fs.readFileSync('./html/not_enabled.html').toString('utf-8');
-        page = page.replace(/#Placeholder#/g, `<a href="/login"><div class="button">It looks like you haven't logged in with Twitch yet. Click here to do that.</div></a>`);
-        response.send(page); 
+        helper.dbQuery(`UPDATE permissions SET bearer = '' WHERE bearer = '${cookies["auth"]}';`);
+        response.clearCookie('auth', {
+          'domain': '.zhekbot.com',
+          secure: true,
+          httpOnly: true
+        });
+        response.redirect('/');
       }
     }).catch(err => {
       helper.dumpError(err, `Home page validation.`);
