@@ -82,7 +82,7 @@ function dumpError(err, where) {
     errString += '\n====================';
     console.log(errString);
   
-    if (errString.includes('404')) return;
+    if (errString.includes('404') || errString.includes('500')) return;
   
     discord.users.fetch('364876603097874433')
     .then(resp => {
