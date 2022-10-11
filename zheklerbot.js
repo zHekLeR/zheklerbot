@@ -2927,6 +2927,10 @@ app.post('/eventsub', (req, res) => {
             for (let i = 0; i < notification.event.outcomes.length; i++) {
               points += notification.event.outcomes[i].channel_points?notification.event.outcomes[i].channel_points:0;
             }
+            if (intArray[notification.event.broadcaster_user_login]) {
+              clearInterval(intArray[notification.event.broadcaster_user_login]);
+              delete intArray[notification.event.broadcaster_user_login];
+            }
             say(notification.event.broadcaster_user_login, `Prediction locked! There are ${points} points on the line for '${pred}'`);
             break;
 
