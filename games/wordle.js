@@ -14,6 +14,8 @@ const r = '🔴';
 import fs from 'fs';
 const possible = fs.readFileSync("./games/possible.txt").toString('utf-8').split("\n");
 const allowed = fs.readFileSync("./games/allowed.txt").toString('utf-8').split("\n");
+console.log(possible.length);
+console.log(allowed.length);
 
 
 // Function to check accuracy of the guessed word.
