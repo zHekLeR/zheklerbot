@@ -1178,8 +1178,18 @@ app.get('/', async (request, response) => {
         response.redirect('/');
       }
     }).catch(err => {
-      helper.dumpError(err, `Home page validation.`);
-      response.send(err);
+      if (err.toString().includes('401')) {
+        helper.dbQuery(`UPDATE permissions SET bearer = '' WHERE bearer = '${cookies["auth"]}';`);
+        response.clearCookie('auth', {
+          'domain': '.zhekbot.com',
+          secure: true,
+          httpOnly: true
+        });
+        response.redirect('/');
+      } else {
+        helper.dumpError(err, `Home page validation.`);
+        response.send(err);
+      }
       return;
     });
 
