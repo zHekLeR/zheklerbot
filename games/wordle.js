@@ -125,7 +125,10 @@ async function wordleGuess(id, guess) {
         let resStr;
         
         // If the user is not in the Wordle or they don't have a word, return a message indicating such.
-        if (!user || user.word.length != 5) {
+        console.log(user);
+        console.log(user.word.length);
+        console.log(allowed.indexOf(user.word));
+        if (!user || user.word.length !== 5 || allowed.indexOf(user.word) < 0) {
             resStr = `@${id}: You haven't started a Wordle yet. To start one, type !wordle`;
         } else {
         
