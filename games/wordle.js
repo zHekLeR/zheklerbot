@@ -112,8 +112,6 @@ async function wordleStart(id) {
 // Function to handle 
 async function wordleGuess(id, guess) {
     try {
-        console.log(guess.toLowerCase());
-        console.log(allowed.includes(guess.toLowerCase()));
 
         // Check word length and whether it's in the list of allowed words.
         if (guess.length != 5 || allowed.indexOf(guess.toLowerCase()) > -1) {
@@ -127,7 +125,7 @@ async function wordleGuess(id, guess) {
         let resStr;
         
         // If the user is not in the Wordle or they don't have a word, return a message indicating such.
-        if (!user || user.word.length != 5 || !possible.includes(user.word)) {
+        if (!user || user.word.length != 5 || allowed.indexOf(user.word) < 0) {
             resStr = `@${id}: You haven't started a Wordle yet. To start one, type !wordle`;
         } else {
         
