@@ -14,8 +14,6 @@ const r = '🔴';
 import fs from 'fs';
 const possible = fs.readFileSync("./games/possible.txt").toString('utf-8').split("\n");
 const allowed = fs.readFileSync("./games/allowed.txt").toString('utf-8').split("\n");
-console.log(possible.length);
-console.log(allowed.length);
 
 
 // Function to check accuracy of the guessed word.
@@ -115,6 +113,8 @@ async function wordleStart(id) {
 async function wordleGuess(id, guess) {
     try {
 
+        console.log(guess);
+        console.log(guess.length);
         // Check word length and whether it's in the list of allowed words.
         if (guess.length != 5 || !allowed.includes(guess.toLowerCase())) {
             return `@${id}: Your guess must be a real 5-letter English word (no names/cities/proper nouns).`;
