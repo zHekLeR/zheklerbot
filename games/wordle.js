@@ -112,11 +112,8 @@ async function wordleStart(id) {
 // Function to handle 
 async function wordleGuess(id, guess) {
     try {
-
+        console.log(guess.toLowerCase());
         console.log(allowed.includes(guess.toLowerCase()));
-        console.log(allowed[2367]);
-        console.log(allowed[2368]);
-        console.log(allowed[2369]);
 
         // Check word length and whether it's in the list of allowed words.
         if (guess.length != 5 || !allowed.includes(guess.toLowerCase())) {
