@@ -116,6 +116,9 @@ bot.on('logon', () => {
 // Free trial up.
 let pause = {};
 
+// Disabled commands.
+let disabled = {};
+
 // Check for commands and respond appropriately.
 bot.on('chat', async (channel, tags, message) => {
   try {
@@ -139,9 +142,30 @@ bot.on('chat', async (channel, tags, message) => {
 
     // Base values.
     let res = [], placement, kills, multis, score, str, rows;
+    
+    // Disabled commands.
+    let coms = userIds[channel.substring(1)].disabled?userIds[channel.substring(1)].disabled.split(','):[];
+    if (coms.includes(short)) return;
 
     // Switch on given command.
     switch (short) {
+      // Enable command.
+      case '!enable': 
+        if (tags['username'] !== channel.substring(1) && !tags['mod']) break;
+        if (coms.indexOf(splits[1]) < 0) break;
+        coms.splice(coms.indexOf(splits[1]), 1);
+        userIds[channel.substring(1)].disabled = coms.join(',');
+        helper.dbQuery(`UPDATE allusers SET disabled = '${coms.join(',')}' WHERE user_id = '${channel.substring(1)}';`);
+        break;
+
+      case '!disable':
+        if (tags['username'] !== channel.substring(1) && !tags['mod']) break;
+        if (coms.indexOf(splits[1]) > -1) break;
+        coms.push(splits[1]);
+        userIds[channel.substring(1)].disabled = coms.join(',');
+        helper.dbQuery(`UPDATE allusers SET disabled = '${coms.join(',')}' WHERE user_id = '${channel.substring(1)}';`);
+        break;
+
       // Return commands for this channel.
       case '!commands':
         if (!userIds[channel.substring(1)].commands) break;
@@ -616,11 +640,11 @@ bot.on('chat', async (channel, tags, message) => {
         break;
       
       // Get win streak.
-      // case '!streak':
-      // case '!winstreak':
-      //   if (!userIds[channel.substring(1)].matches) break;
-      //   say(channel, await streak(channel.substring(1)));
-      //   break;
+      case '!streak':
+      case '!winstreak':
+        if (!userIds[channel.substring(1)].matches) break;
+        say(channel, await streak(channel.substring(1)));
+        break;
 
       // Enable Two vs Two scoring.
       case '!2v2on':
@@ -1117,6 +1141,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import favicon from 'serve-favicon';
 import Profanity from 'profanity-js';
+import { deepStrictEqual } from 'node:assert';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
