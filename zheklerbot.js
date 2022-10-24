@@ -1080,7 +1080,7 @@ function loginWithSSO (sso) {
           console.log(response);
           let authHeader = response.data.authHeader;
           let fakeXSRF = "68e8b62e-1d9d-4ce1-b93f-cbe5ff31a041";
-          apiAxios.defaults.headers.common.Authorization = `bearer ${authHeader}`;
+          // apiAxios.defaults.headers.common.Authorization = `bearer ${authHeader}`;
           apiAxios.defaults.headers.common.x_cod_device_id = `${deviceId}`;
           apiAxios.defaults.headers.common["X-XSRF-TOKEN"] = fakeXSRF;
           apiAxios.defaults.headers.common["X-CSRF-TOKEN"] = fakeXSRF;
@@ -1141,7 +1141,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import favicon from 'serve-favicon';
 import Profanity from 'profanity-js';
-import { deepStrictEqual } from 'node:assert';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
