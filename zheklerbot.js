@@ -949,7 +949,11 @@ let game_modes = {
   'br_buy_back_solo': 'Buy Back Solos',
   'br_mmp_playlist_wz350/mmp': 'Sticks and Stones',
   "br_rebirth_cdlr:_fortune's_keep_trios": `Fortune''s Keep Trios`,
-  'br_playlist_wz325/br_aprl_fool_name4': 'Totally Normal Battle Royale'
+  'br_playlist_wz325/br_aprl_fool_name4': 'Totally Normal Battle Royale',
+  'br_rebirth_dbd_playlist_wz355/res_trials_quads': 'Rebirth Supreme Quads',
+  'br_rebirth_dbd_playlist_wz355/res_trials_trios': 'Rebirth Supreme Trios',
+  'br_rebirth_dbd_playlist_wz355/res_trials_duos': 'Rebirth Supreme Duos',
+  'br_rebirth_dbd_reverse_playlist_wz355/res_trials_solos': 'Rebirth Supreme Solos'
 };
 
 
