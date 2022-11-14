@@ -2078,11 +2078,9 @@ app.get('/wins/:user', async (request, response) => {
 
 
 // API endpoint to format ban statements for accounts in BrookeAB's chat which were created and followed within 6 hours.
-
-
 app.get('/brookescribers', async (request, response) => {
   try {
-    let time = Math.round(Date.now() / 1000) - 7200;
+    let time = Math.round(Date.now() / 1000) - 10800;
 
     // Pull accounts from database.
     let rows = await helper.dbQueryPromise(`SELECT * FROM brookescribers WHERE followed_at > ${time};`);
