@@ -2082,8 +2082,10 @@ app.get('/wins/:user', async (request, response) => {
 
 app.get('/brookescribers', async (request, response) => {
   try {
+    let time = DateTime.now().minus({hours:2}).toMillis();
+
     // Pull accounts from database.
-    let rows = await helper.dbQueryPromise('SELECT * FROM brookescribers;');
+    let rows = await helper.dbQueryPromise(`SELECT * FROM brookescribers WHERE followed_at > ${time};`);
 
     // Format string of ban statements.
     let str = '';
