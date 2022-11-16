@@ -564,7 +564,7 @@ bot.on('chat', async (channel, tags, message) => {
         }
         helper.dbQuery(`UPDATE allusers SET matches = true WHERE user_id = '${channel.substring(1)}';`);
         userIds[channel.substring(1)].matches = true;
-        say(channel, `Matches disabled.`);
+        say(channel, `Matches enabled.`);
         break;
 
       // Disable match tracking.
@@ -572,7 +572,7 @@ bot.on('chat', async (channel, tags, message) => {
         if (!userIds[channel.substring(1)].matches || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
         helper.dbQuery(`UPDATE allusers SET matches = false WHERE user_id = '${channel.substring(1)}';`);
         userIds[channel.substring(1)].matches = false;
-        say(channel, `Matches enabled.`);
+        say(channel, `Matches disabled.`);
         break;
 
       // Get the last game stats.
