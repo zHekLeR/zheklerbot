@@ -34,16 +34,16 @@ function check(word, guess) {
         } else if (word.includes(guess.charAt(i))) {
             
             // Check how many times this character appears in the correct word.
-            let count = 0;
+            let count = 0, correct = 0;
             for (let j = 0; j < 5; j++) {
                 count += (guess.charAt(i)===word.charAt(j))?1:0;
-                console.log(guess.charAt(j) + ' ' + count);
+                correct += (guess.charAt(j)===word.charAt(j))?1:0;
             }
 
             // If the character is in the word but in the wrong spot, add a yellow.
             // If the character is in the word but you already have it in the correct place, add a red.
-            let split = word.split(guess.charAt(i)).join('');
-            result += ((count >= (5 - split.length))?r:y);
+            //let split = word.split(guess.charAt(i)).join('');
+            result += ((count > correct)?r:y);
             
             // Guessed word is not the correct word.
             correct = false;
