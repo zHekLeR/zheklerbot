@@ -827,11 +827,10 @@ bot.on('chat', async (channel, tags, message) => {
       // Set all of the tourney commands after match is done.
       case '!tourneyend':
         if (!tags["mod"] && tags["username"] !== channel.substring(1)) break;
-        say(channel.substring(1), `!editcom !time It’s currently $(time America/Phoenix “h:mm A”) for HusKerrs.`);
+        say(channel.substring(1), `!editcom !time It’s currently $(time America/Phoenix "h:mm A") for HusKerrs.`);
         for (let i = 1; i <= tourneyComs.length; i++) {
-          setTimeout(function () {
-            say(channel.substring(1), `!edit ${tourneyComs[i]} Tourney's over! See !results for more`)
-          }, i*2000)
+          say(channel.substring(1), `!edit ${tourneyComs[i]} Tourney's over! See !results for more`);
+          await new Promise(resolve => setTimeout(resolve, 2000));
         }
         break;
 
