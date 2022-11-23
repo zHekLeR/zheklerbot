@@ -44,7 +44,7 @@ function check(word, guess) {
             // If the character is in the word but in the wrong spot, add a yellow.
             // If the character is in the word but you already have it in the correct place, add a red.
             //let split = word.split(guess.charAt(i)).join('');
-            result += ((count >= correct)?r:y);
+            result += ((count >= correct)?y:r);
             
             // Guessed word is not the correct word.
             correct = false;
