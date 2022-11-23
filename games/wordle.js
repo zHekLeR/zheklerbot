@@ -31,13 +31,13 @@ function check(word, guess) {
             // Character is in the correct place.
             result += g;
 
-        } else if (word.includes(guess.charAt(i))) {
+        } else if (word.indexOf(guess.charAt(i)) > -1) {
             
             // Check how many times this character appears in the correct word.
             let count = 0, correct = 0;
             for (let j = 0; j < 5; j++) {
                 count += (guess.charAt(i)===word.charAt(j))?1:0;
-                correct += (guess.charAt(j)===word.charAt(j))?1:0;
+                correct += ((guess.charAt(j)===word.charAt(i)) && (guess.charAt(j)===word.charAt(j)))?1:0;
             }
             console.log(`${guess.charAt(i)}: ${count} ${correct}`);
 
