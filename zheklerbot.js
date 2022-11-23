@@ -828,9 +828,9 @@ bot.on('chat', async (channel, tags, message) => {
       case '!tourneyend':
         if (!tags["mod"] && tags["username"] !== channel.substring(1)) break;
         say(channel.substring(1), `!editcom !time It’s currently $(time America/Phoenix "h:mm A") for HusKerrs.`);
-        for (let i = 1; i <= tourneyComs.length; i++) {
-          say(channel.substring(1), `!edit ${tourneyComs[i]} Tourney's over! See !results for more`);
+        for (let i = 0; i < tourneyComs.length; i++) {
           await new Promise(resolve => setTimeout(resolve, 2000));
+          say(channel.substring(1), `!edit ${tourneyComs[i]} Tourney's over! See !results for more`);
         }
         break;
 
