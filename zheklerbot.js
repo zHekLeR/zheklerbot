@@ -826,6 +826,7 @@ bot.on('chat', async (channel, tags, message) => {
 
       // Set all of the tourney commands after match is done.
       case '!tourneyend':
+        if (channel.substring(1) !== 'huskerrs') break; 
         if (!tags["mod"] && tags["username"] !== channel.substring(1)) break;
         say(channel.substring(1), `!editcom !time It’s currently $(time America/Phoenix "h:mm A") for HusKerrs.`);
         for (let i = 0; i < tourneyComs.length; i++) {
