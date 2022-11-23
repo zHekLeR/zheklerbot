@@ -36,7 +36,7 @@ function check(word, guess) {
             // Check how many times this character appears in the correct word.
             let count = 0;
             for (let j = 0; j < 5; j++) {
-                count += ((word.charAt(j)===guess.charAt(j)))?1:0;
+                count += ((guess.charAt(i)===word.charAt(j)) || (word.charAt(j)===guess.charAt(j)))?1:0;
                 console.log(guess.charAt(j) + ' ' + count);
             }
 
