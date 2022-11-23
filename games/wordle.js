@@ -25,6 +25,8 @@ function check(word, guess) {
 
     // Compare each character of the correct word and the guessed word.
     for (let i = 0; i < 5; i++) {
+        console.log(word.charAt(i) === guess.charAt(i));
+        console.log(word.includes(guess.charAt(i)));
 
         if (word.charAt(i) === guess.charAt(i)) {
             
@@ -37,6 +39,7 @@ function check(word, guess) {
             let count = 0;
             for (let j = 0; j < 5; j++) {
                 count += ((guess.charAt(i)===word.charAt(j)) && (word.charAt(j)===guess.charAt(j)))?1:0;
+                console.log(guess.charAt(j) + ' ' + count);
             }
 
             // If the character is in the word but in the wrong spot, add a yellow.
