@@ -235,6 +235,7 @@ bot.on('chat', async (channel, tags, message) => {
 
       // Get this user's Revolver Roulette score.
       case '!rrscore':
+      case '!rrstats':
         if (!userIds[channel.substring(1)].revolverroulette) break;
         say(channel, await revolverroulette.revolverrouletteScore(tags["display-name"] || tags["username"] || '', channel));
         break;
@@ -303,6 +304,7 @@ bot.on('chat', async (channel, tags, message) => {
 
       // Get this user's score in Coinflip. 
       case '!coinscore':
+      case '!coinstats':
         if (!userIds[channel.substring(1)].coinflip) break;
         say(channel, await coinflip.coinflipScore(tags["display-name"]?tags["display-name"]:tags["username"], channel));
         break;
@@ -341,6 +343,7 @@ bot.on('chat', async (channel, tags, message) => {
 
       // Get user's score in Rock Paper Scissors.
       case '!rpsscore': 
+      case '!rpsstats':
       if (!userIds[channel.substring(1)].rps) break;
         say(channel, await rps.rpsScore(tags["display-name"]?tags["display-name"]:tags["username"], channel));
         break;
