@@ -258,7 +258,7 @@ async function wordleStats(id) {
         } else {
 
             // Return stats for this user.
-            return `Wordle Stats for ${id} | Wins: ${user.wins} | Losses: ${user.losses} | Quickest Guess: ${user.best == 6?'-':user.best} | Longest Streak: ${user.longest}`;
+            return `Wordle Stats for ${id} | Wins: ${user.wins} | Losses: ${user.losses} | Quickest Guess: ${user.best == 6?'-':user.best} | Current Streak: ${user.streak} | Longest Streak: ${user.longest}`;
 
         }
     } catch (err) {
