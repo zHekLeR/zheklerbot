@@ -117,7 +117,7 @@ bot.on('logon', () => {
 let pause = {};
 
 // Tourney commands.
-let tourneyComs = ["!mc", "!prize", "!status", "!bracket", "!banned"];
+let tourneyComs = ["!mc", "!prize", "!status", "!bracket", "!banned", "!format"];
 
 // Check for commands and respond appropriately.
 bot.on('chat', async (channel, tags, message) => {
