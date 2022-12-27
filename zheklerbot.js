@@ -3091,6 +3091,7 @@ function regenerate() {
       headers: { responseType: 'json' }
   })
   .then(resp => {
+    console.log(resp.data);
     for (var k in resp.data) {
       account_config[k] = resp.data[k];
     }
