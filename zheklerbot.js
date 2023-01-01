@@ -1488,7 +1488,7 @@ app.get('/removeeditor/:channel', async (request, response) => {
     }
 
     let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE userid = '${request.get('editor')}';`);
-    let perms = rows[0].perms.split(',');
+    let perms = rows[0].perms?rows[0].perms.split(','):"";
     perms.splice(rows[0].perms.indexOf(request.params.channel), 1);
     helper.dbQuery(`UPDATE permissions SET perms = '${perms.join(',')}' WHERE userid = '${request.get('editor')}';`);
 
