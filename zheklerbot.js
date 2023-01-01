@@ -1449,7 +1449,7 @@ app.get('/addeditor/:channel', async (request, response) => {
     let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE userid = '${request.get('editor')}';`);
     if (!rows.length) {
       helper.dbQuery(`INSERT INTO permissions(userid, perms) VALUES ('${request.get('editor')}', '${request.params.channel}')`);
-    } else if (!rows[0].perms.split(',').includes(request.params.channel)) {
+    } else if (!rows[0].perms || !rows[0].perms.split(',').includes(request.params.channel)) {
       helper.dbQuery(`UPDATE permissions SET perms = perms || ',${request.params.channel}' WHERE userid = '${request.get('editor')}';`);
     }
 
@@ -2668,7 +2668,7 @@ app.get('/twitch/redirect', async (req, response) => {
     let code = query["code"];
 
     await axios.post(`https://id.twitch.tv/oauth2/token`,
-    `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&code=${code}&grant_type=authorization_code&redirect_uri=https://localhost:6969/redirect`,
+    `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&code=${code}&grant_type=authorization_code&redirect_uri=https://www.zhekbot.com/redirect`,
     {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
@@ -2699,7 +2699,32 @@ app.get('/twitch/redirect', async (req, response) => {
     helper.dumpError(err, "Twitch redirect overall.");
     response.redirect('/');
   }
-})
+});
+
+
+app.get('/twitch/bot', async (req, response) => {
+  try {
+    let query = url.parse(req.url, true).query;
+    let token = query["access_token"];
+    let name = "";
+
+    await axios.post(`https://id.twitch.tv/oauth2/validate`, 
+    {
+      headers: {
+        'Authorization': 'OAuth ' + token
+      }
+    }).then(async resp => {
+      name = resp.data.login;
+    }).catch(err => {
+      helper.dumpError(err, "Twitch bot auth: validate");
+    });
+
+    helper.dbQuery(`UPDATE permissions SET tw_token = '${token}' WHERE userid = '${name}';`);
+  } catch (err) {
+    helper.dumpError(err, "Twitch bot auth.");
+    response.redirect('/');
+  }
+});
 
 
 // Default not found page.
@@ -3086,7 +3111,7 @@ async function authenticate() {
 // Regenerate Twitch API token.
 function regenerate() {
   axios.post('https://id.twitch.tv/oauth2/token',
-    `grant_type=refresh_token&refresh_token=${account_config.refresh_token}&client_id=${client_config.client_id}&client_secret=${client_config.client_secret}`,
+    `grant_type=client_credentials&client_id=${client_config.client_id}&client_secret=${client_config.client_secret}`,
     { 
       headers: { responseType: 'json' }
   })
