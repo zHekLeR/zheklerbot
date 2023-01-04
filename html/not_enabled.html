@@ -1667,10 +1667,9 @@
           }
         })
         .then(res => {
-          console.log(res.status);
-          if (res === 200) {
+          if (res.status === 200) {
             window.location.href = url;
-          } else if (res === 201) {
+          } else if (res.status === 201) {
             window.location.href = "/";
           } else {
             throw new Error("Unknown status code on /login: " + res.status);
