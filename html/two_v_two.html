@@ -2387,7 +2387,7 @@
   data-button-type="tertiary"
 >
   <a
-    
+    onclick='add("o1Kills")'
     class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
   >
     +
@@ -2425,7 +2425,7 @@
   data-button-type="tertiary"
 >
   <a
-    id="add-o1"
+    id="add-o1Kills"
     class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
   >
     +
@@ -3041,8 +3041,6 @@
           })
       })();
 
-      document.getElementById('add-o1').onclick = 'add(o1Kills)';
-
       async function upStatus(setStat) {
           let elem = document.getElementsByClassName(`${setStat}`)[0];
           if (document.getElementById(setStat).value.length == 0) { 
@@ -3090,7 +3088,12 @@
       }
 
       function add(id) {
-          document.getElementById(id).innerHTML = parseInt(document.getElementById(id).innerHTML) + 1;
+        let btn = document.getElementById(`add-${id}`);
+        btn.disabled = true;
+        setTimeout(function () {
+          btn.disabled = false;
+        }, 100);
+        document.getElementById(id).innerHTML = parseInt(document.getElementById(id).innerHTML) + 1;
       }
 
       function sub(id) {
