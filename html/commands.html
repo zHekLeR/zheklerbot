@@ -1446,7 +1446,7 @@
               
             "
           >
-            Warzone Stats / Matches
+            Warzone Stats / Matches&emsp;<span id="matches-en" style="font-size: large; color: red;"></span>
           </span>
           <div
             class="accordion-icon-container"
@@ -1545,7 +1545,7 @@
               
             "
           >
-            Custom Tourney
+            Custom Tourney&emsp;<span id="customs-en" style="font-size: large; color: red;"></span>
           </span>
           <div
             class="accordion-icon-container"
@@ -1644,7 +1644,7 @@
               
             "
           >
-            Two vs Two
+            Two vs Two&emsp;<span id="twovtwo-en" style="font-size: large; color: red;"></span>
           </span>
           <div
             class="accordion-icon-container"
@@ -1743,7 +1743,7 @@
               
             "
           >
-            Duels
+            Duels&emsp;<span id="duels-en" style="font-size: large; color: red;"></span>
           </span>
           <div
             class="accordion-icon-container"
@@ -1842,7 +1842,7 @@
               
             "
           >
-            Revolver Roulette
+            Revolver Roulette&emsp;<span id="rr-en" style="font-size: large; color: red;"></span>
           </span>
           <div
             class="accordion-icon-container"
@@ -1941,7 +1941,7 @@
               
             "
           >
-            Coinflip
+            Coinflip&emsp;<span id="coin-en" style="font-size: large; color: red;"></span>
           </span>
           <div
             class="accordion-icon-container"
@@ -2040,7 +2040,7 @@
               
             "
           >
-            Rock Paper Scissors
+            Rock Paper Scissors&emsp;<span id="rps-en" style="font-size: large; color: red;"></span>
           </span>
           <div
             class="accordion-icon-container"
@@ -2139,7 +2139,7 @@
               
             "
           >
-            Big Vanish
+            Big Vanish&emsp;<span id="bigvanish-en" style="font-size: large; color: red;"></span>
           </span>
           <div
             class="accordion-icon-container"
@@ -2511,68 +2511,68 @@
     <script>
       let tabsEnabled = {}, tab;
 
-      tab = document.getElementById("matches-enabled");
+      tab = document.getElementById("matches-en");
       if (tabsEnabled["Warzone Stats / Matches"]) {
         tab.innerHTML = "Enabled";
+        tab.style.color = "green";
       } else {
         tab.innerHTML = "Disabled";
-        tab.style.color = "red";
       }
 
-      tab = document.getElementById("customs-enabled");
+      tab = document.getElementById("customs-en");
       if (tabsEnabled["Customs"]) {
         tab.innerHTML = "Enabled";
+        tab.style.color = "green";
       } else {
         tab.innerHTML = "Disabled";
-        tab.style.color = "red";
       }
 
-      tab = document.getElementById("twovstwo-enabled");
+      tab = document.getElementById("twovstwo-en");
       if (tabsEnabled["Two vs Two"]) {
         tab.innerHTML = "Enabled";
+        tab.style.color = "green";
       } else {
         tab.innerHTML = "Disabled";
-        tab.style.color = "red";
       }
 
-      tab = document.getElementById("duels-enabled");
+      tab = document.getElementById("duels-en");
       if (tabsEnabled["Duels"]) {
         tab.innerHTML = "Enabled";
+        tab.style.color = "green";
       } else {
         tab.innerHTML = "Disabled";
-        tab.style.color = "red";
       }
 
-      tab = document.getElementById("rr-enabled");
+      tab = document.getElementById("rr-en");
       if (tabsEnabled["Revolver Roulette"]) {
         tab.innerHTML = "Enabled";
+        tab.style.color = "green";
       } else {
         tab.innerHTML = "Disabled";
-        tab.style.color = "red";
       }
 
-      tab = document.getElementById("coin-enabled");
+      tab = document.getElementById("coin-en");
       if (tabsEnabled["Coinflip"]) {
         tab.innerHTML = "Enabled";
+        tab.style.color = "green";
       } else {
         tab.innerHTML = "Disabled";
-        tab.style.color = "red";
       }
 
-      tab = document.getElementById("rps-enabled");
+      tab = document.getElementById("rps-en");
       if (tabsEnabled["Rock Paper Scissors"]) {
         tab.innerHTML = "Enabled";
+        tab.style.color = "green";
       } else {
         tab.innerHTML = "Disabled";
-        tab.style.color = "red";
       }
 
-      tab = document.getElementById("bigvanish-enabled");
+      tab = document.getElementById("bigvanish-en");
       if (tabsEnabled["Big Vanish"]) {
         tab.innerHTML = "Enabled";
+        tab.style.color = "green";
       } else {
         tab.innerHTML = "Disabled";
-        tab.style.color = "red";
       }
 
       async function twitch() {
