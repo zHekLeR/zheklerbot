@@ -2467,7 +2467,7 @@
       async function twitch() {
         let state = makeid(20);
         let url = "https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=#CLIENT_ID#&force_verify=true&redirect_uri=https://www.zhekbot.com/redirect&scope=&state=" + state;
-
+        console.log(url);
         await fetch(`/login`, {
           headers: {
             "state": state

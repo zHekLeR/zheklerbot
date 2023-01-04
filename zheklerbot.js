@@ -1829,7 +1829,7 @@ app.get('/login', async (request, response) => {
         secure: true,
         httpOnly: true
       });
-      response.status(201);
+      response.sendStatus(201);
     }
   } catch (err) {
     helper.dumpError(err, `Login.`);
