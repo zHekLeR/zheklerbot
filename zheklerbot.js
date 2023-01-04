@@ -1830,7 +1830,6 @@ app.get('/login', async (request, response) => {
         httpOnly: true
       });
       response.status(201);
-      response.redirect('/');
     }
   } catch (err) {
     helper.dumpError(err, `Login.`);

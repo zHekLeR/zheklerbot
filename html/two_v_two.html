@@ -610,7 +610,6 @@
                 class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary"
                 
                 style="background-color: #9146ff;"
-                onclick="twitch()"
                 target="_blank"
               >
                 <img src="/images/Twitch.png" style="padding: 0vh 0.2vw; display: inline-block; max-width: 12%; height: auto; vertical-align: middle;">
@@ -1088,7 +1087,7 @@
 
   <div class="container header-menu-nav-item header-menu-nav-item--collection">
     <a
-      href="/commands//#channel#"
+      href="/commands/#channel#"
       
     >
       <div class="header-menu-nav-item-content">
@@ -2290,16 +2289,16 @@
   data-alignment="center"
   data-button-size="small"
   data-button-type="tertiary"
+  onclick="sub('hKills')"
 >
   <a
     
     class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
-    onclick="sub('hKills')"
   >
     -
   </a>
 </div>
-</div></div></div><div class="fe-block fe-block-yui_3_17_2_1_1672802072894_172157"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-yui_3_17_2_1_1672802072894_172157"><div class="sqs-block-content"><span style="text-align: center;"><input id="hStatus" type="checkbox" onclick="upStatus('hName')"></span></div></div></div><div class="fe-block fe-block-f2be8de4d927eff4c310"><div class="sqs-block button-block sqs-block-button" data-block-type="53" id="block-f2be8de4d927eff4c310"><div class="sqs-block-content">
+</div></div></div><div class="fe-block fe-block-yui_3_17_2_1_1672802072894_172157"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-yui_3_17_2_1_1672802072894_172157"><div class="sqs-block-content"><span style="text-align: center;"><input id="hStatus" type="checkbox" onclick="upStatus('hName', 'hStatus')"></span></div></div></div><div class="fe-block fe-block-f2be8de4d927eff4c310"><div class="sqs-block button-block sqs-block-button" data-block-type="53" id="block-f2be8de4d927eff4c310"><div class="sqs-block-content">
 
 <div
   class="sqs-block-button-container sqs-block-button-container--center"
@@ -2307,11 +2306,11 @@
   data-alignment="center"
   data-button-size="small"
   data-button-type="tertiary"
+  onclick="add('hKills')"
 >
   <a
     
     class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
-    onclick="add('hKills')"
   >
     +
   </a>
@@ -2329,11 +2328,11 @@
   data-alignment="center"
   data-button-size="small"
   data-button-type="tertiary"
+  onclick="sub('tKills')"
 >
   <a
     
     class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
-    onclick="sub('tKills')"
   >
     -
   </a>
@@ -2346,11 +2345,11 @@
   data-alignment="center"
   data-button-size="small"
   data-button-type="tertiary"
+  onclick="add('tKills')" 
 >
   <a
     
     class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
-    onclick="add('tKills')" 
   >
     +
   </a>
@@ -2360,7 +2359,7 @@
 <h4 style="text-align:center;white-space:pre-wrap;" id="tKills">0</h4>
 
 
-</div></div></div><div class="fe-block fe-block-cd0fa59c824b48b2c22d"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-cd0fa59c824b48b2c22d"><div class="sqs-block-content"><input id="tName" type="text" placeholder="Teammate" style="width: 90%"></div></div></div><div class="fe-block fe-block-c6dc2d95229d03d60cc1"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-c6dc2d95229d03d60cc1"><div class="sqs-block-content"><input id="tStatus" type="checkbox" onclick="upStatus('tName')"></div></div></div><div class="fe-block fe-block-3aec3c0d4e7ac7e16c6a"><div class="sqs-block button-block sqs-block-button" data-block-type="53" id="block-3aec3c0d4e7ac7e16c6a"><div class="sqs-block-content">
+</div></div></div><div class="fe-block fe-block-cd0fa59c824b48b2c22d"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-cd0fa59c824b48b2c22d"><div class="sqs-block-content"><input id="tName" type="text" placeholder="Teammate" style="width: 90%"></div></div></div><div class="fe-block fe-block-c6dc2d95229d03d60cc1"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-c6dc2d95229d03d60cc1"><div class="sqs-block-content"><input id="tStatus" type="checkbox" onclick="upStatus('tName', 'tStatus')"></div></div></div><div class="fe-block fe-block-3aec3c0d4e7ac7e16c6a"><div class="sqs-block button-block sqs-block-button" data-block-type="53" id="block-3aec3c0d4e7ac7e16c6a"><div class="sqs-block-content">
 
 <div
   class="sqs-block-button-container sqs-block-button-container--center"
@@ -2368,11 +2367,11 @@
   data-alignment="center"
   data-button-size="small"
   data-button-type="tertiary"
+  onclick="sub('o1Kills')"
 >
   <a
     
     class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
-    onclick="sub('o1Kills')"
   >
     -
   </a>
@@ -2398,7 +2397,7 @@
 <h4 style="text-align:center;white-space:pre-wrap;" id="o1Kills">0</h4>
 
 
-</div></div></div><div class="fe-block fe-block-683ff6d087fb7aadad0c"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-683ff6d087fb7aadad0c"><div class="sqs-block-content"><input id="o1Name" type="text" placeholder="Opponent 1" style="width: 90%"></div></div></div><div class="fe-block fe-block-ab59023236516569c0d8"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-ab59023236516569c0d8"><div class="sqs-block-content"><input id="o1Status" type="checkbox" onclick="upStatus('o1Name')"></div></div></div><div class="fe-block fe-block-2eda2f0eeeec6ff1c8de"><div class="sqs-block button-block sqs-block-button" data-block-type="53" id="block-2eda2f0eeeec6ff1c8de"><div class="sqs-block-content">
+</div></div></div><div class="fe-block fe-block-683ff6d087fb7aadad0c"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-683ff6d087fb7aadad0c"><div class="sqs-block-content"><input id="o1Name" type="text" placeholder="Opponent 1" style="width: 90%"></div></div></div><div class="fe-block fe-block-ab59023236516569c0d8"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-ab59023236516569c0d8"><div class="sqs-block-content"><input id="o1Status" type="checkbox" onclick="upStatus('o1Name', 'o1Status')"></div></div></div><div class="fe-block fe-block-2eda2f0eeeec6ff1c8de"><div class="sqs-block button-block sqs-block-button" data-block-type="53" id="block-2eda2f0eeeec6ff1c8de"><div class="sqs-block-content">
 
 <div
   class="sqs-block-button-container sqs-block-button-container--center"
@@ -2406,11 +2405,11 @@
   data-alignment="center"
   data-button-size="small"
   data-button-type="tertiary"
+  onclick="sub('o2Kills')"
 >
   <a
     
     class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
-    onclick="sub('o2Kills')"
   >
     -
   </a>
@@ -2423,9 +2422,9 @@
   data-alignment="center"
   data-button-size="small"
   data-button-type="tertiary"
+  onclick='add("o2Kills")'
 >
   <a
-    onclick='add("o2Kills")'
     class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
   >
     +
@@ -2436,7 +2435,7 @@
 <h4 style="text-align:center;white-space:pre-wrap;" id="o2Kills">0</h4>
 
 
-</div></div></div><div class="fe-block fe-block-eb8c7babe5555155b999"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-eb8c7babe5555155b999"><div class="sqs-block-content"><input id="o2Name" type="text" placeholder="Opponent 2" style="width: 90%"></div></div></div><div class="fe-block fe-block-67031131d406ca28316b"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-67031131d406ca28316b"><div class="sqs-block-content"><input id="o2Status" type="checkbox" onclick="upStatus('o2Name')"></div></div></div><div class="fe-block fe-block-yui_3_17_2_1_1672706097558_786815"><div class="sqs-block button-block sqs-block-button sqs-stretched" data-block-type="53" id="block-yui_3_17_2_1_1672706097558_786815"><div class="sqs-block-content">
+</div></div></div><div class="fe-block fe-block-eb8c7babe5555155b999"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-eb8c7babe5555155b999"><div class="sqs-block-content"><input id="o2Name" type="text" placeholder="Opponent 2" style="width: 90%"></div></div></div><div class="fe-block fe-block-67031131d406ca28316b"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-67031131d406ca28316b"><div class="sqs-block-content"><input id="o2Status" type="checkbox" onclick="upStatus('o2Name', 'o2Status')"></div></div></div><div class="fe-block fe-block-yui_3_17_2_1_1672706097558_786815"><div class="sqs-block button-block sqs-block-button sqs-stretched" data-block-type="53" id="block-yui_3_17_2_1_1672706097558_786815"><div class="sqs-block-content">
 
 <div
   class="sqs-block-button-container sqs-block-button-container--center"
@@ -2444,11 +2443,11 @@
   data-alignment="center"
   data-button-size="large"
   data-button-type="secondary"
+  onclick="sendScore()"
 >
   <a
     id="send"
     class="sqs-block-button-element--large sqs-button-element--secondary sqs-block-button-element"
-    onclick="sendScore()"
   >
     Send Score
   </a>
@@ -2461,11 +2460,11 @@
   data-alignment="center"
   data-button-size="large"
   data-button-type="secondary"
+  onclick="reset()"
 >
   <a
     
     class="sqs-block-button-element--large sqs-button-element--secondary sqs-block-button-element"
-    onclick="reset()"
   >
     Reset All
   </a>
@@ -2483,11 +2482,11 @@
   data-alignment="center"
   data-button-size="small"
   data-button-type="tertiary"
+  onclick="mapreset(0)"
 >
   <a
     
     class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
-    onclick="mapreset(0)"
   >
     Zero
   </a>
@@ -2500,11 +2499,11 @@
   data-alignment="center"
   data-button-size="small"
   data-button-type="tertiary"
+  onclick="mapreset(-1)"
 >
   <a
     
     class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
-    onclick="mapreset(-1)"
   >
     -
   </a>
@@ -2517,11 +2516,11 @@
   data-alignment="center"
   data-button-size="small"
   data-button-type="tertiary"
+  onclick="mapreset(1)"
 >
   <a
     
     class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
-    onclick="mapreset(1)"
   >
     +
   </a>
@@ -3041,9 +3040,8 @@
           })
       })();
 
-      async function upStatus(setStat) {
-          let p = setStat.split('Kills');
-          let elem = document.getElementById(`${p}Status`);
+      async function upStatus(setStat, stat) {
+          let elem = document.getElementById(stat);
           if (document.getElementById(setStat).value.length == 0) { 
               elem.checked = !elem.checked;
               return;
@@ -3138,7 +3136,13 @@
           }
         })
         .then(res => {
-          window.location.href = url;
+          if (res.status == 200) {
+            window.location.href = url;
+          } else if (res.status == 201) {
+            window.location.href = '/';
+          } else {
+            throw new Error("Unknown status code on /login: " + res.status);
+          }
         })
         .catch(err => {
           console.log(err);
