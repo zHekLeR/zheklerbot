@@ -1194,7 +1194,7 @@ app.get('/', async (request, response) => {
         page = page.replace(/#checked#/g, userIds[rows[0].userid].twitch?'checked':'');
         page = page.replace('Login to Twitch', 'Logout of Twitch');
         page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
-        if (userIds[rows[0].user_id].twitch) page = page.replace('let enabled = false', 'let enabled = true');
+        if (userIds[rows[0].userid].twitch) page = page.replace('let enabled = false', 'let enabled = true');
         response.send(page); 
       } else {
         helper.dbQuery(`UPDATE permissions SET bearer = '' WHERE bearer = '${cookies["auth"]}';`);
