@@ -2475,10 +2475,10 @@
         })
         .then(res => {
           if (res.status == 200) {
-            window.location.assign(url);
+            setTimeout(function() { window.location.assign(url); }, 1000);
             return false;
           } else if (res.status == 201) {
-            window.location.assign('/');
+            setTimeout(function() { window.location.assign('/'); }, 1000);
             return false;
           } else {
             throw new Error("Unknown status code on /login: " + res.status);

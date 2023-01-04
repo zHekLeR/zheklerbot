@@ -1345,7 +1345,7 @@ app.get('/commands/:channel', (request, response) => {
   if (Object.keys(userIds).includes(request.params.channel.toLowerCase())) {
     page = fs.readFileSync("./html/commands.html").toString('utf-8');
     page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
-    page = page.replace('let tabsEnabled = {};', `let tabsEnabled = {
+    page = page.replace(/let tabsEnabled = {};/g, `let tabsEnabled = {
       'Warzone Stats / Matches': ${userIds[request.params.channel.toLowerCase()].matches},
       'Revolver Roulette': ${userIds[request.params.channel.toLowerCase()].revolverroulette},
       'Coinflip': ${userIds[request.params.channel.toLowerCase()].coinflip},
