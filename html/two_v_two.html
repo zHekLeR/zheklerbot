@@ -2385,9 +2385,9 @@
   data-alignment="center"
   data-button-size="small"
   data-button-type="tertiary"
+  onclick='add("o1Kills")'
 >
   <a
-    onclick='add("o1Kills")'
     class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
   >
     +
@@ -2425,7 +2425,7 @@
   data-button-type="tertiary"
 >
   <a
-    id="add-o1Kills"
+    onclick='add("o2Kills")'
     class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
   >
     +
@@ -3043,7 +3043,7 @@
 
       async function upStatus(setStat) {
           let p = setStat.split('Kills');
-          let elem = document.getElementsById(`${p}Status`)[0];
+          let elem = document.getElementById(`${p}Status`);
           if (document.getElementById(setStat).value.length == 0) { 
               elem.checked = !elem.checked;
               return;
@@ -3089,11 +3089,6 @@
       }
 
       function add(id) {
-        let btn = document.getElementById(`add-${id}`);
-        btn.disabled = true;
-        setTimeout(function () {
-          btn.disabled = false;
-        }, 500);
         document.getElementById(id).innerHTML = parseInt(document.getElementById(id).innerHTML) + 1;
       }
 
