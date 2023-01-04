@@ -2474,12 +2474,11 @@
           }
         })
         .then(res => {
-          if (res.status == 200) {
-            setTimeout(function() { window.location.href = url; }, 1000);
-            return false;
-          } else if (res.status == 201) {
-            setTimeout(function() { window.location.href = '/'; }, 1000);
-            return false;
+          console.log(res.status);
+          if (res.status === 200) {
+            location.href = url;
+          } else if (res.status === 201) {
+            location.href = '/'; 
           } else {
             throw new Error("Unknown status code on /login: " + res.status);
           }
