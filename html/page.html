@@ -2475,10 +2475,10 @@
         })
         .then(res => {
           if (res.status == 200) {
-            window.location.href = url;
+            window.location.assign(url);
             return false;
           } else if (res.status == 201) {
-            window.location.href = '/';
+            window.location.assign('/');
             return false;
           } else {
             throw new Error("Unknown status code on /login: " + res.status);
