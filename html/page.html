@@ -2449,21 +2449,27 @@
       async function enable() {
         console.log("Enable");
         btn.disabled = true;
-        btn.style.color = gray;
-        setTimeout(function() { 
-          btn.disabled = false; 
-          btn.style.color = green;
-        }, 3000);
+        btn.style.color = "gray";
         
         await fetch('/enable/#channel#')
         .then(res => {
           console.log(res.status);
           if (res.status === 200) {
-            btn.style.color = btn.style.color === "green"?"red":"green";
-            btn.innerHTML = btn.style.color === "green"?"Enable zHekBot":"Disable zHekBot";
-            document.getElementById('zhek-enabled').innerHTML = btn.style.color === "green"?"disabled":"enabled";
-            document.getElementById('zhek-enabled').style.color = btn.style.color === "green"?"disabled":"enabled";
-          } else {
+            setTimeout(function() { 
+              btn.style.color = btn.style.color === "green"?"red":"green";
+              btn.innerHTML = btn.style.color === "green"?"Enable zHekBot":"Disable zHekBot";
+              document.getElementById('zhek-enabled').innerHTML = btn.style.color === "green"?"disabled":"enabled";
+              document.getElementById('zhek-enabled').style.color = btn.style.color === "green"?"disabled":"enabled";
+              btn.disabled = false; 
+            }, 3000);
+          } else {            
+            setTimeout(function() { 
+              btn.style.color = btn.style.color === "green"?"green":"red";
+              btn.innerHTML = btn.style.color === "red"?"Enable zHekBot":"Disable zHekBot";
+              document.getElementById('zhek-enabled').innerHTML = btn.style.color === "red"?"disabled":"enabled";
+              document.getElementById('zhek-enabled').style.color = btn.style.color === "red"?"disabled":"enabled";
+              btn.disabled = false; 
+            }, 3000);
             throw new Error("Unknown status code on enable.");
           }
         })
