@@ -2500,8 +2500,8 @@
 
       let tabs = Object.keys(tabsEnabled);
       for (let i = 0; i < tabs.length; i++) {
+        console.log(tabs[i]);
         if (tabsEnabled[tabs[i]]) {
-          console.log(tabs[i]);
           let elem = document.getElementById(tabs[i]);
           elem.childNodes[0].style.backgroundColor = "darkred";
           elem.childNodes[0].innerHTML = "Disable";
