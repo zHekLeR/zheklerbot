@@ -4354,15 +4354,19 @@
       async function twitch() {
         let state = makeid(20);
         let url = "https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=#CLIENT_ID#&force_verify=true&redirect_uri=https://www.zhekbot.com/redirect&scope=&state=" + state;
-
+        
         await fetch(`/login`, {
           headers: {
             "state": state
           }
         })
         .then(res => {
-          if (res === 200) {
+          if (res.status === 200) {
             window.location.href = url;
+          } else if (res.status === 201) {
+            window.location.href = "/";
+          } else {
+            throw new Error("Unknown status code on /login: " + res.status);
           }
         })
         .catch(err => {

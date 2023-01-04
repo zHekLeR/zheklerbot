@@ -1426,10 +1426,10 @@
   data-alignment="center"
   data-button-size="medium"
   data-button-type="primary"
+  onclick="enable()"
 >
   <a
     id="enable-btn"
-    onclick="enable()"
     class="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element"
     
   >
@@ -2441,19 +2441,22 @@
     <script>
       let enabled = false, btn = document.getElementById("enable-btn");;
       if (enabled) {
-        document.getElementById("zhek-enabled").style.color = "green";
+        document.getElementById("enable-btn").style.color = "green";
         btn.style.color = "red";
         btn.innerHTML = "Disable zHekBot";
       } 
 
       async function enable() {
+        console.log("Enable");
         btn.disabled = true;
         setTimeout(function() { btn.disabled = false; }, 3000);
+        console.log("Enable");
         await fetch('/enable/#channel#')
         .then(res => {
+          console.log(res.status);
           if (res.status != 200) {
-            document.getElementById("zhek-enabled").innerHTML = document.getElementById("zhek-enabled").style.color === "green"?"Disable zHekBot":"Enable zHekBot";
-            document.getElementById("zhek-enabled").style.color = document.getElementById("zhek-enabled").style.color === "green"?"red":"green";
+            document.getElementById("enable-btn").innerHTML = document.getElementById("enable-btn").style.color === "green"?"Disable zHekBot":"Enable zHekBot";
+            document.getElementById("enable-btn").style.color = document.getElementById("enable-btn").style.color === "green"?"red":"green";
             throw new Error(`${res.body}`);
           } 
         })
@@ -2463,21 +2466,20 @@
         });
       }
 
-      function twitch() {
+      async function twitch() {
         let state = makeid(20);
         let url = "https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=#CLIENT_ID#&force_verify=true&redirect_uri=https://www.zhekbot.com/redirect&scope=&state=" + state;
-        console.log(url);
-        fetch(`/login`, {
+        
+        await fetch(`/login`, {
           headers: {
             "state": state
           }
         })
         .then(res => {
-          console.log(res.status);
           if (res.status === 200) {
-            location.href = url;
+            window.location.href = url;
           } else if (res.status === 201) {
-            location.href = '/'; 
+            window.location.href = "/";
           } else {
             throw new Error("Unknown status code on /login: " + res.status);
           }
