@@ -1345,6 +1345,7 @@ app.get('/commands/:channel', (request, response) => {
   if (Object.keys(userIds).includes(request.params.channel.toLowerCase())) {
     page = fs.readFileSync("./html/commands.html").toString('utf-8');
     page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
+    page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
     page = page.replace('let tabsEnabled = {};', `let tabsEnabled = {
       'Warzone Stats / Matches': ${userIds[request.params.channel.toLowerCase()].matches},
       'Revolver Roulette': ${userIds[request.params.channel.toLowerCase()].revolverroulette},
@@ -1521,6 +1522,7 @@ app.get('/permissions/:channel', async (request, response) => {
     page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
 
     let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
+    page = page.replace(/#channel#/g, rows[0].userid);
     
     let perms = rows[0]&&rows[0].perms?rows[0].perms.split(','):'';
     if (!perms.length) {
@@ -1565,7 +1567,7 @@ app.get('/modules/:channel', async (request, response) => {
     }
 
     let page = fs.readFileSync('./html/modules.html').toString('utf-8');
-    page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()].user_id);
+    page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
     page = page.replace('let tabsEnabled = {};', `let tabsEnabled = {
       'Warzone Stats / Matches': ${userIds[request.params.channel.toLowerCase()].matches},
       'Revolver Roulette': ${userIds[request.params.channel.toLowerCase()].revolverroulette},

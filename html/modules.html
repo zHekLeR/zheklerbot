@@ -1088,7 +1088,7 @@
 
   <div class="container header-menu-nav-item header-menu-nav-item--collection">
     <a
-      href="/commands/zhekler"
+      href="/commands/#channel#"
       
     >
       <div class="header-menu-nav-item-content">
@@ -1099,7 +1099,7 @@
 
   <div class="container header-menu-nav-item header-menu-nav-item--collection header-menu-nav-item--active">
     <a
-      href="/modules"
+      href="/modules/#channel#"
       
         aria-current="page"
       
@@ -1112,7 +1112,7 @@
 
   <div class="container header-menu-nav-item header-menu-nav-item--collection">
     <a
-      href="/twovtwo"
+      href="/twovtwo/#channel#"
       
     >
       <div class="header-menu-nav-item-content">
@@ -1123,7 +1123,7 @@
 
   <div class="container header-menu-nav-item header-menu-nav-item--collection">
     <a
-      href="/customs"
+      href="/customs/#channel#"
       
     >
       <div class="header-menu-nav-item-content">
@@ -1134,7 +1134,7 @@
 
   <div class="container header-menu-nav-item header-menu-nav-item--collection">
     <a
-      href="/editors"
+      href="/editors/#channel#"
       
     >
       <div class="header-menu-nav-item-content">
@@ -1145,7 +1145,7 @@
 
   <div class="container header-menu-nav-item header-menu-nav-item--collection">
     <a
-      href="/permissions"
+      href="/permissions/#channel#"
       
     >
       <div class="header-menu-nav-item-content">
@@ -2149,7 +2149,7 @@
 
 </div></div></div><div class="fe-block fe-block-3ca2c113db1896a3a7f2"><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-3ca2c113db1896a3a7f2"><div class="sqs-block-content">
 
-<p class="" style="white-space:pre-wrap;"><input id="pref_name" type="text" placeholder="#Placeholder#"></p>
+<p class="" style="white-space:pre-wrap;"><input id="pref_name" type="text" placeholder="#pref_name#"></p>
 
 
 </div></div></div><div class="fe-block fe-block-0755e4bd4ef074ecb851"><div class="sqs-block button-block sqs-block-button sqs-stretched" data-block-type="53" id="block-0755e4bd4ef074ecb851"><div class="sqs-block-content">
@@ -2179,7 +2179,7 @@
 
 </div></div></div><div class="fe-block fe-block-yui_3_17_2_1_1672761820259_111663"><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-yui_3_17_2_1_1672761820259_111663"><div class="sqs-block-content">
 
-<h3 style="text-align:center;white-space:pre-wrap;">#Placeholder#’s Modules</h3>
+<h3 style="text-align:center;white-space:pre-wrap;">#pref_name#’s Modules</h3>
 
 
 </div></div></div></div></div>
@@ -2497,7 +2497,7 @@
           button.disabled = false; 
         }, 1000);
         if (tabsEnabled[evtName]) {
-          await fetch(`/modules/#Placeholder#/${module}`)
+          await fetch(`/modules/#channel#/${module}`)
           .then(res => {
               if (res.status == 200) {
                 button.innerHTML = 'Enable';
@@ -2519,7 +2519,7 @@
             if (!acti.length || acti === '') {
                 alert('You must enter an Activision ID to turn on match tracking.');
             } else {
-              await fetch(`/modules/#Placeholder#/${module}`, { headers: { 'Acti': encodeURIComponent(acti) } })
+              await fetch(`/modules/#channel#/${module}`, { headers: { 'Acti': encodeURIComponent(acti) } })
               .then(res => {
                 if (res.status == 200) {
                   button.innerHTML = 'Disable';
@@ -2538,7 +2538,7 @@
               });
             }
         } else {
-          await fetch(`/modules/#Placeholder#/${module}`)
+          await fetch(`/modules/#channel#/${module}`)
           .then(res => {
             if (res.status == 200) {
               button.innerHTML = 'Disable';
@@ -2566,7 +2566,7 @@
           button.style = `background-color: white; border: 1px solid gray;`; 
           button.disabled = false;
         }, 1000);
-        await fetch(`/newname/#Placeholder#`, { headers: { 'pref_name': encodeURIComponent(document.getElementById('pref_name').value) }})
+        await fetch(`/newname/#channel#`, { headers: { 'pref_name': encodeURIComponent(document.getElementById('pref_name').value) }})
         .then(res => {
           if (res.status != 200) {
             throw new Error(`Unknown error.`);
