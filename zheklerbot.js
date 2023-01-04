@@ -1345,7 +1345,6 @@ app.get('/commands/:channel', (request, response) => {
   if (Object.keys(userIds).includes(request.params.channel.toLowerCase())) {
     page = fs.readFileSync("./html/commands.html").toString('utf-8');
     page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
-    page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
     page = page.replace('let tabsEnabled = {};', `let tabsEnabled = {
       'Warzone Stats / Matches': ${userIds[request.params.channel.toLowerCase()].matches},
       'Revolver Roulette': ${userIds[request.params.channel.toLowerCase()].revolverroulette},
@@ -1363,12 +1362,19 @@ app.get('/commands/:channel', (request, response) => {
   let cookies = request.cookies;
   if (cookies["auth"]) {
     page = page.replace('Login to Twitch', 'Logout of Twitch');
+    page = page.replace(/#modules#/g, `href-"/modules/${userIds[request.params.channel.toLowerCase()].user_id}`);
+    page = page.replace(/#twovtwo#/g, `href="/twovtwo/${userIds[request.params.channel.toLowerCase()].user_id}`);
+    page = page.replace(/#customs#/g, `href="/customs/${userIds[request.params.channel.toLowerCase()].user_id}`);
+    page = page.replace(/#editors#/g, `href="/editors/${userIds[request.params.channel.toLowerCase()].user_id}`);
+    page = page.replace(/#permissions#/g, `href="/permissions/${userIds[request.params.channel.toLowerCase()].user_id}`);
+    page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
   } else {
-    page = page.replace('href="/modules"', 'style="color: grey; pointer-events: none;"');
-    page = page.replace('href="/twovtwo"', 'style="color: grey; pointer-events: none;"');
-    page = page.replace('href="/customs"', 'style="color: grey; pointer-events: none;"');
-    page = page.replace('href="/editors"', 'style="color: grey; pointer-events: none;"');
-    page = page.replace('href="/permissions"', 'style="color: grey; pointer-events: none;"');
+    page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
+    page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
+    page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
+    page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
+    page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
+    page = page.replace(/#channel#/g, 'zhekler');
   }
   page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
   response.send(page);
@@ -1404,12 +1410,13 @@ app.get('/editors/:channel', async (request, response) => {
     for (let i = 0; i < rows.length; i++) {
       let perms = rows[i].perms.split(',');
       if (perms.includes(request.params.channel)) {
-        str += `<tr><td>${rows[i].user_id}</td><td><a onclick="remove(this)" class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary">${userIds[perms[i]].pref_name}</a></td></tr><tr>&emsp;</tr>`;
+        str += `<tr><td>${rows[i].user_id}</td><td><a onclick="remove(this)" class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary">Remove</a></td></tr><tr>&emsp;</tr>`;
       }
     }
     page = page.replace(/#editors#/g, str);
     page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
     page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
+    page = page.replace(/Login to Twitch/g, "Logout of Twitch");
 
     response.send(page);
   } catch (err) {
@@ -1534,6 +1541,8 @@ app.get('/permissions/:channel', async (request, response) => {
       }
       page = page.replace(/#permissions#/g, str);
     }
+
+    response.send(page);
   } catch (err) {
     helper.dumpError(err, "Permissions page main.");
     response.sendStatus(500);
@@ -1568,6 +1577,7 @@ app.get('/modules/:channel', async (request, response) => {
 
     let page = fs.readFileSync('./html/modules.html').toString('utf-8');
     page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
+    page = page.replace(/Login to Twitch/g, "Logout of Twitch");
     page = page.replace('let tabsEnabled = {};', `let tabsEnabled = {
       'Warzone Stats / Matches': ${userIds[request.params.channel.toLowerCase()].matches},
       'Revolver Roulette': ${userIds[request.params.channel.toLowerCase()].revolverroulette},
@@ -1578,7 +1588,7 @@ app.get('/modules/:channel', async (request, response) => {
       'Two vs Two': ${userIds[request.params.channel.toLowerCase()]["two_v_two"]},
       'Duels': ${userIds[request.params.channel.toLowerCase()].duel}
     };`);
-    page = page.replace(/#Acti#/g, userIds[request.params.channel.toLowerCase()] && userIds[request.params.channel.toLowerCase()].acti_id?userIds[request.params.channel.toLowerCase()].acti_id:''); 
+    page = page.replace(/#acti#/g, userIds[request.params.channel.toLowerCase()] && userIds[request.params.channel.toLowerCase()].acti_id?userIds[request.params.channel.toLowerCase()].acti_id:'Activision ID'); 
     page = page.replace(/#pref_name#/g, userIds[request.params.channel.toLowerCase()].pref_name || '');
     page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
 
@@ -1938,6 +1948,7 @@ app.get('/twovtwo/:channel', async (request, response) => {
     }
 
     let page = fs.readFileSync('./html/two_v_two.html').toString('utf-8');
+    page = page.replace(/Login to Twitch/g, "Logout of Twitch");
     page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
     page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
     page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || "");
@@ -2205,6 +2216,7 @@ app.get ('/customs/:channel', async (request, response) => {
     }
 
     let page = fs.readFileSync('./html/customs.html').toString('utf-8');
+    page = page.replace(/Login to Twitch/g, "Logout of Twitch");
     page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
     page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
     page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
