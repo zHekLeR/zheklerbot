@@ -612,12 +612,11 @@
             </div>
 
             
-              <div class="header-actions-action header-actions-action--cta" data-animation-role="header-element">
+              <div class="header-actions-action header-actions-action--cta" data-animation-role="header-element" onclick="twitch()">
                 <a
                   class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary"
                   
                   style="background-color: #9146ff;"
-                  onclick="twitch()"
                   target="_blank"
                 >
                   <img src="/images/Twitch.png" style="padding: 0vh 0.2vw; display: inline-block; max-width: 12%; height: auto; vertical-align: middle;">
@@ -2464,11 +2463,11 @@
         });
       }
 
-      async function twitch() {
+      function twitch() {
         let state = makeid(20);
         let url = "https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=#CLIENT_ID#&force_verify=true&redirect_uri=https://www.zhekbot.com/redirect&scope=&state=" + state;
         console.log(url);
-        await fetch(`/login`, {
+        fetch(`/login`, {
           headers: {
             "state": state
           }
