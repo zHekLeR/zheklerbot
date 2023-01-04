@@ -2458,10 +2458,10 @@
           console.log(res.status);
           if (res.status === 200) {
             setTimeout(function() { 
-              btnText.style.backgroundColor = enabled?"darkred":"green";
+              btnText.style.backgroundColor = enabled?"green":"darkred";
               btnText.innerHTML = enabled?"Enable zHekBot":"Disable zHekBot";
               zhekEn.innerHTML = enabled?"disabled":"enabled";
-              zhekEn.style.backgroundColor = enabled?"darkred":"green";
+              zhekEn.style.color = enabled?"darkred":"green";
               enabled = !enabled;
               btn.disabled = false; 
             }, 3000);
