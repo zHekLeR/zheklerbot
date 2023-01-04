@@ -16,9 +16,12 @@ pool.on('error', (err) => {
 
 
 // Discord bot.
-import { Client, Intents } from "discord.js";
+import { Client, GatewayIntentBits } from "discord.js";
 const discord = new Client({
-    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]
+    intents: [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMessages,
+    ]
 });
   
 

@@ -1178,7 +1178,6 @@ app.use(favicon(path.join(__dirname, 'images/favicon.ico')));
 // Home page.
 app.get('/', async (request, response) => {
   let cookies = request.cookies;
-  console.log(JSON.stringify(cookies));
   let page;
   if (cookies["auth"]) {
     await axios.get('https://id.twitch.tv/oauth2/validate', {
@@ -1189,27 +1188,13 @@ app.get('/', async (request, response) => {
       if (res.status === 200) {
         let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
 
-        if (rows.length) {
-          page = fs.readFileSync('./html/page.html').toString('utf-8');
-          page = page.replace(/#pref_name#/g, userIds[rows[0].userid].pref_name)
-          page = page.replace(/#channel#/g, userIds[rows[0].userid].user_id);
-          page = page.replace(/#editors#/g, `<a href="/editors/${rows[0].userid}"><div class="button">Manage your Editors</div></a><br>`);
-          page = page.replace(/#checked#/g, userIds[rows[0].userid].twitch?'checked':'');
-          page = page.replace('Login to Twitch', 'Logout of Twitch');
-          let perms = rows[0]&&rows[0].perms?rows[0].perms.split(','):'';
-          if (!perms.length) {
-            page = page.replace(/#Permissions#/g, '');
-          } else {
-            let str = '<h3>Permissions:</h3>';
-            for (let i = 0; i < perms.length; i++) {
-              str += `<a href="/edit/${perms[i]}"><div class="button">${userIds[perms[i]].pref_name}</div></a>`;
-            }
-            page = page.replace(/#Permissions#/g, str);
-          }
-        } else {
-          response.redirect('/login');
-          return;
-        }
+        page = fs.readFileSync('./html/page.html').toString('utf-8');
+        page = page.replace(/#pref_name#/g, userIds[rows[0].userid].pref_name)
+        page = page.replace(/#channel#/g, userIds[rows[0].userid].user_id);
+        page = page.replace(/#editors#/g, `<a href="/editors/${rows[0].userid}"><div class="button">Manage your Editors</div></a><br>`);
+        page = page.replace(/#checked#/g, userIds[rows[0].userid].twitch?'checked':'');
+        page = page.replace('Login to Twitch', 'Logout of Twitch');
+        page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
         response.send(page); 
       } else {
         helper.dbQuery(`UPDATE permissions SET bearer = '' WHERE bearer = '${cookies["auth"]}';`);
@@ -1238,7 +1223,7 @@ app.get('/', async (request, response) => {
 
   } else {
     page = fs.readFileSync('./html/not_enabled.html').toString('utf-8');
-    page = page.replace(/#Placeholder#/g, `<a href="/login"><div class="button">It looks like you haven't logged in with Twitch yet. Click here to do that.</div></a>`);
+    page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
     response.send(page); 
   }
 });
@@ -1330,6 +1315,7 @@ app.get('/edit/:channel', async (request, response) => {
           page = page.replace(/#editors#/g, '');
           page = page.replace(/#checked#/g, userIds[request.params.channel.toLowerCase()].twitch?'checked':'');
           page = page.replace(/Login to Twitch/g, 'Logout of Twitch');
+          page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
 
           response.send(page);
         } else {
@@ -1355,11 +1341,11 @@ app.get('/edit/:channel', async (request, response) => {
 
 // Commands page.
 app.get('/commands/:channel', (request, response) => {
-  let comPage;
+  let page;
   if (Object.keys(userIds).includes(request.params.channel.toLowerCase())) {
-    comPage = fs.readFileSync("./html/commands.html").toString('utf-8');
-    comPage = comPage.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
-    comPage = comPage.replace('let tabsEnabled = {};', `let tabsEnabled = {
+    page = fs.readFileSync("./html/commands.html").toString('utf-8');
+    page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
+    page = page.replace('let tabsEnabled = {};', `let tabsEnabled = {
       'Warzone Stats / Matches': ${userIds[request.params.channel.toLowerCase()].matches},
       'Revolver Roulette': ${userIds[request.params.channel.toLowerCase()].revolverroulette},
       'Coinflip': ${userIds[request.params.channel.toLowerCase()].coinflip},
@@ -1371,13 +1357,20 @@ app.get('/commands/:channel', (request, response) => {
     };`);
   } else {
     response.status(404);
-    comPage = fs.readFileSync("./html/not_found.html").toString('utf-8');
+    page = fs.readFileSync("./html/not_found.html").toString('utf-8');
   }
   let cookies = request.cookies;
   if (cookies["auth"]) {
-    comPage = comPage.replace('Login to Twitch', 'Logout of Twitch');
+    page = page.replace('Login to Twitch', 'Logout of Twitch');
+  } else {
+    page = page.replace('href="/modules"', 'style="color: grey; pointer-events: none;"');
+    page = page.replace('href="/twovtwo"', 'style="color: grey; pointer-events: none;"');
+    page = page.replace('href="/customs"', 'style="color: grey; pointer-events: none;"');
+    page = page.replace('href="/editors"', 'style="color: grey; pointer-events: none;"');
+    page = page.replace('href="/permissions"', 'style="color: grey; pointer-events: none;"');
   }
-  response.send(comPage);
+  page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
+  response.send(page);
 });
 
 
@@ -1410,12 +1403,12 @@ app.get('/editors/:channel', async (request, response) => {
     for (let i = 0; i < rows.length; i++) {
       let perms = rows[i].perms.split(',');
       if (perms.includes(request.params.channel)) {
-        str += `<tr><th>${rows[0].userid}</th><th><div class="button" onclick="remove(this)">Remove</div></th></tr>`;
+        str += `<tr><td>${rows[i].user_id}</td><td><a onclick="remove(this)" class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary">${userIds[perms[i]].pref_name}</a></td></tr><tr>&emsp;</tr>`;
       }
     }
     page = page.replace(/#editors#/g, str);
-    page = page.replace(/#pref_name#/g, userIds[request.params.channel].pref_name);
     page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
+    page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
 
     response.send(page);
   } catch (err) {
@@ -1449,7 +1442,9 @@ app.get('/addeditor/:channel', async (request, response) => {
     let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE userid = '${request.get('editor')}';`);
     if (!rows.length) {
       helper.dbQuery(`INSERT INTO permissions(userid, perms) VALUES ('${request.get('editor')}', '${request.params.channel}')`);
-    } else if (!rows[0].perms || !rows[0].perms.split(',').includes(request.params.channel)) {
+    } else if (!rows[0].perms) {
+      helper.dbQuery(`UPDATE permissions SET perms = '${request.params.channel}' WHERE userid = '${request.get('editor')}';`);
+    } else if (!rows[0].perms.split(',').includes(request.params.channel)) {
       helper.dbQuery(`UPDATE permissions SET perms = perms || ',${request.params.channel}' WHERE userid = '${request.get('editor')}';`);
     }
 
@@ -1500,6 +1495,50 @@ app.get('/removeeditor/:channel', async (request, response) => {
 });
 
 
+// Permissions page.
+app.get('/permissions/:channel', async (request, response) => {
+  try {
+    request.params.channel = request.params.channel.toLowerCase();
+    if (!userIds[request.params.channel]) {
+      response.sendStatus(404);
+      return;
+    }
+    
+    let cookies = request.cookies;
+    if (cookies["auth"]) {
+      let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
+      if (!rows.length || rows[0].userid !== request.params.channel.toLowerCase()) {
+        response.sendStatus(401);
+        return;
+      }
+    } else {
+      response.sendStatus(401);
+      return;
+    }
+
+    let page = fs.readFileSync('./html/permissions.html').toString('utf-8');
+    page = page.replace(/Login to Twitch/g, "Logout of Twitch");
+    page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
+
+    let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
+    
+    let perms = rows[0]&&rows[0].perms?rows[0].perms.split(','):'';
+    if (!perms.length) {
+      page = page.replace(/#permission#/g, 'You do not have permissions to any channels.');
+    } else {
+      let str = '<h3>Permissions:</h3>';
+      for (let i = 0; i < perms.length; i++) {
+        str += `<tr><a href="/edit/${perms[i]}" class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary">${userIds[perms[i]].pref_name}</a></tr><tr>&emsp;</tr>`;
+      }
+      page = page.replace(/#permissions#/g, str);
+    }
+  } catch (err) {
+    helper.dumpError(err, "Permissions page main.");
+    response.sendStatus(500);
+  }
+});
+
+
 // States.
 let states = [];
 
@@ -1539,6 +1578,7 @@ app.get('/modules/:channel', async (request, response) => {
     };`);
     page = page.replace(/#Acti#/g, userIds[request.params.channel.toLowerCase()] && userIds[request.params.channel.toLowerCase()].acti_id?userIds[request.params.channel.toLowerCase()].acti_id:''); 
     page = page.replace(/#pref_name#/g, userIds[request.params.channel.toLowerCase()].pref_name || '');
+    page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
 
     response.send(page);
   } catch (err) {
@@ -1756,16 +1796,17 @@ app.get('/login', async (request, response) => {
   try {
     let cookies = request.cookies;
     if (!cookies["auth"]) {
-      let state;
-      do {
-        state = makeid(20);
-      } while (states.includes(state));
-      states[state] = '#login#';
-      let page = fs.readFileSync('./html/verify.html').toString('utf-8');
+      let state = request.get("state") || '';
+      if (!state || state.length != 20) {
+        console.log("Invalid state: " + state);
+        response.sendStatus(500)
+        return;
+      }
       
-      page = page.replace('${process.env.CLIENT_ID}', process.env.CLIENT_ID || '');
-      page = page.replace('${state}', state);
-      response.send(page);
+      states[state] = '#login#';
+
+      response.sendStatus(200);
+
       setTimeout(function() {
         if (states.indexOf(state) > -1) delete states[state];
       }, 30000);
@@ -1776,6 +1817,7 @@ app.get('/login', async (request, response) => {
         secure: true,
         httpOnly: true
       });
+      response.status(201);
       response.redirect('/');
     }
   } catch (err) {
@@ -1869,18 +1911,6 @@ app.get('/verify', (request, response) => {
 });
 
 
-// Random string.
-function makeid(length) {
-  var result = '';
-  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  var charactersLength = characters.length;
-  for ( var i = 0; i < length; i++ ) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
-
-
 // 2v2
 app.get('/twovtwo/:channel', async (request, response) => {
   try {
@@ -1908,6 +1938,7 @@ app.get('/twovtwo/:channel', async (request, response) => {
     let page = fs.readFileSync('./html/two_v_two.html').toString('utf-8');
     page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
     page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
+    page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || "");
     response.send(page);
   } catch (err) {
     helper.dumpError(err, `2v2 overall.`);
@@ -2174,6 +2205,7 @@ app.get ('/customs/:channel', async (request, response) => {
     let page = fs.readFileSync('./html/customs.html').toString('utf-8');
     page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
     page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
+    page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
 
     let rows = await helper.dbQueryPromise(`SELECT * FROM customs WHERE user_id = '${request.params.channel}';`);
 
@@ -2733,6 +2765,13 @@ app.get("*", (req, response) => {
   let page = fs.readFileSync("./html/not_found.html").toString('utf-8');
   if (req.cookies["auth"]) {
     page = page.replace('Login to Twitch', 'Logout of Twitch');
+    page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
+  } else {
+    page = page.replace('href="/modules"', 'style="color: grey; pointer-events: none;"');
+    page = page.replace('href="/twovtwo"', 'style="color: grey; pointer-events: none;"');
+    page = page.replace('href="/customs"', 'style="color: grey; pointer-events: none;"');
+    page = page.replace('href="/editors"', 'style="color: grey; pointer-events: none;"');
+    page = page.replace('href="/permissions"', 'style="color: grey; pointer-events: none;"');
   }
   response.send(page);
 });
@@ -3224,10 +3263,10 @@ async function brookescribers() {
       console.log("Server is listening.");
     });
 
-    // Log into the COD API.
-    await loginWithSSO(process.env.COD_SSO);
+    // // Log into the COD API.
+    // await loginWithSSO(process.env.COD_SSO);
 
-    // Populate match cache and initialize userIds map.
+    // // Populate match cache and initialize userIds map.
     let temp = await helper.dbQueryPromise(`SELECT * FROM allusers;`);
     for (let i = 0; i < temp.length; i++) {
       userIds[temp[i].user_id] = temp[i];
@@ -3238,44 +3277,44 @@ async function brookescribers() {
       }
     };
 
-    // Set the 5 minute interval for each player being tracked and get their active elements.
-    intervals["matches"] = setInterval(async() => { 
-      try { 
-        await updateMatches();
-      } catch (err) {
-        console.log(`Match intervals: ${err}`);
-      }
-    }, 300000);
+    // // Set the 5 minute interval for each player being tracked and get their active elements.
+    // intervals["matches"] = setInterval(async() => { 
+    //   try { 
+    //     await updateMatches();
+    //   } catch (err) {
+    //     console.log(`Match intervals: ${err}`);
+    //   }
+    // }, 300000);
 
-    setInterval(function() { duelExpiration(); }, 5000);
+    // setInterval(function() { duelExpiration(); }, 5000);
     
-    // Connect to Twitch channels.
-    await bot.connect()
-    .catch(err => {
-      helper.dumpError(err, "Twitch enable.");
-    });
+    // // Connect to Twitch channels.
+    // await bot.connect()
+    // .catch(err => {
+    //   helper.dumpError(err, "Twitch enable.");
+    // });
 
-    // Authenticate with Twitch API and set 2 minute interval for BrookeAB's followers.
-    await authenticate();
+    // // Authenticate with Twitch API and set 2 minute interval for BrookeAB's followers.
+    // await authenticate();
 
-    // Hourly call to verify access token.
-    intervals["access_token"] = setInterval(function() {
-      symAxios.get('https://id.twitch.tv/oauth2/validate', 
-      {
-        headers: {
-          "Client-Id": process.env.CLIENT_ID || '',
-          "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
-          "Content-Type": "application/x-www-form-urlencoded"
-        }
-      }).then(resp => {
-          console.log(JSON.stringify(resp.data));
-          if (resp.status && `${resp.status}`.includes('40')) {
-            regenerate();
-          }
-      }).catch(err => {
-          helper.dumpError(err, "Hourly Twitch validation error.");
-      });
-    }, 60*60*1000);
+    // // Hourly call to verify access token.
+    // intervals["access_token"] = setInterval(function() {
+    //   symAxios.get('https://id.twitch.tv/oauth2/validate', 
+    //   {
+    //     headers: {
+    //       "Client-Id": process.env.CLIENT_ID || '',
+    //       "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
+    //       "Content-Type": "application/x-www-form-urlencoded"
+    //     }
+    //   }).then(resp => {
+    //       console.log(JSON.stringify(resp.data));
+    //       if (resp.status && `${resp.status}`.includes('40')) {
+    //         regenerate();
+    //       }
+    //   }).catch(err => {
+    //       helper.dumpError(err, "Hourly Twitch validation error.");
+    //   });
+    // }, 60*60*1000);
 
   } catch (err) {
 
