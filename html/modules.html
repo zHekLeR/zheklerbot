@@ -2501,20 +2501,21 @@
       let tabs = Object.keys(tabsEnabled);
       for (let i = 0; i < tabs.length; i++) {
         if (tabsEnabled[tabs[i]]) {
+          console.log(tabs[i]);
           let elem = document.getElementById(tabs[i]);
-          elem.style.color = "red";
+          elem.childNodes[0].style.backgroundColor = "darkred";
           elem.childNodes[0].innerHTML = "Disable";
         }
       }
 
       async function enable(module, evtName) {
-        let button = document.getElementById(evtName);
-        let stat = button.style.color === "green"?"red":"green";
+        let button = document.getElementById(module);
+        let stat = button.style.backgroundColor === "green"?"darkred":"green";
         button.disabled = true;
         button.style.color = "gray";
         setTimeout(function() { 
           button.disabled = false;
-          button.style.color =  stat;
+          button.style.backgroundColor =  stat;
         }, 1000);
         if (tabsEnabled[evtName]) {
           await fetch(`/modules/#channel#/${module}`)
@@ -2522,7 +2523,7 @@
               if (res.status == 200) {
                 button.innerHTML = 'Enable';
                 tabsEnabled[evtName] = false;
-                document.getElementById(evtName).style = `font-weight: bold; color: ${tabsEnabled[evtName]?'green':'red'};`;
+                document.getElementById(module).style = `backgroundColor: ${tabsEnabled[evtName]?'green':'darkred'};`;
               } else {
                 throw new Error(`${res.status==401?'Account is private.':res.status==404?'Account not found.':res.status==405?'Bot is not enabled.':'Unknown error.'}`);
               }
@@ -2541,7 +2542,7 @@
                 if (res.status == 200) {
                   button.innerHTML = 'Disable';
                   tabsEnabled[evtName] = true;
-                  document.getElementById(evtName).style = `font-weight: bold; color: ${tabsEnabled[evtName]?'green':'red'};`;
+                  document.getElementById(evtName).style = `backgroundColor: ${tabsEnabled[evtName]?'green':'darkred'};`;
                 } else {
                   throw new Error(`${res.status==401?'Account is private.':res.status==404?'Account not found.':res.status==405?'Bot is not enabled.':'Unknown error.'}`);
                 }
@@ -2558,7 +2559,7 @@
               button.innerHTML = 'Disable';
               tabsEnabled[evtName] = true;
               document.getElementById(evtName).innerHTML = tabsEnabled[evtName]?'enabled':'disabled';
-              document.getElementById(module).style = `font-weight: bold; color: ${tabsEnabled[evtName]?'green':'red'};`;
+              document.getElementById(module).style = `backgroundColor: ${tabsEnabled[evtName]?'green':'darkred'};`;
             } else {
                 throw new Error(`${res.status==401?'Account is private.':res.status==404?'Account not found.':res.status==405?'Bot is not enabled.':'Unknown error.'}`);
             }
