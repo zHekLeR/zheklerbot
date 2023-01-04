@@ -1362,11 +1362,11 @@ app.get('/commands/:channel', (request, response) => {
   let cookies = request.cookies;
   if (cookies["auth"]) {
     page = page.replace('Login to Twitch', 'Logout of Twitch');
-    page = page.replace(/#modules#/g, `href-"/modules/${userIds[request.params.channel.toLowerCase()].user_id}`);
-    page = page.replace(/#twovtwo#/g, `href="/twovtwo/${userIds[request.params.channel.toLowerCase()].user_id}`);
-    page = page.replace(/#customs#/g, `href="/customs/${userIds[request.params.channel.toLowerCase()].user_id}`);
-    page = page.replace(/#editors#/g, `href="/editors/${userIds[request.params.channel.toLowerCase()].user_id}`);
-    page = page.replace(/#permissions#/g, `href="/permissions/${userIds[request.params.channel.toLowerCase()].user_id}`);
+    page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
+    page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
+    page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
+    page = page.replace(/#editors#/g, `href="/editors/${request.params.channel.toLowerCase()}"`);
+    page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel.toLowerCase()}"`);
     page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
   } else {
     page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
