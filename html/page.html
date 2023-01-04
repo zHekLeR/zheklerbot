@@ -2441,7 +2441,7 @@
     <script>
       let enabled = false, btn = document.getElementById("enable-btn");;
       if (enabled) {
-        document.getElementById("enable-btn").style.color = "green";
+        document.getElementById("zhek-enabled").style.color = "green";
         btn.style.color = "red";
         btn.innerHTML = "Disable zHekBot";
       } 
@@ -2449,16 +2449,23 @@
       async function enable() {
         console.log("Enable");
         btn.disabled = true;
-        setTimeout(function() { btn.disabled = false; }, 3000);
-        console.log("Enable");
+        btn.style.color = gray;
+        setTimeout(function() { 
+          btn.disabled = false; 
+          btn.style.color = green;
+        }, 3000);
+        
         await fetch('/enable/#channel#')
         .then(res => {
           console.log(res.status);
-          if (res.status != 200) {
-            document.getElementById("enable-btn").innerHTML = document.getElementById("enable-btn").style.color === "green"?"Disable zHekBot":"Enable zHekBot";
-            document.getElementById("enable-btn").style.color = document.getElementById("enable-btn").style.color === "green"?"red":"green";
-            throw new Error(`${res.body}`);
-          } 
+          if (res.status === 200) {
+            btn.style.color = btn.style.color === "green"?"red":"green";
+            btn.innerHTML = btn.style.color === "green"?"Enable zHekBot":"Disable zHekBot";
+            document.getElementById('zhek-enabled').innerHTML = btn.style.color === "green"?"disabled":"enabled";
+            document.getElementById('zhek-enabled').style.color = btn.style.color === "green"?"disabled":"enabled";
+          } else {
+            throw new Error("Unknown status code on enable.");
+          }
         })
         .catch(err => {
           console.log(err);

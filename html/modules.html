@@ -1961,10 +1961,11 @@
   data-alignment="center"
   data-button-size="medium"
   data-button-type="primary"
+  onclick="enable('matches', 'Warzone Stats / Matches')"
+  id="Warzone Stats / Matches"
 >
   <a
     id="matches"
-    onclick="enable('matches', 'Warzone Stats / Matches')"
     class="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element"
     
   >
@@ -1994,10 +1995,11 @@
   data-alignment="center"
   data-button-size="medium"
   data-button-type="primary"
+  onclick="enable('two_v_two', 'Two vs Two')"
+  id="Two vs Two"
 >
   <a
     id="two_v_two"
-    onclick="enable('two_v_two', 'Two vs Two')"
     class="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element"
     
   >
@@ -2017,10 +2019,11 @@
   data-alignment="center"
   data-button-size="medium"
   data-button-type="primary"
+  onclick="enable('customs', 'Custom Tourney')"
+  id="Custom Tourney"
 >
   <a
     id="customs"
-    onclick="enable('customs', 'Custom Tourney')"
     class="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element"
     
   >
@@ -2040,10 +2043,11 @@
   data-alignment="center"
   data-button-size="medium"
   data-button-type="primary"
+  onclick="enable('duel', 'Duels')"
+  id="Duels"
 >
   <a
     id="duel"
-    onclick="enable('duel', 'Duels')"
     class="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element"
     
   >
@@ -2063,10 +2067,11 @@
   data-alignment="center"
   data-button-size="medium"
   data-button-type="primary"
+  onclick="enable('revolverroulette', 'Revolver Roulette')"
+  id="Revolver Roulette"
 >
   <a
     id="revolverroulette"
-    onclick="enable('revolverroulette', 'Revolver Roulette')"
     class="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element"
     
   >
@@ -2086,10 +2091,11 @@
   data-alignment="center"
   data-button-size="medium"
   data-button-type="primary"
+  onclick="enable('coinflip', 'Coinflip')"
+  id="Coinflip"
 >
   <a
     id="coinflip"
-    onclick="enable('coinflip', 'Coinflip')"
     class="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element"
     
   >
@@ -2109,10 +2115,11 @@
   data-alignment="center"
   data-button-size="medium"
   data-button-type="primary"
+  onclick="enable('rps', 'Rock Paper Scissors')"
+  id="Rock Paper Scissors"
 >
   <a
     id="rps"
-    onclick="enable('rps', 'Rock Paper Scissors')"
     class="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element"
     
   >
@@ -2132,10 +2139,11 @@
   data-alignment="center"
   data-button-size="medium"
   data-button-type="primary"
+  onclick="enable('bigvanish', 'Big Vanish')"
+  id="Big Vanish"
 >
   <a
     id="bigvanish"
-    onclick="enable('bigvanish', 'Big Vanish')"
     class="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element"
     
   >
@@ -2160,9 +2168,9 @@
   data-alignment="center"
   data-button-size="medium"
   data-button-type="primary"
+  onclick="newname()"
 >
   <a
-    onclick="newname()"
     class="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element"
     
   >
@@ -2491,21 +2499,21 @@
       let tabsEnabled = {};
 
       async function enable(module, evtName) {
-        let button = document.getElementById(module);
+        let button = document.getElementById(evtName);
+        let stat = button.style.color === "green"?"red":"green";
         button.disabled = true;
+        button.style.color = gray;
         setTimeout(function() { 
-          button.disabled = false; 
+          button.disabled = false;
+          button.style.color =  stat;
         }, 1000);
         if (tabsEnabled[evtName]) {
           await fetch(`/modules/#channel#/${module}`)
           .then(res => {
               if (res.status == 200) {
                 button.innerHTML = 'Enable';
-                button.style = `background-color: gray; border: 1px solid gray;`;
                 tabsEnabled[evtName] = false;
-                document.getElementById(module).innerHTML = tabsEnabled[evtName]?'enabled':'disabled';
-                document.getElementById(module).style = `font-weight: bold; color: ${tabsEnabled[evtName]?'green':'red'};`;
-                setTimeout(function() { button.style = `background-color: green; border 1px solid green;` }, 1000);
+                document.getElementById(evtName).style = `font-weight: bold; color: ${tabsEnabled[evtName]?'green':'red'};`;
               } else {
                 throw new Error(`${res.status==401?'Account is private.':res.status==404?'Account not found.':res.status==405?'Bot is not enabled.':'Unknown error.'}`);
               }
@@ -2523,11 +2531,8 @@
               .then(res => {
                 if (res.status == 200) {
                   button.innerHTML = 'Disable';
-                  button.style = `background-color: gray; border: 1px solid gray;`;
                   tabsEnabled[evtName] = true;
-                  document.getElementById(module).innerHTML = tabsEnabled[evtName]?'enabled':'disabled';
-                  document.getElementById(module).style = `font-weight: bold; color: ${tabsEnabled[evtName]?'green':'red'};`;
-                  setTimeout(function() { button.style = `background-color: red; border 1px solid red;` }, 1000);
+                  document.getElementById(evtName).style = `font-weight: bold; color: ${tabsEnabled[evtName]?'green':'red'};`;
                 } else {
                   throw new Error(`${res.status==401?'Account is private.':res.status==404?'Account not found.':res.status==405?'Bot is not enabled.':'Unknown error.'}`);
                 }
@@ -2542,11 +2547,9 @@
           .then(res => {
             if (res.status == 200) {
               button.innerHTML = 'Disable';
-              button.style = `background-color: gray; border: 1px solid gray;`;
               tabsEnabled[evtName] = true;
-              document.getElementById(module).innerHTML = tabsEnabled[evtName]?'enabled':'disabled';
+              document.getElementById(evtName).innerHTML = tabsEnabled[evtName]?'enabled':'disabled';
               document.getElementById(module).style = `font-weight: bold; color: ${tabsEnabled[evtName]?'green':'red'};`;
-              setTimeout(function() { button.style = `background-color: red; border 1px solid red;`; }, 1000);
             } else {
                 throw new Error(`${res.status==401?'Account is private.':res.status==404?'Account not found.':res.status==405?'Bot is not enabled.':'Unknown error.'}`);
             }
