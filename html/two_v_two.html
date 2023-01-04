@@ -3138,8 +3138,10 @@
         .then(res => {
           if (res.status == 200) {
             window.location.href = url;
+            return false;
           } else if (res.status == 201) {
             window.location.href = '/';
+            return false;
           } else {
             throw new Error("Unknown status code on /login: " + res.status);
           }
