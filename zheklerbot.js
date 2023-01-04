@@ -1191,10 +1191,10 @@ app.get('/', async (request, response) => {
         page = fs.readFileSync('./html/page.html').toString('utf-8');
         page = page.replace(/#pref_name#/g, userIds[rows[0].userid].pref_name)
         page = page.replace(/#channel#/g, userIds[rows[0].userid].user_id);
-        page = page.replace(/#editors#/g, `<a href="/editors/${rows[0].userid}"><div class="button">Manage your Editors</div></a><br>`);
         page = page.replace(/#checked#/g, userIds[rows[0].userid].twitch?'checked':'');
         page = page.replace('Login to Twitch', 'Logout of Twitch');
         page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
+        if (userIds[rows[0].user_id].twitch) page = page.replace('let enabled = false', 'let enabled = true');
         response.send(page); 
       } else {
         helper.dbQuery(`UPDATE permissions SET bearer = '' WHERE bearer = '${cookies["auth"]}';`);
