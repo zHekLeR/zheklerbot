@@ -1410,7 +1410,7 @@ app.get('/editors/:channel', async (request, response) => {
     for (let i = 0; i < rows.length; i++) {
       let perms = rows[i].perms.split(',');
       if (perms.includes(request.params.channel)) {
-        str += `<tr><td>${rows[i].user_id}</td><td><a onclick="remove(this)" class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary">Remove</a></td></tr><tr>&emsp;</tr>`;
+        str += `<tr><td>${rows[i].userid}</td><td><a onclick="remove(this)" class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary">Remove</a></td></tr><tr>&emsp;</tr>`;
       }
     }
     page = page.replace(/#editors#/g, str);

@@ -3042,7 +3042,8 @@
       })();
 
       async function upStatus(setStat) {
-          let elem = document.getElementsByClassName(`${setStat}`)[0];
+          let p = setStat.split('Kills');
+          let elem = document.getElementsById(`${p}Status`)[0];
           if (document.getElementById(setStat).value.length == 0) { 
               elem.checked = !elem.checked;
               return;
@@ -3092,7 +3093,7 @@
         btn.disabled = true;
         setTimeout(function () {
           btn.disabled = false;
-        }, 100);
+        }, 500);
         document.getElementById(id).innerHTML = parseInt(document.getElementById(id).innerHTML) + 1;
       }
 
