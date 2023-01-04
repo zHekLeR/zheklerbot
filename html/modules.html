@@ -2498,6 +2498,15 @@
     <script>
       let tabsEnabled = {};
 
+      let tabs = Object.keys(tabsEnabled);
+      for (let i = 0; i < tabs.length; i++) {
+        if (tabsEnabled[tabs[i]]) {
+          let elem = document.getElementById(tabs[i]);
+          elem.style.color = "red";
+          elem.childNodes[0].innerHTML = "Disable";
+        }
+      }
+
       async function enable(module, evtName) {
         let button = document.getElementById(evtName);
         let stat = button.style.color === "green"?"red":"green";
