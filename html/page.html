@@ -2451,17 +2451,17 @@
       async function enable() {
         console.log("Enable");
         btn.disabled = true;
-        btn.style.color = "gray";
+        btnText.style.backgroundColor = "gray";
         
         await fetch('/enable/#channel#')
         .then(res => {
           console.log(res.status);
           if (res.status === 200) {
             setTimeout(function() { 
-              btn.style.color = document.getElementById('zhek-enabled').innerHTML === "disabled"?"darkred":"green";
-              btnText.innerHTML = btn.style.color === "red"?"Enable zHekBot":"Disable zHekBot";
-              document.getElementById('zhek-enabled').innerHTML = btn.style.color === "darkred"?"disabled":"enabled";
-              document.getElementById('zhek-enabled').style.color = btn.style.color === "darkred"?"disabled":"enabled";
+              btnText.style.backgroundColor = document.getElementById('zhek-enabled').innerHTML === "disabled"?"darkred":"green";
+              btnText.innerHTML = btnText.style.backgroundColor === "red"?"Enable zHekBot":"Disable zHekBot";
+              document.getElementById('zhek-enabled').innerHTML = btnText.style.backgroundColor === "darkred"?"disabled":"enabled";
+              document.getElementById('zhek-enabled').style.color = btnText.style.backgroundColor === "darkred"?"disabled":"enabled";
               btn.disabled = false; 
             }, 3000);
           } else {            
