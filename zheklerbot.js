@@ -1318,6 +1318,7 @@ app.get('/edit/:channel', async (request, response) => {
     }
 
     var rows = await helper.checkBearer(cookies["auth"]);
+    console.log(rows);
     if (!rows[0]) throw new Error("No bearer in DB - 400.");
 
     await axios.get('https://id.twitch.tv/oauth2/validate', {
@@ -1352,7 +1353,7 @@ app.get('/edit/:channel', async (request, response) => {
       response.redirect('/');
     })
   } catch (err) {
-    if (!err.includes('400')) {
+    if (!err.message.includes('400')) {
       helper.dumpError(err, `Editors home page.`);
     }
     response.status(400);
