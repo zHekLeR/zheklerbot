@@ -46,13 +46,13 @@ import * as duel from './games/duel.js';
 import { DateTime } from 'luxon';
 
 // Cooldowns for games.
-let rrcd = [], rpscd = [], cfcd = [], bvcd = [], dcd = [];
+var rrcd = [], rpscd = [], cfcd = [], bvcd = [], dcd = [];
 
 // Global cooldowns.
-let gcd = { };
+var gcd = { };
 
 // Active elements for each user.
-let userIds = {}, online = {};
+var userIds = {}, online = {};
 
 // Configuration for Twitch API.
 const client_config = {
@@ -106,7 +106,7 @@ function say(channel, message) {
 }
 
 // Two vs Two arrays.
-let tvtUpdate = {};
+var tvtUpdate = {};
 
 // Logs the Twitch bot being initialized.
 bot.on('logon', () => {
@@ -114,10 +114,10 @@ bot.on('logon', () => {
 });
 
 // Free trial up.
-let pause = {};
+var pause = {};
 
 // Tourney commands.
-let tourneyComs = ["!mc", "!prize", "!status", "!bracket", "!banned", "!format"];
+var tourneyComs = ["!mc", "!prize", "!status", "!bracket", "!banned", "!format"];
 
 // Check for commands and respond appropriately.
 bot.on('chat', async (channel, tags, message) => {
@@ -128,8 +128,8 @@ bot.on('chat', async (channel, tags, message) => {
     if (pause[channel.substring(1)] && tags["username"] !== 'zhekler') return;
 
     // Get command.
-    let splits = message.split(' ');
-    let short = splits[0].toLowerCase();
+    var splits = message.split(' ');
+    var short = splits[0].toLowerCase();
 
     // Is there a global command set for this chat?
     if (!gcd[channel.substring] || !gcd[channel.substring].length) {
@@ -141,10 +141,10 @@ bot.on('chat', async (channel, tags, message) => {
     gcd[channel.substring(1)][short] = Date.now() + 2000;
 
     // Base values.
-    let res = [], placement, kills, multis, score, str, rows;
+    var res = [], placement, kills, multis, score, str, rows;
     
     // Disabled commands.
-    let coms = userIds[channel.substring(1)].disabled?userIds[channel.substring(1)].disabled.split(','):[];
+    var coms = userIds[channel.substring(1)].disabled?userIds[channel.substring(1)].disabled.split(','):[];
     if (coms.includes(short)) return;
 
     // Switch on given command.
@@ -179,7 +179,7 @@ bot.on('chat', async (channel, tags, message) => {
         if (tags['username'] !== 'zhekler') break;
         if (!intArray[channel.substring(1)]) intArray[channel.substring(1)] = {};
         if (intArray[channel.substring(1)][splits[1]]) break;
-        let time = parseInt(splits[2]);
+        var time = parseInt(splits[2]);
         intArray[channel.substring(1)][splits[1]] = setInterval(function () {
           say(channel.substring(1), splits.slice(3).join(' '));
         }, time);
@@ -438,8 +438,8 @@ bot.on('chat', async (channel, tags, message) => {
       // Set the placement string.
       case '!setplacement':
         if (!userIds[channel.substring(1)].customs || (!tags["mod"] && tags['username'] !== channel.substring(1)) || splits.length % 2 != 1) break;
-        let temp = false;
-        for (let i = 1; i < splits.length; i++) {
+        var temp = false;
+        for (var i = 1; i < splits.length; i++) {
           if (!parseInt(splits[i])) {
             temp = true;
             say(channel, `'Input must be integer pairs. An example for 1st: 2x, 2nd-8th: 1.5x, 9th+: 1x would be '!setplacement 1 2 2 1.5 9 1'`);
@@ -464,7 +464,7 @@ bot.on('chat', async (channel, tags, message) => {
         score = 0;
         
         multis = res[0].multipliers.split(' ');
-        for (let i = multis.length/2; i >= 0; i--) {
+        for (var i = multis.length/2; i >= 0; i--) {
           if (placement >= parseInt(multis[2*i])) {
             score = kills * parseFloat(multis[(2*i)+1]);
             break;
@@ -522,12 +522,12 @@ bot.on('chat', async (channel, tags, message) => {
         if (userIds[channel.substring(1)].customs) {
           res = await helper.dbQueryPromise(`SELECT * FROM customs WHERE user_id = '${channel.substring(1)}';`);
           score = [];
-          let total = 0;
+          var total = 0;
           
           multis = res[0].multipliers.split(' '), placement = 0;
           
-          for (let i = 0; i < res[0].maps.placement.length; i++) {
-            for (let j = multis.length/2; j >= 0; j--) {
+          for (var i = 0; i < res[0].maps.placement.length; i++) {
+            for (var j = multis.length/2; j >= 0; j--) {
               if (parseInt(res[0].maps.placement[i]) >= parseInt(multis[2*j])) {
                 placement = parseFloat(multis[(2*j)+1]);
                 break;
@@ -832,7 +832,7 @@ bot.on('chat', async (channel, tags, message) => {
         if (channel.substring(1) !== 'huskerrs') break; 
         if (!tags["mod"] && tags["username"] !== channel.substring(1)) break;
         say(channel.substring(1), `!editcom !time It’s currently $(time America/Phoenix "h:mm A") for HusKerrs.`);
-        for (let i = 0; i < tourneyComs.length; i++) {
+        for (var i = 0; i < tourneyComs.length; i++) {
           await new Promise(resolve => setTimeout(resolve, 2000));
           say(channel.substring(1), `!edit ${tourneyComs[i]} Tourney's over! See !results for more`);
         }
@@ -842,8 +842,8 @@ bot.on('chat', async (channel, tags, message) => {
       // Refresh the userIds cache.
       case '!refresh':
         if (tags["username"] !== 'zhekler') break;
-        let users = await helper.dbQueryPromise(`SELECT * FROM allusers;`);
-        for (let i = 0; i < users.length; i++) {
+        var users = await helper.dbQueryPromise(`SELECT * FROM allusers;`);
+        for (var i = 0; i < users.length; i++) {
           userIds[users[i].user_id] = users[i];
         }
         break;
@@ -875,9 +875,9 @@ bot.on('chat', async (channel, tags, message) => {
 async function tvtscores(channel) {
   try {
     if (!tvtUpdate[channel] || tvtUpdate[channel] < Date.now()) {
-      let res = await helper.dbQueryPromise(`SELECT * FROM twovtwo WHERE userid = '${channel}';`);
-      let us = res[0].hkills + res[0].tkills;
-      let opp = res[0].o1kills + res[0].o2kills;
+      var res = await helper.dbQueryPromise(`SELECT * FROM twovtwo WHERE userid = '${channel}';`);
+      var us = res[0].hkills + res[0].tkills;
+      var opp = res[0].o1kills + res[0].o2kills;
       say(channel, `${us} - ${opp}${(us==6 && opp==9)?` Nice`:``} | ${us + res[0].mapreset > opp?("Up "+ (us + res[0].mapreset - opp)):(us + res[0].mapreset < opp)?("Down " + (opp - us - res[0].mapreset)):"Tied"}
         ${res[0].mapreset != 0?(res[0].mapreset > 0?' (Up ':' (Down ') + Math.abs(res[0].mapreset) + ' after reset)':''}`);
       tvtUpdate[channel] = Date.now() + 2000;
@@ -909,7 +909,7 @@ bot.on('resub', (channel, username, months, message, userstate, methods) => {
 
 
 // Make the COD API game_mode more readable.
-let game_modes = {
+var game_modes = {
   'br_brquads': 'Battle Royale Quads',
   'br_brtrios': 'Battle Royale Trios',
   'br_brduos': 'Battle Royale Duos',
@@ -973,12 +973,12 @@ let game_modes = {
 
 
 // Constants for queries to the COD API.
-let baseCookie = "new_SiteId=cod; ACT_SSO_LOCALE=en_US;country=US;";
-let loggedIn = false;
+var baseCookie = "new_SiteId=cod; ACT_SSO_LOCALE=en_US;country=US;";
+var loggedIn = false;
 
 
 // Axios for queries to the COD API.
-let apiAxios = axios.create({
+var apiAxios = axios.create({
   headers: {
     // @ts-ignore
     common: {
@@ -991,13 +991,13 @@ let apiAxios = axios.create({
   },
   withCredentials: true
 });
-let loginAxios = apiAxios;
-let defaultBaseURL = "https://my.callofduty.com/api/papi-client/";
+var loginAxios = apiAxios;
+var defaultBaseURL = "https://my.callofduty.com/api/papi-client/";
 console.log("Created apiAxios.");
 
 
 // Axios for queries to Twitch.
-let symAxios = axios.create({
+var symAxios = axios.create({
   headers: {      
       // @ts-ignore
       'Client-ID': client_config.client_id,
@@ -1014,7 +1014,7 @@ console.log("Created symAxios.");
 // Handle errors from the COD API.
 function apiErrorHandling(error) {
   if (!!error) {
-      let response = error.response;
+      var response = error.response;
       if (!!response) {
           switch (response.status) {
               case 200:
@@ -1089,16 +1089,16 @@ function sendRequest(url) {
 function loginWithSSO (sso) {
   return new Promise(async (resolve, reject) => {
       if (typeof sso === "undefined" || sso.length <= 0) reject("SSO token is invalid.");
-      let loginURL = "https://profile.callofduty.com/cod/mapp/";
-      let randomId = uniqid();
-      let md5sum = crypto.createHash('md5');
-      let deviceId = md5sum.update(randomId).digest('hex');
+      var loginURL = "https://profile.callofduty.com/cod/mapp/";
+      var randomId = uniqid();
+      var md5sum = crypto.createHash('md5');
+      var deviceId = md5sum.update(randomId).digest('hex');
       postReq(`${loginURL}registerDevice`, {
           'deviceId': deviceId
       }).then((response) => {
           console.log(response);
-          let authHeader = response.data.authHeader;
-          let fakeXSRF = "68e8b62e-1d9d-4ce1-b93f-cbe5ff31a041";
+          var authHeader = response.data.authHeader;
+          var fakeXSRF = "68e8b62e-1d9d-4ce1-b93f-cbe5ff31a041";
           // apiAxios.defaults.headers.common.Authorization = `bearer ${authHeader}`;
           apiAxios.defaults.headers.common.x_cod_device_id = `${deviceId}`;
           apiAxios.defaults.headers.common["X-XSRF-TOKEN"] = fakeXSRF;
@@ -1118,7 +1118,7 @@ function loginWithSSO (sso) {
 // Pull last 20 matches for a player.
 function last20(gamertag, platform) {
   return new Promise((resolve, reject) => {
-      let urlInput = defaultBaseURL + `crm/cod/v2/title/mw/platform/${platform}/gamer/${gamertag}/matches/wz/start/0/end/0/details`;
+      var urlInput = defaultBaseURL + `crm/cod/v2/title/mw/platform/${platform}/gamer/${gamertag}/matches/wz/start/0/end/0/details`;
       sendRequest(urlInput).then(data => resolve(data)).catch(e => reject(e));
   });
 };
@@ -1126,7 +1126,7 @@ function last20(gamertag, platform) {
 // 20 matches from date.
 function date20(gamertag, platform, date) {
   return new Promise((resolve, reject) => {
-    let urlInput = defaultBaseURL + `crm/cod/v2/title/mw/platform/${platform}/gamer/${gamertag}/matches/wz/start/0/end/${date*1000}/details`;
+    var urlInput = defaultBaseURL + `crm/cod/v2/title/mw/platform/${platform}/gamer/${gamertag}/matches/wz/start/0/end/${date*1000}/details`;
     sendRequest(urlInput).then(data => resolve(data)).catch(e => reject(e));
   })
 }
@@ -1134,7 +1134,7 @@ function date20(gamertag, platform, date) {
 // Pull match info from match ID.
 function matchInfo(matchID) {
   return new Promise((resolve, reject) => {
-      let urlInput = defaultBaseURL + `crm/cod/v2/title/mw/platform/acti/fullMatch/wz/${matchID}/en`;
+      var urlInput = defaultBaseURL + `crm/cod/v2/title/mw/platform/acti/fullMatch/wz/${matchID}/en`;
       sendRequest(urlInput).then(data => resolve(data)).catch(e => reject(e));
   });
 };
@@ -1143,7 +1143,7 @@ function matchInfo(matchID) {
 // Pull lifetime stats from COD API.
 function lifetime(gamertag, platform) {
   return new Promise((resolve, reject) => {
-    let urlInput = defaultBaseURL + `stats/cod/v1/title/mw/platform/${platform}/gamer/${gamertag}/profile/type/wz`;
+    var urlInput = defaultBaseURL + `stats/cod/v1/title/mw/platform/${platform}/gamer/${gamertag}/profile/type/wz`;
     sendRequest(urlInput).then(data => resolve(data)).catch(e => reject(e));
   });
 };
@@ -1177,8 +1177,8 @@ app.use(favicon(path.join(__dirname, 'images/favicon.ico')));
 
 // Home page.
 app.get('/', async (request, response) => {
-  let cookies = await request.cookies;
-  let page;
+  var cookies = await request.cookies;
+  var page;
   if (cookies["auth"]) {
     await axios.get('https://id.twitch.tv/oauth2/validate', {
       headers: {
@@ -1186,7 +1186,7 @@ app.get('/', async (request, response) => {
       }
     }).then(async res => {
       if (res.status === 200) {
-        let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
+        var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
 
         page = fs.readFileSync('./html/page.html').toString('utf-8');
         page = page.replace(/#pref_name#/g, userIds[rows[0].userid].pref_name)
@@ -1194,7 +1194,7 @@ app.get('/', async (request, response) => {
         page = page.replace(/#checked#/g, userIds[rows[0].userid].twitch?'checked':'');
         page = page.replace('Login to Twitch', 'Logout of Twitch');
         page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
-        if (userIds[rows[0].userid].twitch) page = page.replace('let enabled = false', 'let enabled = true');
+        if (userIds[rows[0].userid].twitch) page = page.replace('var enabled = false', 'var enabled = true');
         response.send(page); 
       } else {
         helper.dbQuery(`UPDATE permissions SET bearer = '' WHERE bearer = '${cookies["auth"]}';`);
@@ -1238,9 +1238,9 @@ app.get('/enable/:channel', async (request, response) => {
       return;
     }
     
-    let cookies = await request.cookies;
+    var cookies = await request.cookies;
     if (cookies["auth"]) {
-      let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
+      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
         response.sendStatus(401);
         return;
@@ -1285,9 +1285,9 @@ app.get('/edit/:channel', async (request, response) => {
       return;
     }
     
-    let cookies = request.cookies;
+    var cookies = request.cookies;
     if (cookies["auth"]) {
-      let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
+      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
         response.status(401);
         response.redirect('/');
@@ -1305,10 +1305,10 @@ app.get('/edit/:channel', async (request, response) => {
       }
     }).then(async res => {
       if (res.status === 200) {
-        let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies['auth']}';`);
+        var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies['auth']}';`);
 
         if (rows.length && rows[0].perms.split(',').includes(request.params.channel.toLowerCase())) {
-          let page = fs.readFileSync('./html/page.html').toString('utf-8');
+          var page = fs.readFileSync('./html/page.html').toString('utf-8');
           page = page.replace(/#pref_name#/g, userIds[request.params.channel.toLowerCase()].pref_name);
           page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
           page = page.replace(/#Permissions#/g, '');
@@ -1342,12 +1342,12 @@ app.get('/edit/:channel', async (request, response) => {
 // Commands page.
 app.get('/commands/:channel', async (request, response) => {
   try {
-    let page;
+    var page;
     if (Object.keys(userIds).includes(request.params.channel.toLowerCase())) {
       page = fs.readFileSync("./html/commands.html").toString('utf-8');
       page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
       page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
-      page = page.replace("let tabsEnabled = {}", `let tabsEnabled = {
+      page = page.replace("var tabsEnabled = {}", `var tabsEnabled = {
         'Warzone Stats / Matches': ${userIds[request.params.channel.toLowerCase()].matches},
         'Revolver Roulette': ${userIds[request.params.channel.toLowerCase()].revolverroulette},
         'Coinflip': ${userIds[request.params.channel.toLowerCase()].coinflip},
@@ -1361,7 +1361,7 @@ app.get('/commands/:channel', async (request, response) => {
       response.status(404);
       page = fs.readFileSync("./html/not_found.html").toString('utf-8');
     }
-    let cookies = await request.cookies;
+    var cookies = await request.cookies;
     if (cookies["auth"]) {
       page = page.replace('Login to Twitch', 'Logout of Twitch');
       page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
@@ -1395,9 +1395,9 @@ app.get('/editors/:channel', async (request, response) => {
       return;
     }
     
-    let cookies = await request.cookies;
+    var cookies = await request.cookies;
     if (cookies["auth"]) {
-      let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
+      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || rows[0].userid !== request.params.channel.toLowerCase()) {
         response.sendStatus(401);
         return;
@@ -1407,13 +1407,13 @@ app.get('/editors/:channel', async (request, response) => {
       return;
     }
 
-    let page = fs.readFileSync('./html/editors.html').toString('utf-8');
+    var page = fs.readFileSync('./html/editors.html').toString('utf-8');
 
-    let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE perms LIKE '%${request.params.channel}%';`);
+    var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE perms LIKE '%${request.params.channel}%';`);
 
-    let str = '';
-    for (let i = 0; i < rows.length; i++) {
-      let perms = rows[i].perms.split(',');
+    var str = '';
+    for (var i = 0; i < rows.length; i++) {
+      var perms = rows[i].perms.split(',');
       if (perms.includes(request.params.channel)) {
         str += `<tr><td style="padding: 2px; text-align: center;">${rows[i].userid}</td><td onclick="remove(this)" style="padding: 2px; text-align: center;"><a class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary">Remove</a></td></tr><tr>&emsp;</tr>`;
       }
@@ -1440,9 +1440,9 @@ app.get('/addeditor/:channel', async (request, response) => {
       return;
     }
     
-    let cookies = request.cookies;
+    var cookies = request.cookies;
     if (cookies["auth"]) {
-      let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
+      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || rows[0].userid !== request.params.channel.toLowerCase()) {
         response.sendStatus(401);
         return;
@@ -1452,7 +1452,7 @@ app.get('/addeditor/:channel', async (request, response) => {
       return;
     }
 
-    let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE userid = '${request.get('editor')}';`);
+    var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE userid = '${request.get('editor')}';`);
     if (!rows.length) {
       helper.dbQuery(`INSERT INTO permissions(userid, perms) VALUES ('${request.get('editor')}', '${request.params.channel}')`);
     } else if (!rows[0].perms) {
@@ -1478,9 +1478,9 @@ app.get('/removeeditor/:channel', async (request, response) => {
       return;
     }
     
-    let cookies = request.cookies;
+    var cookies = request.cookies;
     if (cookies["auth"]) {
-      let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
+      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || rows[0].userid !== request.params.channel) {
         response.sendStatus(401);
         return;
@@ -1495,8 +1495,8 @@ app.get('/removeeditor/:channel', async (request, response) => {
       return;
     }
 
-    let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE userid = '${request.get('editor')}';`);
-    let perms = rows[0].perms?rows[0].perms.split(','):"";
+    var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE userid = '${request.get('editor')}';`);
+    var perms = rows[0].perms?rows[0].perms.split(','):"";
     perms.splice(rows[0].perms.indexOf(request.params.channel), 1);
     helper.dbQuery(`UPDATE permissions SET perms = '${perms.join(',')}' WHERE userid = '${request.get('editor')}';`);
 
@@ -1517,9 +1517,9 @@ app.get('/permissions/:channel', async (request, response) => {
       return;
     }
     
-    let cookies = request.cookies;
+    var cookies = request.cookies;
     if (cookies["auth"]) {
-      let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
+      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || rows[0].userid !== request.params.channel.toLowerCase()) {
         response.sendStatus(401);
         return;
@@ -1529,19 +1529,19 @@ app.get('/permissions/:channel', async (request, response) => {
       return;
     }
 
-    let page = fs.readFileSync('./html/permissions.html').toString('utf-8');
+    var page = fs.readFileSync('./html/permissions.html').toString('utf-8');
     page = page.replace(/Login to Twitch/g, "Logout of Twitch");
     page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
 
-    let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
+    var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
     page = page.replace(/#channel#/g, rows[0].userid);
     
-    let perms = rows[0]&&rows[0].perms?rows[0].perms.split(','):'';
+    var perms = rows[0]&&rows[0].perms?rows[0].perms.split(','):'';
     if (!perms.length) {
       page = page.replace(/#permission#/g, 'You do not have permissions to any channels.');
     } else {
-      let str = '<h3>Permissions:</h3>';
-      for (let i = 0; i < perms.length; i++) {
+      var str = '<h3>Permissions:</h3>';
+      for (var i = 0; i < perms.length; i++) {
         str += `<tr><a href="/edit/${perms[i]}" class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary">${userIds[perms[i]].pref_name}</a></tr><tr>&emsp;</tr>`;
       }
       page = page.replace(/#permissions#/g, str);
@@ -1556,7 +1556,7 @@ app.get('/permissions/:channel', async (request, response) => {
 
 
 // States.
-let states = [];
+var states = [];
 
 
 // Modules.
@@ -1568,9 +1568,9 @@ app.get('/modules/:channel', async (request, response) => {
       return;
     }
     
-    let cookies = request.cookies;
+    var cookies = request.cookies;
     if (cookies["auth"]) {
-      let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
+      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
         response.sendStatus(401);
         return;
@@ -1580,10 +1580,10 @@ app.get('/modules/:channel', async (request, response) => {
       return;
     }
 
-    let page = fs.readFileSync('./html/modules.html').toString('utf-8');
+    var page = fs.readFileSync('./html/modules.html').toString('utf-8');
     page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
     page = page.replace(/Login to Twitch/g, "Logout of Twitch");
-    page = page.replace('let tabsEnabled = {};', `let tabsEnabled = {
+    page = page.replace('var tabsEnabled = {};', `var tabsEnabled = {
       'Warzone Stats / Matches': ${userIds[request.params.channel.toLowerCase()].matches},
       'Revolver Roulette': ${userIds[request.params.channel.toLowerCase()].revolverroulette},
       'Coinflip': ${userIds[request.params.channel.toLowerCase()].coinflip},
@@ -1614,9 +1614,9 @@ app.get('/modules/:channel/:module', async (request, response) => {
       return;
     }
     
-    let cookies = request.cookies;
+    var cookies = request.cookies;
     if (cookies["auth"]) {
-      let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
+      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
         response.status(401);
         response.redirect('/');
@@ -1627,16 +1627,16 @@ app.get('/modules/:channel/:module', async (request, response) => {
       return;
     }
 
-    let str = '';
+    var str = '';
     if (request.params.module === 'matches') {
-      let acti_id = request.get('Acti') || '';
+      var acti_id = request.get('Acti') || '';
       if (!userIds[request.params.channel].matches && 
           (!userIds[request.params.channel].acti_id || userIds[request.params.channel].acti_id === '' || userIds[request.params.channel].acti_id !== decodeURIComponent(acti_id))) {
         if (acti_id === '') throw new Error('Blank Acti ID.');
         if (profanity.isProfane(acti_id || '')) throw new Error('No profanity allowed.');
         str += `, acti_id = '${decodeURIComponent(acti_id || '')}'`;
         userIds[request.params.channel].acti_id = decodeURIComponent(acti_id || '');
-        let data = await last20(acti_id, 'uno');
+        var data = await last20(acti_id, 'uno');
         str += `, uno_id = '${data.matches[0].player.uno}'`;
       }
 
@@ -1709,7 +1709,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
           helper.dbQuery(`UPDATE allusers SET event_sub = true::bool WHERE user_id = '${request.params.channel}';`);
           userIds[request.params.channel].event_sub = true;
 
-          let mCache = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${request.params.channel}';`);
+          var mCache = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${request.params.channel}';`);
           if (!mCache || !mCache.length) weekMatches(request.params.channel);
 
         } else if (userIds[request.params.channel].matches && userIds[request.params.channel].event_sub) {
@@ -1777,9 +1777,9 @@ app.get('/newname/:channel', async (request, response) => {
       return;
     }
     
-    let cookies = request.cookies;
+    var cookies = request.cookies;
     if (cookies["auth"]) {
-      let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
+      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
         response.sendStatus(401);
         return;
@@ -1811,9 +1811,9 @@ app.get('/redirect', (request, response) => {
 // Log in to Twitch.
 app.get('/login', async (request, response) => {
   try {
-    let cookies = request.cookies;
+    var cookies = request.cookies;
     if (!cookies["auth"]) {
-      let state = request.get("state") || '';
+      var state = request.get("state") || '';
       if (!state || state.length != 20) {
         console.log("Invalid state: " + state);
         response.sendStatus(500)
@@ -1846,7 +1846,7 @@ app.get('/login', async (request, response) => {
 // Logout.
 app.get('/logout', async (request, response) => {
   try {
-    let cookies = request.cookies;
+    var cookies = request.cookies;
     if (cookies["auth"]) {
       helper.dbQuery(`UPDATE permissions SET bearer = '' WHERE bearer = '${cookies["auth"]}';`);
       response.clearCookie('auth', {
@@ -1888,8 +1888,8 @@ app.get('/verify', (request, response) => {
             'Client-Id': process.env.CLIENT_ID || ''
           }
         }).then(async res => {
-          let details = res.data.data;
-          let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE userid = '${details[0]["display_name"].toLowerCase()}';`);
+          var details = res.data.data;
+          var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE userid = '${details[0]["display_name"].toLowerCase()}';`);
           
           // @ts-ignore
           if (rows.length && (rows[0].perms > 0 && rows[0].perms.split(',').includes(states[request.get("state")]) || details[0]["display_name"].toLowerCase() === states[request.get("state")] || states[request.get("state")] === "#login#")) {
@@ -1959,9 +1959,9 @@ app.get('/twovtwo/:channel', async (request, response) => {
       return;
     }
     
-    let cookies = request.cookies;
+    var cookies = request.cookies;
     if (cookies["auth"]) {
-      let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
+      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
         response.status(401);
         response.redirect('/');
@@ -1973,7 +1973,7 @@ app.get('/twovtwo/:channel', async (request, response) => {
       return;
     }
 
-    let page = fs.readFileSync('./html/two_v_two.html').toString('utf-8');
+    var page = fs.readFileSync('./html/two_v_two.html').toString('utf-8');
     page = page.replace(/Login to Twitch/g, "Logout of Twitch");
     page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
     page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
@@ -1991,7 +1991,7 @@ app.get ('/twovtwoscores/:channel', async (request, response) => {
   try {
     request.params.channel = request.params.channel.toLowerCase();
     
-    let cookies = request.cookies, rows;
+    var cookies = request.cookies, rows;
     if (cookies["auth"]) {
       rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
@@ -2005,7 +2005,7 @@ app.get ('/twovtwoscores/:channel', async (request, response) => {
       return;
     }
 
-    let res = await helper.dbQueryPromise(`SELECT * FROM twovtwo WHERE userid = '${request.params.channel}';`);
+    var res = await helper.dbQueryPromise(`SELECT * FROM twovtwo WHERE userid = '${request.params.channel}';`);
     if (!res.length) {
       res = [{ 
         hkills: 0,
@@ -2037,7 +2037,7 @@ app.get('/post/:channel/reset', async (request, response) => {
       return;
     }
     
-    let cookies = request.cookies, rows;
+    var cookies = request.cookies, rows;
     if (cookies["auth"]) {
       rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
@@ -2077,8 +2077,8 @@ app.get('/post/:channel/enable', jsonParser, async (request, response) => {
       return;
     }
     
-    let cookies = request.cookies;
-    let rows;
+    var cookies = request.cookies;
+    var rows;
     if (cookies["auth"]) {
       rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || (rows[0].userid !== request.params.channel && !rows[0].perms.split(',').includes(request.params.channel))) {
@@ -2114,7 +2114,7 @@ app.get('/send/:channel/:hKills/:tKills/:o1Kills/:o2Kills', async (request, resp
       response.sendStatus(405);
       return;
     }
-    let cookies = request.cookies, rows;
+    var cookies = request.cookies, rows;
     if (cookies["auth"]) {
       rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
@@ -2154,7 +2154,7 @@ app.get('/send/:channel/:hKills/:tKills/:o1Kills/:o2Kills', async (request, resp
 // Wins for c_o_l_e
 app.get('/wins/:user', async (request, response) => {
   try {
-    let data = await lifetime(encodeURIComponent(request.params.user), 'uno');
+    var data = await lifetime(encodeURIComponent(request.params.user), 'uno');
     response.send(`I got ${data.lifetime.mode.br.properties.wins} dubskies!`);
   } catch (err) {
     helper.dumpError(err, `Wins web.`);
@@ -2165,18 +2165,18 @@ app.get('/wins/:user', async (request, response) => {
 // API endpoint to format ban statements for accounts in BrookeAB's chat which were created and followed within 6 hours.
 app.get('/brookescribers', async (request, response) => {
   try {
-    let time = Math.round(Date.now() / 1000) - 10800;
+    var time = Math.round(Date.now() / 1000) - 10800;
 
     // Pull accounts from database.
-    let rows = await helper.dbQueryPromise(`SELECT * FROM brookescribers ORDER BY followed_at DESC;`);
+    var rows = await helper.dbQueryPromise(`SELECT * FROM brookescribers ORDER BY followed_at DESC;`);
 
     if (rows.length > 100) {
       rows = await helper.dbQueryPromise(`SELECT * FROM brookescribers WHERE followed_at > ${time} ORDER BY followed_at DESC;`);
     }
 
     // Format string of ban statements.
-    let str = '';
-    for (let i = 0; i < rows.length; i++) {
+    var str = '';
+    for (var i = 0; i < rows.length; i++) {
       str += `/ban ${rows[i].user_id} <br/>`;
     }
 
@@ -2227,9 +2227,9 @@ app.get ('/customs/:channel', async (request, response) => {
       return;
     }
     
-    let cookies = request.cookies;
+    var cookies = request.cookies;
     if (cookies["auth"]) {
-      let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
+      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
         response.status(401);
         response.redirect('/');
@@ -2241,21 +2241,21 @@ app.get ('/customs/:channel', async (request, response) => {
       return;
     }
 
-    let page = fs.readFileSync('./html/customs.html').toString('utf-8');
+    var page = fs.readFileSync('./html/customs.html').toString('utf-8');
     page = page.replace(/Login to Twitch/g, "Logout of Twitch");
     page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
     page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
     page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
 
-    let rows = await helper.dbQueryPromise(`SELECT * FROM customs WHERE user_id = '${request.params.channel}';`);
+    var rows = await helper.dbQueryPromise(`SELECT * FROM customs WHERE user_id = '${request.params.channel}';`);
 
-    let multis = [];
+    var multis = [];
     if (!rows || !rows.length) {
       multis.push('Multipliers not defined. Please use the !setmultipliers command in chat.');
     } else {
-      let raw = rows[0].multipliers.split(' ');
-      for (let i = 0; i < raw.length/2; i++) {
-        let temp = '';
+      var raw = rows[0].multipliers.split(' ');
+      for (var i = 0; i < raw.length/2; i++) {
+        var temp = '';
         if (i + 1 >= raw.length/2) {
           temp = `${addEnd(raw[2*i])}+ : ${raw[2*i + 1]}x`;
         } else if (parseInt(raw[2*i]) + 1 === parseInt(raw[2*i + 2])) {
@@ -2276,7 +2276,7 @@ app.get ('/customs/:channel', async (request, response) => {
 });
 
 
-let customCd = {};
+var customCd = {};
 
 
 // Custom tourney update.
@@ -2288,9 +2288,9 @@ app.get ('/customs/update/:channel', async (request, response) => {
       return;
     }
     
-    let cookies = request.cookies;
+    var cookies = request.cookies;
     if (cookies["auth"]) {
-      let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
+      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
         response.status(401);
         return;
@@ -2307,16 +2307,16 @@ app.get ('/customs/update/:channel', async (request, response) => {
       customCd[request.params.channel] = (Date.now()/1000) + 3;
     }
 
-    let rows = await helper.dbQueryPromise(`SELECT * FROM customs WHERE user_id = '${request.params.channel}';`);
+    var rows = await helper.dbQueryPromise(`SELECT * FROM customs WHERE user_id = '${request.params.channel}';`);
 
-    let hKills = parseInt(request.get('hkills') || '0');
-    let tKills = parseInt(request.get('tkills') || '0');
-    let o1Kills = parseInt(request.get('o1kills') || '0');
-    let o2Kills = parseInt(request.get('o2kills') || '0');
-    let kills = hKills + tKills + o1Kills + o2Kills;
+    var hKills = parseInt(request.get('hkills') || '0');
+    var tKills = parseInt(request.get('tkills') || '0');
+    var o1Kills = parseInt(request.get('o1kills') || '0');
+    var o2Kills = parseInt(request.get('o2kills') || '0');
+    var kills = hKills + tKills + o1Kills + o2Kills;
 
-    let multis = rows[0].multipliers.split(' '), place = request.get('place') || '', placement = 0;
-    for (let j = multis.length/2; j >= 0; j--) {
+    var multis = rows[0].multipliers.split(' '), place = request.get('place') || '', placement = 0;
+    for (var j = multis.length/2; j >= 0; j--) {
       
       if (parseInt(place) >= parseInt(multis[2*j])) {
         placement = parseFloat(multis[(2*j)+1]);
@@ -2337,15 +2337,15 @@ app.get ('/customs/update/:channel', async (request, response) => {
 // Get user's stats.
 async function stats(username, platform) {
   try {
-    let uriUser = encodeURIComponent(username);
-    let time, lk, wk, wins, kills;
+    var uriUser = encodeURIComponent(username);
+    var time, lk, wk, wins, kills;
 
-    let rows = await helper.dbQueryPromise(`SELECT * FROM stats WHERE acti_id = '${username}';`);
+    var rows = await helper.dbQueryPromise(`SELECT * FROM stats WHERE acti_id = '${username}';`);
 
     if (!rows || !rows.length || rows[0].timeout < Date.now()/1000) {
 
       // Get stats.
-      let data = await lifetime(uriUser, platform);
+      var data = await lifetime(uriUser, platform);
 
       if (data === 'Not permitted: not allowed') {
         return 'Account is private.';
@@ -2383,7 +2383,7 @@ async function stats(username, platform) {
 // Get user's last match info.
 async function lastGame(username) { 
   try {
-    let rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${userIds[username].acti_id}' ORDER BY timestamp DESC LIMIT 1;`);
+    var rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${userIds[username].acti_id}' ORDER BY timestamp DESC LIMIT 1;`);
     
     // If rows are empty, return.
     if (!rows.length) {
@@ -2392,12 +2392,12 @@ async function lastGame(username) {
     }
 
     // Get match object.
-    let match = rows[0];
+    var match = rows[0];
 
     // Format teammates, if any.
-    let teammates = ' | Teammates: ';
+    var teammates = ' | Teammates: ';
     if (!match.teammates.length) teammates += '-';
-    for (let i = 0; i < match.teammates.length; i++) { teammates += (!i?'':' | ') + `${match.teammates[i].name} (${match.teammates[i].kills}K, ${match.teammates[i].deaths}D)`; }
+    for (var i = 0; i < match.teammates.length; i++) { teammates += (!i?'':' | ') + `${match.teammates[i].name} (${match.teammates[i].kills}K, ${match.teammates[i].deaths}D)`; }
     
     // Return response.
     return `${match.game_mode} | Lobby KD: ${match.lobby_kd?match.lobby_kd.toFixed(2):'-'} | ${match.placement} place | ${userIds[username].pref_name} (${match.kills}K, ${match.deaths}D) | Gulag: ${match.gulag_kills?'Won':match.gulag_deaths?'Lost':'-'} ${teammates}`;
@@ -2412,20 +2412,20 @@ async function lastGame(username) {
 // Get user's weekly stats.
 async function lastGames(username) {
   try {
-    let rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${userIds[username].acti_id}';`);
+    var rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${userIds[username].acti_id}';`);
 
     // Base values.
-    let kGame = 0;
-    let dGame = 0;
-    let wins = 0;
-    let streak = 0;
-    let gulag_kills = 0;
-    let gulag_deaths = 0;
-    let lobby_kd = 0;
-    let total = 0;
+    var kGame = 0;
+    var dGame = 0;
+    var wins = 0;
+    var streak = 0;
+    var gulag_kills = 0;
+    var gulag_deaths = 0;
+    var lobby_kd = 0;
+    var total = 0;
 
     // Increment stats.
-    for (let i = 0; i < rows.length; i++) {
+    for (var i = 0; i < rows.length; i++) {
       kGame += rows[i].kills;
       dGame += rows[i].deaths;
       wins += rows[i].placement === "1st"?1:0;
@@ -2450,23 +2450,23 @@ async function lastGames(username) {
 async function daily(username) {
   try {
     // Midnight of current day.
-    let midnight = DateTime.now().setZone('America/Los_Angeles').startOf('day').toSeconds() - userIds[username].time_offset || DateTime.now().setZone('America/Los_Angeles').startOf('day').toSeconds();
+    var midnight = DateTime.now().setZone('America/Los_Angeles').startOf('day').toSeconds() - userIds[username].time_offset || DateTime.now().setZone('America/Los_Angeles').startOf('day').toSeconds();
 
-    let rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${userIds[username].acti_id}' AND timestamp > ${midnight};`);
+    var rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${userIds[username].acti_id}' AND timestamp > ${midnight};`);
 
     // Base values.
-    let dailyGames = 0;
-    let kGame = 0;
-    let dGame = 0;
-    let wins = 0;
-    let streak = 0;
-    let gulag_kills = 0;
-    let gulag_deaths = 0;
-    let lobby_kd = 0;
-    let total = 0;
+    var dailyGames = 0;
+    var kGame = 0;
+    var dGame = 0;
+    var wins = 0;
+    var streak = 0;
+    var gulag_kills = 0;
+    var gulag_deaths = 0;
+    var lobby_kd = 0;
+    var total = 0;
 
     // Increment stats.
-    for (let i = 0; i < rows.length; i++) {
+    for (var i = 0; i < rows.length; i++) {
       dailyGames++;
       kGame += rows[i].kills;
       dGame += rows[i].deaths;
@@ -2492,15 +2492,15 @@ async function daily(username) {
 async function bombs(username) {
   try {
     // Midnight of current day.
-    let midnight = DateTime.now().setZone('America/Los_Angeles').startOf('day').toSeconds() - userIds[username].time_offset || DateTime.now().setZone('America/Los_Angeles').startOf('day').toSeconds();
+    var midnight = DateTime.now().setZone('America/Los_Angeles').startOf('day').toSeconds() - userIds[username].time_offset || DateTime.now().setZone('America/Los_Angeles').startOf('day').toSeconds();
 
-    let rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${userIds[username].acti_id}' AND timestamp > ${midnight} AND kills > ${userIds[username].bomb};`);
+    var rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${userIds[username].acti_id}' AND timestamp > ${midnight} AND kills > ${userIds[username].bomb};`);
 
     // Base object.
-    let bombs = [];
+    var bombs = [];
 
     // Increment stats.
-    for (let i = 0; i < rows.length; i++) {
+    for (var i = 0; i < rows.length; i++) {
       bombs.push(rows[i].kills);
     }
 
@@ -2518,15 +2518,15 @@ async function bombs(username) {
 async function wins(username) {
   try {
     // Midnight of current day.
-    let midnight = DateTime.now().setZone('America/Los_Angeles').startOf('day').toSeconds() - userIds[username].time_offset || DateTime.now().setZone('America/Los_Angeles').startOf('day').toSeconds();
+    var midnight = DateTime.now().setZone('America/Los_Angeles').startOf('day').toSeconds() - userIds[username].time_offset || DateTime.now().setZone('America/Los_Angeles').startOf('day').toSeconds();
 
-    let rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${userIds[username].acti_id}' AND timestamp > ${midnight};`);
+    var rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${userIds[username].acti_id}' AND timestamp > ${midnight};`);
 
     // Base object.
-    let wins = [];
+    var wins = [];
 
     // Increment stats.
-    for (let i = 0; i < rows.length; i++) {
+    for (var i = 0; i < rows.length; i++) {
       if (rows[i].placement === '1st') wins.push(rows[i].kills);
     }
 
@@ -2544,16 +2544,16 @@ async function wins(username) {
 async function gulag(username) {
   try {
     // Midnight of current day.
-    let midnight = DateTime.now().setZone('America/Los_Angeles').startOf('day').toSeconds() - userIds[username].time_offset || DateTime.now().setZone('America/Los_Angeles').startOf('day').toSeconds();
+    var midnight = DateTime.now().setZone('America/Los_Angeles').startOf('day').toSeconds() - userIds[username].time_offset || DateTime.now().setZone('America/Los_Angeles').startOf('day').toSeconds();
 
-    let rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${userIds[username].acti_id}' AND timestamp > ${midnight};`);
+    var rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${userIds[username].acti_id}' AND timestamp > ${midnight};`);
 
     // Base values.
-    let gulag_kills = 0;
-    let gulag_deaths = 0;
+    var gulag_kills = 0;
+    var gulag_deaths = 0;
 
     // Increment stats.
-    for (let i = 0; i < rows.length; i++) {
+    for (var i = 0; i < rows.length; i++) {
       if (rows[i].gulag_kills) { 
         gulag_kills++;
       } else if (rows[i].gulag_deaths) {
@@ -2574,24 +2574,24 @@ async function gulag(username) {
 // Function to get user's frequent teammates.
 async function teammates(username) {
   try {
-    let rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${username}';`);
+    var rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${username}';`);
 
-    let teammates = new Map();
+    var teammates = new Map();
 
-    for (let i = 0; i < rows.length; i++) {
-      let team = rows[i].teammates;
+    for (var i = 0; i < rows.length; i++) {
+      var team = rows[i].teammates;
       if (!team.length) continue;
 
-      for (let j = 0; j < team.length; j++) {
-        let keyValue = teammates.get(team[j].name);
+      for (var j = 0; j < team.length; j++) {
+        var keyValue = teammates.get(team[j].name);
         teammates.set(team[j].name, keyValue?keyValue + 1:1);
       }
     }
     
-    let sorted = Array.from(teammates.keys()).sort((a, b) => teammates.get(b) - teammates.get(a));
+    var sorted = Array.from(teammates.keys()).sort((a, b) => teammates.get(b) - teammates.get(a));
     
-    let retStr = `Weekly Teammates | `;
-    for (let i = 0; i < (sorted.length < 5?sorted.length:5); i++) {
+    var retStr = `Weekly Teammates | `;
+    for (var i = 0; i < (sorted.length < 5?sorted.length:5); i++) {
       retStr += `${sorted[i]}: ${teammates.get(sorted[i])} games${i == 4 || i + 1 == sorted.length?'':' | '}`;
     }
     
@@ -2606,21 +2606,21 @@ async function teammates(username) {
 // Function to get user's frequent teammates.
 async function gamemodes(username) {
   try {
-    let rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${username}';`);
+    var rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${username}';`);
 
-    let gamemodes = new Map();
+    var gamemodes = new Map();
 
-    for (let i = 0; i < rows.length; i++) {
-      let mode = rows[i].game_mode;
+    for (var i = 0; i < rows.length; i++) {
+      var mode = rows[i].game_mode;
 
-      let keyValue = gamemodes.get(mode);
+      var keyValue = gamemodes.get(mode);
       gamemodes.set(mode, keyValue?keyValue + 1:1);
     }
     
-    let sorted = Array.from(gamemodes.keys()).sort((a, b) => gamemodes.get(b) - gamemodes.get(a));
+    var sorted = Array.from(gamemodes.keys()).sort((a, b) => gamemodes.get(b) - gamemodes.get(a));
     
-    let retStr = `Weekly Game Modes | `;
-    for (let i = 0; i < (sorted.length < 5?sorted.length:5); i++) {
+    var retStr = `Weekly Game Modes | `;
+    for (var i = 0; i < (sorted.length < 5?sorted.length:5); i++) {
       retStr += `${sorted[i]}: ${gamemodes.get(sorted[i])} games${i == 4 || i + 1 == sorted.length?'':' | '}`;
     }
     
@@ -2635,9 +2635,9 @@ async function gamemodes(username) {
 // Win streak.
 async function streak(username) {
   try {
-    let rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${userIds[username].acti_id}' ORDER BY timestamp DESC;`);
+    var rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${userIds[username].acti_id}' ORDER BY timestamp DESC;`);
 
-    let wins = 0, x = 0;
+    var wins = 0, x = 0;
     while (x < rows.length) {
       if (rows[x].placement === '1st') {
         wins++;
@@ -2656,8 +2656,8 @@ async function streak(username) {
 // Pull number of semtex kills from COD API - only for HusK currently.
 async function semtex() {
   try {
-    let data = await lifetime('HusKerrs', 'uno');
-    let semtex = data.lifetime.itemData.lethals['equip_semtex'].properties.kills;
+    var data = await lifetime('HusKerrs', 'uno');
+    var semtex = data.lifetime.itemData.lethals['equip_semtex'].properties.kills;
     return `${semtex} kills with semtex huskKing`;
   } catch (err) {
     helper.dumpError(err, `Semtex.`);
@@ -2736,8 +2736,8 @@ app.get('/wordlelb', async (req, response) => {
 
 app.get('/twitch/redirect', async (req, response) => {
   try {
-    let query = url.parse(req.url, true).query;
-    let code = query["code"];
+    var query = url.parse(req.url, true).query;
+    var code = query["code"];
 
     await axios.post(`https://id.twitch.tv/oauth2/token`,
     `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&code=${code}&grant_type=authorization_code&redirect_uri=https://www.zhekbot.com/redirect`,
@@ -2746,7 +2746,7 @@ app.get('/twitch/redirect', async (req, response) => {
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     }).then(async resp => {
-      let data = resp.data;
+      var data = resp.data;
 
       await axios.get('https://id.twitch.tv/oauth2/validate',
       {
@@ -2754,7 +2754,7 @@ app.get('/twitch/redirect', async (req, response) => {
           'Authorization': 'OAuth ' + data.access_token
         }
       }).then(async resp2 => {
-        let data2 = resp2.data;
+        var data2 = resp2.data;
 
         helper.dbQuery(`INSERT INTO access_tokens(userid, access_token, refresh_token, scope) 
           VALUES ('${data2.login}', '${data.access_token}', '${data.refresh_token}', '${data2.scopes.join(', ')}')
@@ -2776,9 +2776,9 @@ app.get('/twitch/redirect', async (req, response) => {
 
 app.get('/twitch/bot', async (req, response) => {
   try {
-    let query = url.parse(req.url, true).query;
-    let token = query["access_token"];
-    let name = "";
+    var query = url.parse(req.url, true).query;
+    var token = query["access_token"];
+    var name = "";
 
     await axios.post(`https://id.twitch.tv/oauth2/validate`, 
     {
@@ -2802,7 +2802,7 @@ app.get('/twitch/bot', async (req, response) => {
 // Default not found page.
 app.get("*", (req, response) => {
   response.status(404);
-  let page = fs.readFileSync("./html/not_found.html").toString('utf-8');
+  var page = fs.readFileSync("./html/not_found.html").toString('utf-8');
   if (req.cookies["auth"]) {
     page = page.replace('Login to Twitch', 'Logout of Twitch');
     page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
@@ -2820,14 +2820,14 @@ app.get("*", (req, response) => {
 // Pull all matches in the last week.
 async function weekMatches(userid) {
   try {
-    let matches = [];
+    var matches = [];
 
-    let timestamp = parseInt((await helper.dbQueryPromise(`SELECT MIN(timestamp) FROM matches WHERE user_id = '${userIds[userid].acti_id}';`))[0].min) || DateTime.now().toSeconds();
-    let weekAgo = DateTime.now().minus({weeks:1}).toSeconds() + userIds[userid].time_offset || DateTime.now().minus({weeks:1}).toSeconds();
+    var timestamp = parseInt((await helper.dbQueryPromise(`SELECT MIN(timestamp) FROM matches WHERE user_id = '${userIds[userid].acti_id}';`))[0].min) || DateTime.now().toSeconds();
+    var weekAgo = DateTime.now().minus({weeks:1}).toSeconds() + userIds[userid].time_offset || DateTime.now().minus({weeks:1}).toSeconds();
 
     while (timestamp > weekAgo) {
-      let data = (await date20(encodeURIComponent(userIds[userid].acti_id), userIds[userid].platform, timestamp)).matches;
-      for (let i = 0; i < data.length; i++) {
+      var data = (await date20(encodeURIComponent(userIds[userid].acti_id), userIds[userid].platform, timestamp)).matches;
+      for (var i = 0; i < data.length; i++) {
         timestamp = data[i].utcStartSeconds; 
         if (timestamp < weekAgo) break;
 
@@ -2849,28 +2849,28 @@ async function weekMatches(userid) {
 async function updateMatches() {
   idArray = [];
   try {
-    let onTwitch = await helper.dbQueryPromise(`SELECT * FROM allusers WHERE matches = true;`);
-    for (let i = 0; i < onTwitch.length; i++) {
+    var onTwitch = await helper.dbQueryPromise(`SELECT * FROM allusers WHERE matches = true;`);
+    for (var i = 0; i < onTwitch.length; i++) {
       if (userIds[onTwitch[i].user_id].matches && userIds[onTwitch[i].user_id].twitch && onTwitch[i].user_id !== 'zhekler' && (!online[onTwitch[i].user_id] || Date.now() > online[onTwitch[i].user_id])) {
         setTimeout(async () => {
           try {
             // Get time from a week ago and set base timestamp.
             console.log("Updating matches for " + userIds[onTwitch[i].user_id].acti_id);
             
-            let weekAgo = (DateTime.now().minus({weeks:1}).toSeconds() + userIds[onTwitch[i].user_id].time_offset) || DateTime.now().minus({weeks:1}).toSeconds();
-            let lastTimestamp = 0;
+            var weekAgo = (DateTime.now().minus({weeks:1}).toSeconds() + userIds[onTwitch[i].user_id].time_offset) || DateTime.now().minus({weeks:1}).toSeconds();
+            var lastTimestamp = 0;
             
             // Clear matches which are older than a week.
             helper.dbQuery(`DELETE FROM matches WHERE timestamp < ${weekAgo} AND user_id = '${onTwitch[i].acti_id}';`);
             
             // If match cache for this user is empty, set it.
-            let rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${userIds[onTwitch[i].user_id].acti_id}' ORDER BY timestamp DESC;`);
+            var rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${userIds[onTwitch[i].user_id].acti_id}' ORDER BY timestamp DESC;`);
             
             // Update timestamp of last match.
             lastTimestamp = rows.length?rows[0].timestamp:lastTimestamp;
             
             // Fetch last 20 matches for user from COD API.
-            let data;
+            var data;
             try { 
               data = await last20(encodeURIComponent(userIds[onTwitch[i].user_id].acti_id), userIds[onTwitch[i].user_id].platform); 
               if (!data) throw new Error('Matches undefined.');
@@ -2914,16 +2914,16 @@ async function update(matches, user, lastTimestamp) {
   try {
 
     // Declarations and base values.
-    let timestamp, match_id, placement, kills, deaths, lobby_kd, game_mode;
-    let gulag_kills = 0;
-    let gulag_deaths = 0;
-    let streak = 0;
-    let addStr = [];
+    var timestamp, match_id, placement, kills, deaths, lobby_kd, game_mode;
+    var gulag_kills = 0;
+    var gulag_deaths = 0;
+    var streak = 0;
+    var addStr = [];
 
     if (!matches) return;
-    for (let i = 0; i < matches.length; i++) {
+    for (var i = 0; i < matches.length; i++) {
 
-      let data = (await apiAxios.get(`https://app.wzstats.gg/v2/?matchId=${matches[i].matchID}`)).data;
+      var data = (await apiAxios.get(`https://app.wzstats.gg/v2/?matchId=${matches[i].matchID}`)).data;
       lobby_kd = data.matchStatData.playerAverage?data.matchStatData.playerAverage:0;
 
       timestamp = matches[i].utcStartSeconds;
@@ -2965,11 +2965,11 @@ async function update(matches, user, lastTimestamp) {
       }
       
       // Get all players for this match.
-      let players = data.data.players || [];
+      var players = data.data.players || [];
       
       // Find user's team name.
-      let teamName = '';
-      for (let j = 0; j < players.length; j++) {
+      var teamName = '';
+      for (var j = 0; j < players.length; j++) {
         if (players[j].playerMatchStat.player.uno === user.uno_id) {
           teamName = players[j].playerMatchStat.player.team;
           break;
@@ -2977,10 +2977,10 @@ async function update(matches, user, lastTimestamp) {
       }
       
       // Teammates?
-      let teammates = [];
-      for (let j = 0; j < players.length; j++) {
+      var teammates = [];
+      for (var j = 0; j < players.length; j++) {
         if (players[j].playerMatchStat.player.team === teamName && players[j].playerMatchStat.player.uno !== user.uno_id) {
-          let player = { 
+          var player = { 
             name: players[j].playerMatchStat.player.username, 
             kills: players[j].playerMatchStat.playerStats.kills, 
             deaths: players[j].playerMatchStat.playerStats.deaths 
@@ -3023,18 +3023,18 @@ const MESSAGE_TYPE_REVOCATION = 'revocation';
 const HMAC_PREFIX = 'sha256=';
 
 // Message IDs.
-let idArray = [], intArray = {};
+var idArray = [], intArray = {};
 
 
 app.post('/eventsub', (req, res) => {
-  let secret = getSecret();
-  let message = getHmacMessage(req);
-  let hmac = HMAC_PREFIX + getHmac(secret, message);  // Signature to compare
+  var secret = getSecret();
+  var message = getHmacMessage(req);
+  var hmac = HMAC_PREFIX + getHmac(secret, message);  // Signature to compare
 
   if (true === verifyMessage(hmac, req.headers[TWITCH_MESSAGE_SIGNATURE])) {
 
     // Get JSON object from body, so you can process the message.
-    let notification = req.body;
+    var notification = req.body;
     
     if (idArray.includes(req.get(TWITCH_MESSAGE_ID))) {
       console.log("Duplicate event message.");
@@ -3045,11 +3045,11 @@ app.post('/eventsub', (req, res) => {
     } else {
       idArray.push(req.get(TWITCH_MESSAGE_ID));
       if (MESSAGE_TYPE_NOTIFICATION === req.headers[MESSAGE_TYPE]) {
-        let pred;
+        var pred;
         switch (notification.subscription.type) {
           case "channel.prediction.begin":
             pred = notification.event.title;
-            let time = ((new Date(notification.event.locks_at)).getTime() - (new Date(notification.event.started_at)).getTime())/1000;
+            var time = ((new Date(notification.event.locks_at)).getTime() - (new Date(notification.event.started_at)).getTime())/1000;
             say(notification.event.broadcaster_user_login, `NEW PREDICTION peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time} SECONDS peepoGamble DinkDonk 
               NEW PREDICTION peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time} SECONDS`);
             if (time >= 60) {
@@ -3062,16 +3062,16 @@ app.post('/eventsub', (req, res) => {
             break;
 
           case "channel.prediction.end": 
-            let outcome;
-            for (let i = 0; i < notification.event.outcomes.length; i++) {
+            var outcome;
+            for (var i = 0; i < notification.event.outcomes.length; i++) {
               if (notification.event.winning_outcome_id === notification.event.outcomes[i].id) {
                 outcome = notification.event.outcomes[i];
                 break;
               }
             }
             if (outcome) {
-              let result = outcome.title;
-              let topBetter = outcome.top_predictors[0];
+              var result = outcome.title;
+              var topBetter = outcome.top_predictors[0];
               say(notification.event.broadcaster_user_login, `Prediction over! The result was '${result}'! ${topBetter.user_name?topBetter.user_name:topBetter.user_login} won ${topBetter.channel_points_won} points!`);
             } else {
               if (intArray[notification.event.broadcaster_user_login]) {
@@ -3084,8 +3084,8 @@ app.post('/eventsub', (req, res) => {
 
           case "channel.prediction.lock":
             pred = notification.event.title;
-            let points = 0;
-            for (let i = 0; i < notification.event.outcomes.length; i++) {
+            var points = 0;
+            for (var i = 0; i < notification.event.outcomes.length; i++) {
               points += notification.event.outcomes[i].channel_points?notification.event.outcomes[i].channel_points:0;
             }
             if (intArray[notification.event.broadcaster_user_login]) {
@@ -3158,7 +3158,7 @@ function verifyMessage(hmac, verifySignature) {
 
 
 // Intervals.
-let intervals = [];
+var intervals = [];
 
 
 // Authenticate with Twitch API.
@@ -3235,7 +3235,7 @@ async function brookescribers() {
 
     // Get Unix timestamp from 6 hours ago.
     
-    let sixAgo = DateTime.now().setZone('America/Denver').minus({hours:6}).toMillis()/1000;
+    var sixAgo = DateTime.now().setZone('America/Denver').minus({hours:6}).toMillis()/1000;
 
       // Get BrookeAB's last 20 followers.
       await symAxios.get('https://api.twitch.tv/helix/users/follows?to_id=214560121')
@@ -3243,23 +3243,23 @@ async function brookescribers() {
         try {
           // Pull most recent follower from database.
           helper.dbQuery(`DELETE FROM brookescribers WHERE created_at < ${sixAgo};`);
-          let fRes = await helper.dbQueryPromise(`SELECT user_id FROM brookescribers;`);
-          let fLast = []
-          for (let i = 0; i < fRes.length; i++) fLast.push(fRes[i].user_id);
+          var fRes = await helper.dbQueryPromise(`SELECT user_id FROM brookescribers;`);
+          var fLast = []
+          for (var i = 0; i < fRes.length; i++) fLast.push(fRes[i].user_id);
 
           // Set up temp storage.
-          let temp = resp.data.data;
-          let them = [];
+          var temp = resp.data.data;
+          var them = [];
           // Iterate through recent followers.
-          for (let i = 0; i < temp.length; i++) {
+          for (var i = 0; i < temp.length; i++) {
 
             // If follower is more recent than those in the database and followed within six hours, check it's creation date.
-            let followed = (new Date(temp[i].followed_at)).getTime()/1000;
+            var followed = (new Date(temp[i].followed_at)).getTime()/1000;
             if (followed > sixAgo) {
               await symAxios.get(`https://api.twitch.tv/helix/users?id=${temp[i].from_id}`)
               .then(res2 => {
                 if (res2.data.data[0]) {
-                  let created = (new Date(res2.data.data[0].created_at)).getTime()/1000;
+                  var created = (new Date(res2.data.data[0].created_at)).getTime()/1000;
                   if (created > sixAgo && !fLast.includes(res2.data.data[0].login)) {
                     them.push(`('${res2.data.data[0].login}', ${followed}, ${created})`);
                   }
@@ -3307,8 +3307,8 @@ async function brookescribers() {
     await loginWithSSO(process.env.COD_SSO);
 
     // // Populate match cache and initialize userIds map.
-    let temp = await helper.dbQueryPromise(`SELECT * FROM allusers;`);
-    for (let i = 0; i < temp.length; i++) {
+    var temp = await helper.dbQueryPromise(`SELECT * FROM allusers;`);
+    for (var i = 0; i < temp.length; i++) {
       userIds[temp[i].user_id] = temp[i];
       if (temp[i].twitch) {
         // @ts-ignore
@@ -3359,7 +3359,7 @@ async function brookescribers() {
   } catch (err) {
 
     // Clear intervals.
-    for (let i = 0; i < intervals.length; i++) {
+    for (var i = 0; i < intervals.length; i++) {
       clearInterval(intervals[i]);
     }
 
