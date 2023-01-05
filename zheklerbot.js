@@ -2203,7 +2203,7 @@ app.get('/send/:channel/:hKills/:tKills/:o1Kills/:o2Kills', async (request, resp
     var cookies = request.cookies, rows;
     if (cookies["auth"]) {
       rows = await helper.checkBearer(cookies["auth"]);
-      if ((!rows[0] || !rows[1].perms || rows[1].perms.split(',').includes(request.params.channel)) && rows[1].userid !== request.params.channel) {
+      if ((!rows[0] || !rows[1].perms || !rows[1].perms.split(',').includes(request.params.channel)) && rows[1].userid !== request.params.channel) {
         response.status(401);
         response.redirect('/');
         return;
