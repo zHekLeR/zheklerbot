@@ -1187,7 +1187,8 @@ app.get('/', async (request, response) => {
     }).then(async res => {
       if (res.status === 200) {
         var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
-        if (!rows) {
+        console.log(rows);
+        if (!rows[0]) {
           helper.dbQuery(`UPDATE permissions SET bearer = '' WHERE bearer = '${cookies["auth"]}';`);
           response.clearCookie('auth', {
             'domain': '.zhekbot.com',
