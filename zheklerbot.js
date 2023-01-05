@@ -1347,6 +1347,25 @@ app.get('/commands/:channel', async (request, response) => {
       page = fs.readFileSync("./html/commands.html").toString('utf-8');
       page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
       page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
+
+      var cookies = await request.cookies;
+      if (cookies["auth"]) {
+        page = page.replace('Login to Twitch', 'Logout of Twitch');
+        page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
+        page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
+        page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
+        page = page.replace(/#editors#/g, `href="/editors/${request.params.channel.toLowerCase()}"`);
+        page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel.toLowerCase()}"`);
+        page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
+      } else {
+        page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
+        page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
+        page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
+        page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
+        page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
+        page = page.replace(/#channel#/g, 'zhekler');
+      }
+      
       page = page.replace("var tabsEnabled = {}", `var tabsEnabled = {
         'Warzone Stats / Matches': ${userIds[request.params.channel.toLowerCase()].matches},
         'Revolver Roulette': ${userIds[request.params.channel.toLowerCase()].revolverroulette},
@@ -1361,23 +1380,7 @@ app.get('/commands/:channel', async (request, response) => {
       response.status(404);
       page = fs.readFileSync("./html/not_found.html").toString('utf-8');
     }
-    var cookies = await request.cookies;
-    if (cookies["auth"]) {
-      page = page.replace('Login to Twitch', 'Logout of Twitch');
-      page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
-      page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
-      page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
-      page = page.replace(/#editors#/g, `href="/editors/${request.params.channel.toLowerCase()}"`);
-      page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel.toLowerCase()}"`);
-      page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
-    } else {
-      page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
-      page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
-      page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
-      page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
-      page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
-      page = page.replace(/#channel#/g, 'zhekler');
-    }
+
   } catch (err) {
     helper.dumpError(err, "Commands page.");
     response.sendStatus(500);
