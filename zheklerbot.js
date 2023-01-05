@@ -1234,14 +1234,13 @@ app.get('/', async (request, response) => {
       response.send(page); 
     }
   } catch (err) {
-    helper.removeBearer(cookies["auth"], rows[1].userid);
     response.clearCookie('auth', {
       'domain': '.zhekbot.com',
       secure: true,
       httpOnly: true
     });
+    response.status(500);
     response.redirect('/');
-    response.sendStatus(500);
   }
 });
 
