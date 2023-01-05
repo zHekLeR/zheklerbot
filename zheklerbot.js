@@ -1306,8 +1306,9 @@ app.get('/edit/:channel', async (request, response) => {
     var cookies = request.cookies;
     if (cookies["auth"]) {
       let bearer = await helper.checkBearer(cookies["auth"]);
+      console.log(bearer);
       if (!bearer[0] || !bearer[1].perms || bearer[1].perms.split(',').includes(request.params.channel)) {
-        response.sendStatus(401);
+        response.status(401);
         response.redirect('/');
         return;
       }
