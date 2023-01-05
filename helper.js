@@ -100,4 +100,85 @@ function dumpError(err, where) {
   }
 
 
-  export { discord, dbQuery, dbQueryPromise, dumpError };
+  // Check auth cookie.
+  async function checkBearer(bearer) {
+    try {
+      var rows = await dbQueryPromise(`SELECT * FROM permissions WHERE bearer LIKE '%${bearer}%';`);
+      if (!rows.length) {
+        return [false, {}];
+      } else if (rows.length === 1) {
+        if (rows[0].userid !== request.params.channel.toLowerCase()) {
+          return [false, {}];
+        } 
+      } else {
+        for (var i = 0; i < rows.length; i++) {
+          if (rows[i].bearer === bearer) {
+            return [true, rows[i]];
+          } else {
+            var bearers = rows[i].bearer.split(',');
+            if (bearers.includes(bearer)) {
+              return [true, rows[i]];
+            } else continue;
+          }
+        }
+      }
+      return [false, {}];
+    } catch (err) {
+      dumpError(err, "Check bearer.");
+      return [false, {}];
+    }
+  }
+
+
+  // Add auth cookie.
+  async function addBearer(bearer, userid) {
+    try {
+      var rows = await dbQueryPromise(`SELECT * FROM permissions WHERE userid = '${userid}';`);
+      if (!rows[0]) {
+        dbQuery(`INSERT INTO permissions(userid, bearer) VALUES ('${userid}', '${bearer}');`);
+      } else {
+        if (!rows[0].bearer) {
+          dbQuery(`UPDATE permissions SET bearer = '${bearer}' WHERE userid = '${userid}';`);
+        } else {
+          dbQuery(`UPDATE permissions SET bearer = '${rows[0].bearer + ',' + bearer}' WHERE userid = '${userid}';`);
+        }
+      }
+      return true; 
+    } catch (err) {
+      dumpError(err, "Add bearer.");
+      return false;
+    }
+  }
+
+
+  // Remove auth cookie.
+  async function removeBearer(bearer, userid) {
+    try {
+      var rows = await dbQueryPromise(`SELECT * FROM permissions WHERE userid = '${userid}';`);
+      if (rows[0] && rows[0].bearer) {
+        var bearers = rows[0].bearer.split(',');
+        if (bearers.length === 1 && bearers[0] === bearer) {
+          dbQuery(`UPDATE permissions SET bearer = '' WHERE userid = '${userid}';`);
+          return true;
+        } else if (bearers.length > 1) {
+          var found = false;
+          for (var i = 0; i < bearers.length; i++) {
+            if (bearers[i] === bearer) {
+              found = true;
+              bearers = bearers.splice(i, 1);
+              dbQuery(`UPDATE permissions SET bearer = '${bearers.join(',')}' WHERE userid = '${userid}';`);
+              break;
+            }
+          }
+          return found;
+        }
+      }
+      return false;
+    } catch (err) {
+      dumpError(err, "Remove bearer.");
+      return false;
+    }
+  }
+
+
+  export { discord, dbQuery, dbQueryPromise, dumpError, checkBearer, addBearer, removeBearer };
