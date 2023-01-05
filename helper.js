@@ -127,7 +127,7 @@ function dumpError(err, where) {
 
 
   // Add auth cookie.
-  async function addBearer(bearer, userid) {
+  async function addBearer(userid, bearer) {
     try {
       var rows = await dbQueryPromise(`SELECT * FROM permissions WHERE userid = '${userid}';`);
       if (!rows[0]) {
@@ -139,8 +139,6 @@ function dumpError(err, where) {
           dbQuery(`UPDATE permissions SET bearer = '${rows[0].bearer + ',' + bearer}' WHERE userid = '${userid}';`);
         }
       }
-      console.log(rows);
-      console.log(bearer);
       return true; 
     } catch (err) {
       dumpError(err, "Add bearer.");
