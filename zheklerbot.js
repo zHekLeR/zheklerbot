@@ -2894,7 +2894,7 @@ async function updateMatches() {
 
           
           } catch (err) {
-            helper.dumpError(err, `Updating matches.`);
+            helper.dumpError(err, `Updating matches: ${onTwitch[i]}`);
             return; 
           }
         }, i*10000);
