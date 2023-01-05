@@ -1838,6 +1838,28 @@ app.get('/login', async (request, response) => {
 });
 
 
+// Logout.
+app.get('/logout', async (request, response) => {
+  try {
+    let cookies = request.cookies;
+    if (cookies["auth"]) {
+      helper.dbQuery(`UPDATE permissions SET bearer = '' WHERE bearer = '${cookies["auth"]}';`);
+      response.clearCookie('auth', {
+        'domain': '.zhekbot.com',
+        secure: true,
+        httpOnly: true
+      });
+      response.sendStatus(201);
+      return;
+    }
+    response.sendStatus(401);
+  } catch (err) {
+    helper.dumpError(err, "Logout");
+    response.sendStatus(500);
+  }
+});
+
+
 // Verify state.
 app.get('/verify', (request, response) => {
   try {
