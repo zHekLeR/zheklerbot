@@ -1667,8 +1667,6 @@
       var url = `https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=${client_id}&force_verify=true&redirect_uri=https://www.zhekbot.com/redirect&scope=&state=${state}`;
 
       async function twitch() {
-
-        async function twitch() {
         await fetch(`/login`, {
           headers: {
             "state": state
@@ -1687,7 +1685,6 @@
           console.log(err);
           alert(err);
         });
-
       };
 
       // Random string.
@@ -1700,7 +1697,6 @@
         }
         return result;
       }
-    }
     </script>
   </body>
 </html>
