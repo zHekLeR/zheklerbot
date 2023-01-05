@@ -613,7 +613,7 @@
                 target="_blank"
               >
                 <img src="/images/Twitch.png" style="padding: 0vh 0.2vw; display: inline-block; max-width: 12%; height: auto; vertical-align: middle;">
-                Login to Twitch
+                Logout of Twitch
               </a>
             </div>
             
@@ -3127,18 +3127,9 @@
 
         
       async function twitch() {
-        let state = makeid(20);
-        let url = "https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=#CLIENT_ID#&force_verify=true&redirect_uri=https://www.zhekbot.com/redirect&scope=&state=" + state;
-        
-        await fetch(`/login`, {
-          headers: {
-            "state": state
-          }
-        })
+        await fetch(`/out`)
         .then(res => {
-          if (res.status === 200) {
-            window.location.href = url;
-          } else if (res.status === 201) {
+          if (res.status === 201) {
             window.location.href = "/";
           } else {
             throw new Error("Unknown status code on /login: " + res.status);

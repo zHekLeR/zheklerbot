@@ -1177,7 +1177,7 @@ app.use(favicon(path.join(__dirname, 'images/favicon.ico')));
 
 // Home page.
 app.get('/', async (request, response) => {
-  let cookies = request.cookies;
+  let cookies = await request.cookies;
   let page;
   if (cookies["auth"]) {
     await axios.get('https://id.twitch.tv/oauth2/validate', {
@@ -1193,7 +1193,7 @@ app.get('/', async (request, response) => {
         page = page.replace(/#channel#/g, userIds[rows[0].userid].user_id);
         page = page.replace(/#checked#/g, userIds[rows[0].userid].twitch?'checked':'');
         page = page.replace('Login to Twitch', 'Logout of Twitch');
-        page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
+        page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
         if (userIds[rows[0].userid].twitch) page = page.replace('let enabled = false', 'let enabled = true');
         response.send(page); 
       } else {
@@ -1238,7 +1238,7 @@ app.get('/enable/:channel', async (request, response) => {
       return;
     }
     
-    let cookies = request.cookies;
+    let cookies = await request.cookies;
     if (cookies["auth"]) {
       let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
@@ -1340,44 +1340,49 @@ app.get('/edit/:channel', async (request, response) => {
 
 
 // Commands page.
-app.get('/commands/:channel', (request, response) => {
-  let page;
-  if (Object.keys(userIds).includes(request.params.channel.toLowerCase())) {
-    page = fs.readFileSync("./html/commands.html").toString('utf-8');
-    page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
-    page = page.replace("let tabsEnabled = {}", `let tabsEnabled = {
-      'Warzone Stats / Matches': ${userIds[request.params.channel.toLowerCase()].matches},
-      'Revolver Roulette': ${userIds[request.params.channel.toLowerCase()].revolverroulette},
-      'Coinflip': ${userIds[request.params.channel.toLowerCase()].coinflip},
-      'Rock Paper Scissors': ${userIds[request.params.channel.toLowerCase()].rps},
-      'Big Vanish': ${userIds[request.params.channel.toLowerCase()].bigvanish},
-      'Custom Tourney': ${userIds[request.params.channel.toLowerCase()].customs},
-      'Two vs Two': ${userIds[request.params.channel.toLowerCase()]["two_v_two"]},
-      'Duel': ${userIds[request.params.channel.toLowerCase()].duel}
-    }`);
-  } else {
-    response.status(404);
-    page = fs.readFileSync("./html/not_found.html").toString('utf-8');
+app.get('/commands/:channel', async (request, response) => {
+  try {
+    let page;
+    if (Object.keys(userIds).includes(request.params.channel.toLowerCase())) {
+      page = fs.readFileSync("./html/commands.html").toString('utf-8');
+      page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
+      page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
+      page = page.replace("let tabsEnabled = {}", `let tabsEnabled = {
+        'Warzone Stats / Matches': ${userIds[request.params.channel.toLowerCase()].matches},
+        'Revolver Roulette': ${userIds[request.params.channel.toLowerCase()].revolverroulette},
+        'Coinflip': ${userIds[request.params.channel.toLowerCase()].coinflip},
+        'Rock Paper Scissors': ${userIds[request.params.channel.toLowerCase()].rps},
+        'Big Vanish': ${userIds[request.params.channel.toLowerCase()].bigvanish},
+        'Custom Tourney': ${userIds[request.params.channel.toLowerCase()].customs},
+        'Two vs Two': ${userIds[request.params.channel.toLowerCase()]["two_v_two"]},
+        'Duel': ${userIds[request.params.channel.toLowerCase()].duel}
+      }`);
+    } else {
+      response.status(404);
+      page = fs.readFileSync("./html/not_found.html").toString('utf-8');
+    }
+    let cookies = await request.cookies;
+    if (cookies["auth"]) {
+      page = page.replace('Login to Twitch', 'Logout of Twitch');
+      page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
+      page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
+      page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
+      page = page.replace(/#editors#/g, `href="/editors/${request.params.channel.toLowerCase()}"`);
+      page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel.toLowerCase()}"`);
+      page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
+    } else {
+      page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#channel#/g, 'zhekler');
+    }
+    response.send(page);
+  } catch (err) {
+    helper.dumpError(err, "Commands page.");
+    response.sendStatus(500);
   }
-  let cookies = request.cookies;
-  if (cookies["auth"]) {
-    page = page.replace('Login to Twitch', 'Logout of Twitch');
-    page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
-    page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
-    page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
-    page = page.replace(/#editors#/g, `href="/editors/${request.params.channel.toLowerCase()}"`);
-    page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel.toLowerCase()}"`);
-    page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
-  } else {
-    page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
-    page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
-    page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
-    page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
-    page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
-    page = page.replace(/#channel#/g, 'zhekler');
-  }
-  page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
-  response.send(page);
 });
 
 
@@ -1390,7 +1395,7 @@ app.get('/editors/:channel', async (request, response) => {
       return;
     }
     
-    let cookies = request.cookies;
+    let cookies = await request.cookies;
     if (cookies["auth"]) {
       let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || rows[0].userid !== request.params.channel.toLowerCase()) {
@@ -1590,7 +1595,7 @@ app.get('/modules/:channel', async (request, response) => {
     };`);
     page = page.replace(/#acti#/g, userIds[request.params.channel.toLowerCase()] && userIds[request.params.channel.toLowerCase()].acti_id?userIds[request.params.channel.toLowerCase()].acti_id:'Activision ID'); 
     page = page.replace(/#pref_name#/g, userIds[request.params.channel.toLowerCase()].pref_name || '');
-    page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
+    page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
 
     response.send(page);
   } catch (err) {
