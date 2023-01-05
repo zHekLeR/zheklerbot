@@ -3689,22 +3689,22 @@
                         <a href="/" data-animation-role="header-element"> Home </a>
                       </div>
                       <div class="header-nav-item header-nav-item--collection">
-                        <a href="/commands" data-animation-role="header-element"> Commands </a>
+                        <a href="/commands/#channel#" data-animation-role="header-element"> Commands </a>
                       </div>
                       <div class="header-nav-item header-nav-item--collection">
-                        <a href="/modules" data-animation-role="header-element"> Modules </a>
+                        <a href="/modules/#channel#" data-animation-role="header-element"> Modules </a>
                       </div>
                       <div class="header-nav-item header-nav-item--collection">
-                        <a href="/twovtwo" data-animation-role="header-element"> Two vs Two </a>
+                        <a href="/twovtwo/#channel#" data-animation-role="header-element"> Two vs Two </a>
                       </div>
                       <div class="header-nav-item header-nav-item--collection header-nav-item--active">
-                        <a href="/customs" data-animation-role="header-element" aria-current="page"> Customs </a>
+                        <a href="/customs/#channel#" data-animation-role="header-element" aria-current="page"> Customs </a>
                       </div>
                       <div class="header-nav-item header-nav-item--collection">
-                        <a href="/editors" data-animation-role="header-element"> Editors </a>
+                        <a href="/editors/#channel#" data-animation-role="header-element"> Editors </a>
                       </div>
                       <div class="header-nav-item header-nav-item--collection">
-                        <a href="/permissions" data-animation-role="header-element"> My Permissions </a>
+                        <a href="/permissions/#channel#" data-animation-role="header-element"> My Permissions </a>
                       </div>
                     </nav>
                   </div>
@@ -3926,32 +3926,32 @@
                     </a>
                   </div>
                   <div class="container header-menu-nav-item header-menu-nav-item--collection">
-                    <a href="/commands">
+                    <a href="/commands/#channel#">
                       <div class="header-menu-nav-item-content"> Commands </div>
                     </a>
                   </div>
                   <div class="container header-menu-nav-item header-menu-nav-item--collection">
-                    <a href="/modules">
+                    <a href="/modules/#channel#">
                       <div class="header-menu-nav-item-content"> Modules </div>
                     </a>
                   </div>
                   <div class="container header-menu-nav-item header-menu-nav-item--collection">
-                    <a href="/twovtwo">
+                    <a href="/twovtwo/#channel#">
                       <div class="header-menu-nav-item-content"> Two vs Two </div>
                     </a>
                   </div>
                   <div class="container header-menu-nav-item header-menu-nav-item--collection header-menu-nav-item--active">
-                    <a href="/customs" aria-current="page">
+                    <a href="/customs/#channel#" aria-current="page">
                       <div class="header-menu-nav-item-content"> Customs </div>
                     </a>
                   </div>
                   <div class="container header-menu-nav-item header-menu-nav-item--collection">
-                    <a href="/editors">
+                    <a href="/editors/#channel#">
                       <div class="header-menu-nav-item-content"> Editors </div>
                     </a>
                   </div>
                   <div class="container header-menu-nav-item header-menu-nav-item--collection">
-                    <a href="/permissions">
+                    <a href="/permissions/#channel#">
                       <div class="header-menu-nav-item-content"> My Permissions </div>
                     </a>
                   </div>
@@ -3966,7 +3966,13 @@
                   </div>
                 </div>
                 <div class="header-menu-cta">
-                  <a class="theme-btn--primary btn sqs-button-element--primary" href="https://id.twitch.tv/oauth2/authorize?client_id=%24%7Bprocess.env.CLIENT_ID%7D&amp;force_verify=true&amp;redirect_uri=https%3A%2F%2Fwww.zhekbot.com%2Fredirect&amp;response_type=token&amp;scope=&amp;state=%24%7Bstate%7D" target="_blank"> Twitch </a>
+                  <a 
+                  class="theme-btn--primary btn sqs-button-element--primary" 
+                  style="background-color: #9146ff;"
+                  onclick="twitch()"
+                  target="_blank"
+                >
+                  <img src="/images/Twitch.png" style="padding: 0vh 0.2vw; display: inline-block; max-width: 12%; height: auto; vertical-align: middle;"> Logout of Twitch </a>
                 </div>
               </div>
             </nav>

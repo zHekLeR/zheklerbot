@@ -1258,11 +1258,13 @@ app.get('/enable/:channel', async (request, response) => {
     if (cookies["auth"]) {
       var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
-        response.sendStatus(401);
+        response.status(401);
+        response.redirect('/');
         return;
       }
     } else {
-      response.sendStatus(401);
+      response.status(401);
+      response.redirect('/');
       return;
     }
 
@@ -1418,11 +1420,13 @@ app.get('/editors/:channel', async (request, response) => {
     if (cookies["auth"]) {
       var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || rows[0].userid !== request.params.channel.toLowerCase()) {
-        response.sendStatus(401);
+        response.status(401);
+        response.redirect('/');
         return;
       }
     } else {
-      response.sendStatus(401);
+      response.status(401);
+      response.redirect('/');
       return;
     }
 
@@ -1542,10 +1546,12 @@ app.get('/permissions/:channel', async (request, response) => {
       var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || rows[0].userid !== request.params.channel.toLowerCase()) {
         response.sendStatus(401);
+        response.redirect('/');
         return;
       }
     } else {
       response.sendStatus(401);
+      response.redirect('/');
       return;
     }
 
@@ -1592,10 +1598,12 @@ app.get('/modules/:channel', async (request, response) => {
       var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
       if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
         response.sendStatus(401);
+        response.redirect('/');
         return;
       }
     } else {
       response.sendStatus(401);
+      response.redirect('/');
       return;
     }
 
