@@ -1189,11 +1189,15 @@ app.get('/', async (request, response) => {
         var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
 
         page = fs.readFileSync('./html/page.html').toString('utf-8');
+        page = page.replace(/#modules#/g, `href="/modules/${rows[0].userid}"`);
+        page = page.replace(/#twovtwo#/g, `href="/twovtwo/${rows[0].userid}"`);
+        page = page.replace(/#customs#/g, `href="/customs/${rows[0].userid}"`);
+        page = page.replace(/#editors#/g, `href="/editors/${rows[0].userid}"`);
+        page = page.replace(/#permissions#/g, `href="/permissions/${rows[0].userid}"`);
         page = page.replace(/#pref_name#/g, userIds[rows[0].userid].pref_name)
         page = page.replace(/#channel#/g, userIds[rows[0].userid].user_id);
         page = page.replace(/#checked#/g, userIds[rows[0].userid].twitch?'checked':'');
         page = page.replace('Login to Twitch', 'Logout of Twitch');
-        page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
         if (userIds[rows[0].userid].twitch) page = page.replace('var enabled = false', 'var enabled = true');
         response.send(page); 
       } else {
@@ -1223,7 +1227,14 @@ app.get('/', async (request, response) => {
 
   } else {
     page = fs.readFileSync('./html/not_enabled.html').toString('utf-8');
-    page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
+    page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
+    page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
+    page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
+    page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
+    page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
+    page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
+    page = page.replace(/#channel#/g, 'zhekler');
+  
     response.send(page); 
   }
 });
@@ -1315,7 +1326,6 @@ app.get('/edit/:channel', async (request, response) => {
           page = page.replace(/#editors#/g, '');
           page = page.replace(/#checked#/g, userIds[request.params.channel.toLowerCase()].twitch?'checked':'');
           page = page.replace(/Login to Twitch/g, 'Logout of Twitch');
-          page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
 
           response.send(page);
         } else {
@@ -1346,7 +1356,6 @@ app.get('/commands/:channel', async (request, response) => {
     if (Object.keys(userIds).includes(request.params.channel.toLowerCase())) {
       page = fs.readFileSync("./html/commands.html").toString('utf-8');
       page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
-      page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
 
       var cookies = await request.cookies;
       if (cookies["auth"]) {
@@ -1364,8 +1373,9 @@ app.get('/commands/:channel', async (request, response) => {
         page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
         page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
         page = page.replace(/#channel#/g, 'zhekler');
+        page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
       }
-      
+
       page = page.replace("var tabsEnabled = {}", `var tabsEnabled = {
         'Warzone Stats / Matches': ${userIds[request.params.channel.toLowerCase()].matches},
         'Revolver Roulette': ${userIds[request.params.channel.toLowerCase()].revolverroulette},
@@ -1416,15 +1426,16 @@ app.get('/editors/:channel', async (request, response) => {
     var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE perms LIKE '%${request.params.channel}%';`);
 
     var str = '';
+
     for (var i = 0; i < rows.length; i++) {
       var perms = rows[i].perms.split(',');
       if (perms.includes(request.params.channel)) {
         str += `<tr><td style="padding: 2px; text-align: center;">${rows[i].userid}</td><td onclick="remove(this)" style="padding: 2px; text-align: center;"><a class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary">Remove</a></td></tr><tr>&emsp;</tr>`;
       }
     }
+
     page = page.replace(/#editors#/g, str);
     page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
-    page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
     page = page.replace(/Login to Twitch/g, "Logout of Twitch");
 
     response.send(page);
@@ -1535,7 +1546,6 @@ app.get('/permissions/:channel', async (request, response) => {
 
     var page = fs.readFileSync('./html/permissions.html').toString('utf-8');
     page = page.replace(/Login to Twitch/g, "Logout of Twitch");
-    page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
 
     var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
     page = page.replace(/#channel#/g, rows[0].userid);
@@ -1599,7 +1609,6 @@ app.get('/modules/:channel', async (request, response) => {
     };`);
     page = page.replace(/#acti#/g, userIds[request.params.channel.toLowerCase()] && userIds[request.params.channel.toLowerCase()].acti_id?userIds[request.params.channel.toLowerCase()].acti_id:'Activision ID'); 
     page = page.replace(/#pref_name#/g, userIds[request.params.channel.toLowerCase()].pref_name || '');
-    page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
 
     response.send(page);
   } catch (err) {
@@ -1793,7 +1802,7 @@ app.get('/newname/:channel', async (request, response) => {
       return;
     }
 
-    if (profanity.isProfane(request.get('pref_name') || '')) throw new Error('No profanity allowed.');
+    if (profanity.isProfane(request.get('pref_name') + '')) throw new Error('No profanity allowed.');
     userIds[request.params.channel].pref_name = request.get('pref_name');
 
     helper.dbQuery(`UPDATE allusers SET pref_name = '${request.get('pref_name')}' WHERE user_id = '${request.params.channel}';`);
@@ -1807,8 +1816,37 @@ app.get('/newname/:channel', async (request, response) => {
 
 
 // Redirect.
-app.get('/redirect', (request, response) => {
-  response.send(fs.readFileSync("./html/redirect.html").toString("utf-8"));
+app.get('/redirect', async (request, response) => {
+  try {
+    var page = fs.readFileSync("./html/redirect.html").toString("utf-8");
+
+    var cookies = await request.cookies;
+    if (cookies["auth"]) {
+      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${request.get('auth')}';`);
+      if (!rows[0]) throw new Error("No bearer in DB.");
+
+      page = page.replace('Login to Twitch', 'Logout of Twitch');
+      page = page.replace(/#modules#/g, `href="/modules/${rows[0].userid.toLowerCase()}"`);
+      page = page.replace(/#twovtwo#/g, `href="/twovtwo/${rows[0].userid.toLowerCase()}"`);
+      page = page.replace(/#customs#/g, `href="/customs/${rows[0].userid.toLowerCase()}"`);
+      page = page.replace(/#editors#/g, `href="/editors/${rows[0].userid.toLowerCase()}"`);
+      page = page.replace(/#permissions#/g, `href="/permissions/${rows[0].userid.toLowerCase()}"`);
+      page = page.replace(/#channel#/g, rows[0].userid.toLowerCase());
+    } else {
+      page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#channel#/g, 'zhekler');
+      page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
+    }
+
+    response.send(page);
+  } catch(err) {
+    helper.dumpError(err, "Redirect page.");
+    response.sendStatus(500);
+  }
 });
 
 
@@ -1981,7 +2019,6 @@ app.get('/twovtwo/:channel', async (request, response) => {
     page = page.replace(/Login to Twitch/g, "Logout of Twitch");
     page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
     page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
-    page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || "");
     response.send(page);
   } catch (err) {
     helper.dumpError(err, `2v2 overall.`);
@@ -2249,7 +2286,6 @@ app.get ('/customs/:channel', async (request, response) => {
     page = page.replace(/Login to Twitch/g, "Logout of Twitch");
     page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
     page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
-    page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
 
     var rows = await helper.dbQueryPromise(`SELECT * FROM customs WHERE user_id = '${request.params.channel}';`);
 
@@ -2804,20 +2840,39 @@ app.get('/twitch/bot', async (req, response) => {
 
 
 // Default not found page.
-app.get("*", (req, response) => {
-  response.status(404);
-  var page = fs.readFileSync("./html/not_found.html").toString('utf-8');
-  if (req.cookies["auth"]) {
-    page = page.replace('Login to Twitch', 'Logout of Twitch');
-    page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
-  } else {
-    page = page.replace('href="/modules"', 'style="color: grey; pointer-events: none;"');
-    page = page.replace('href="/twovtwo"', 'style="color: grey; pointer-events: none;"');
-    page = page.replace('href="/customs"', 'style="color: grey; pointer-events: none;"');
-    page = page.replace('href="/editors"', 'style="color: grey; pointer-events: none;"');
-    page = page.replace('href="/permissions"', 'style="color: grey; pointer-events: none;"');
+app.get("*", async (req, response) => {
+  try {
+    response.status(404);
+    var page = fs.readFileSync("./html/not_found.html").toString('utf-8');
+
+    let cookies = await req.cookies;
+
+    if (cookies["auth"]) {
+      page = page.replace('Login to Twitch', 'Logout of Twitch');
+
+      let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${req.get('auth')}';`);
+      if (!rows[0]) throw new Error("No bearer in DB.");
+
+      page = page.replace('Login to Twitch', 'Logout of Twitch');
+      page = page.replace(/#modules#/g, `href="/modules/${rows[0].userid.toLowerCase()}"`);
+      page = page.replace(/#twovtwo#/g, `href="/twovtwo/${rows[0].userid.toLowerCase()}"`);
+      page = page.replace(/#customs#/g, `href="/customs/${rows[0].userid.toLowerCase()}"`);
+      page = page.replace(/#editors#/g, `href="/editors/${rows[0].userid.toLowerCase()}"`);
+      page = page.replace(/#permissions#/g, `href="/permissions/${rows[0].userid.toLowerCase()}"`);
+      page = page.replace(/#channel#/g, rows[0].userid.toLowerCase());
+    } else {
+      page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#channel#/g, 'zhekler');
+      page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
+    }
+    response.send(page);
+  } catch (err) {
+    helper.dumpError(err, "Unknown page.");
   }
-  response.send(page);
 });
 
 
