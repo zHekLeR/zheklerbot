@@ -2282,52 +2282,51 @@
   }
 
 </style><div class="fe-block fe-block-yui_3_17_2_1_1672706097558_742444"><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-yui_3_17_2_1_1672706097558_742444" style="text-align: center;">   
-  <h1>#Placeholder#'s 2v2 Counter</h1>
   <div>&emsp;&emsp;
       <button id="send" onclick="sendScore()">Send Scores</button>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
       Respond to !score
   </div>
   <div>
       <input id='hName' type="text" readonly="true" value="#channel#" size="8" style="text-align:center;">
-      Kills: 
-      <button class="change" onclick="add('hKills')">+</button> 
+      Kills:  
+      <button class="change" onclick="sub('hKills')">-</button>
       <span id="hKills">0</span> 
-      <button class="change" onclick="sub('hKills')">-</button>&ensp;
+      <button class="change" onclick="add('hKills')">+</button>&ensp;
       <input type="checkbox" id="hStatus" class="hName" onclick="upStatus('hName')">&ensp;
       <label for="hStatus">Enabled</label>
   </div>
   <div>
       <input type="text" id="tName" placeholder="Teammate" size="8" style="text-align:center;"> 
       Kills: 
-      <button class="change" onclick="add('tKills')">+</button> 
+      <button class="change" onclick="sub('tKills')">-</button>
       <span id="tKills">0</span> 
-      <button class="change" onclick="sub('tKills')">-</button>&ensp;
+      <button class="change" onclick="add('tKills')">+</button> &ensp;
       <input type="checkbox" id="tStatus" class="tName" onclick="upStatus('tName')">&ensp;
       <label for="tStatus">Enabled</label>
   </div>
   <div>
       <input type="text" id="o1Name" placeholder="Opponent 1" size="8" style="text-align:center;">
-      Kills: 
-      <button class="change" onclick="add('o1Kills')">+</button> 
+      Kills:  
+      <button class="change" onclick="sub('o1Kills')">-</button>
       <span id="o1Kills">0</span> 
-      <button class="change" onclick="sub('o1Kills')">-</button>&ensp;
+      <button class="change" onclick="add('o1Kills')">+</button>&ensp;
       <input type="checkbox" id="o1Status" class="o1Name" onclick="upStatus('o1Name')">&ensp;
       <label for="o1Status">Enabled</label>
   </div>
   <div><input type="text" id="o2Name" placeholder="Opponent 2" size="8" style="text-align:center;">
-      Kills: 
-      <button class="change" onclick="add('o2Kills')">+</button> 
+      Kills:  
+      <button class="change" onclick="sub('o2Kills')">-</button>
       <span id="o2Kills">0</span> 
-      <button class="change" onclick="sub('o2Kills')">-</button>&ensp;
+      <button class="change" onclick="add('o2Kills')">+</button>&ensp;
       <input type="checkbox" id="o2Status" class="o2Name" onclick="upStatus('o2Name')">&ensp;
       <label for="o2Status">Enabled</label>
   </div><br>
-  <div><button onclick="reset()">Reset All</button></div>
+  <div><button onclick="reset()">Reset All</button></div><br>
   <div>
       Map Reset (carry scores over): 
-      <button class="change" onclick="mapreset(1)">+</button> 
-      <button class="change" onclick="mapreset(0)" style="text-align: center; width: 60px;">Zero</button>
       <button class="change" onclick="mapreset(-1)">-</button>
+      <button class="change" onclick="mapreset(0)" style="text-align: center; width: 60px;">Zero</button>
+      <button class="change" onclick="mapreset(1)">+</button> 
       <span id="updown" style="display: inline-block; font-size: auto; width: 75px;">-</span> 
   </div>
   <br><br>
