@@ -1099,7 +1099,6 @@ function loginWithSSO (sso) {
           console.log(response);
           var authHeader = response.data.authHeader;
           var fakeXSRF = "68e8b62e-1d9d-4ce1-b93f-cbe5ff31a041";
-          // apiAxios.defaults.headers.common.Authorization = `bearer ${authHeader}`;
           apiAxios.defaults.headers.common.x_cod_device_id = `${deviceId}`;
           apiAxios.defaults.headers.common["X-XSRF-TOKEN"] = fakeXSRF;
           apiAxios.defaults.headers.common["X-CSRF-TOKEN"] = fakeXSRF;
@@ -1180,25 +1179,16 @@ app.get('/', async (request, response) => {
   var cookies = await request.cookies;
   var page;
   if (cookies["auth"]) {
+    var rows = await helper.checkBearer(cookies["auth"]);
+    if (!rows[0]) throw new Error("No bearer in DB - 401.");
+
     await axios.get('https://id.twitch.tv/oauth2/validate', {
       headers: {
         "Authorization": `Bearer ${cookies["auth"]}`
       }
     }).then(async res => {
-      if (res.status === 200) {
-        var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
-        console.log(rows);
-        if (!rows[0]) {
-          helper.dbQuery(`UPDATE permissions SET bearer = '' WHERE bearer = '${cookies["auth"]}';`);
-          response.clearCookie('auth', {
-            'domain': '.zhekbot.com',
-            secure: true,
-            httpOnly: true
-          });
-          response.redirect('/');
-          return;
-        }
 
+      if (res.status === 200) {
         page = fs.readFileSync('./html/page.html').toString('utf-8');
         page = page.replace(/#modules#/g, `href="/modules/${rows[0].userid}"`);
         page = page.replace(/#twovtwo#/g, `href="/twovtwo/${rows[0].userid}"`);
@@ -1212,7 +1202,7 @@ app.get('/', async (request, response) => {
         if (userIds[rows[0].userid].twitch) page = page.replace('var enabled = false', 'var enabled = true');
         response.send(page); 
       } else {
-        helper.dbQuery(`UPDATE permissions SET bearer = '' WHERE bearer = '${cookies["auth"]}';`);
+        helper.removeBearer(cookies["auth"], rows[0].userid);
         response.clearCookie('auth', {
           'domain': '.zhekbot.com',
           secure: true,
@@ -1222,7 +1212,7 @@ app.get('/', async (request, response) => {
       }
     }).catch(err => {
       if (err.toString().includes('401')) {
-        helper.dbQuery(`UPDATE permissions SET bearer = '' WHERE bearer = '${cookies["auth"]}';`);
+        helper.removeBearer(cookies["auth"], rows[0].userid);
         response.clearCookie('auth', {
           'domain': '.zhekbot.com',
           secure: true,
@@ -1254,16 +1244,16 @@ app.get('/enable/:channel', async (request, response) => {
       return;
     }
     
-    var cookies = await request.cookies;
+    var cookies = request.cookies;
     if (cookies["auth"]) {
-      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
-      if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
-        response.status(401);
+      let bearer = await helper.checkBearer(cookies["auth"]);
+      if ((!bearer[0] || !bearer[1].perms || bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
+        response.sendStatus(401);
         response.redirect('/');
         return;
       }
     } else {
-      response.status(401);
+      response.sendStatus(401);
       response.redirect('/');
       return;
     }
@@ -1305,17 +1295,20 @@ app.get('/edit/:channel', async (request, response) => {
     
     var cookies = request.cookies;
     if (cookies["auth"]) {
-      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
-      if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
-        response.status(401);
+      let bearer = await helper.checkBearer(cookies["auth"]);
+      if (!bearer[0] || !bearer[1].perms || bearer[1].perms.split(',').includes(request.params.channel)) {
+        response.sendStatus(401);
         response.redirect('/');
         return;
       }
     } else {
-      response.status(401);
+      response.sendStatus(401);
       response.redirect('/');
       return;
     }
+
+    var rows = await helper.checkBearer(cookies["auth"]);
+    if (!rows[0]) throw new Error("No bearer in DB - 400.");
 
     await axios.get('https://id.twitch.tv/oauth2/validate', {
       headers: {
@@ -1323,34 +1316,36 @@ app.get('/edit/:channel', async (request, response) => {
       }
     }).then(async res => {
       if (res.status === 200) {
-        var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies['auth']}';`);
 
-        if (rows.length && rows[0].perms.split(',').includes(request.params.channel.toLowerCase())) {
+        if (rows[1].perms.split(',').includes(request.params.channel.toLowerCase())) {
           var page = fs.readFileSync('./html/page.html').toString('utf-8');
           page = page.replace(/#pref_name#/g, userIds[request.params.channel.toLowerCase()].pref_name);
           page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
-          page = page.replace(/#Permissions#/g, '');
-          page = page.replace(/#editors#/g, '');
+          page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
+          page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
           page = page.replace(/#checked#/g, userIds[request.params.channel.toLowerCase()].twitch?'checked':'');
           page = page.replace(/Login to Twitch/g, 'Logout of Twitch');
+          if (userIds[request.params.channel].twitch) page = page.replace('var enabled = false', 'var enabled = true');
 
           response.send(page);
         } else {
-          response.status(403);
+          response.status(401);
           response.redirect('/');
         }
       } else {
-        response.status(403);
+        response.status(401);
         response.redirect('/');
       }
     }).catch(err => {
       console.log(err);
-      response.status(500);
+      response.status(400);
       response.redirect('/');
     })
   } catch (err) {
-    helper.dumpError(err, `Editors home page.`);
-    response.status(500);
+    if (!err.includes('400')) {
+      helper.dumpError(err, `Editors home page.`);
+    }
+    response.status(400);
     response.redirect('/');
   }
 });
@@ -1358,30 +1353,11 @@ app.get('/edit/:channel', async (request, response) => {
 
 // Commands page.
 app.get('/commands/:channel', async (request, response) => {
+  var page = '';
   try {
-    var page;
     if (Object.keys(userIds).includes(request.params.channel.toLowerCase())) {
       page = fs.readFileSync("./html/commands.html").toString('utf-8');
       page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
-
-      var cookies = await request.cookies;
-      if (cookies["auth"]) {
-        page = page.replace('Login to Twitch', 'Logout of Twitch');
-        page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
-        page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
-        page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
-        page = page.replace(/#editors#/g, `href="/editors/${request.params.channel.toLowerCase()}"`);
-        page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel.toLowerCase()}"`);
-        page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
-      } else {
-        page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
-        page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
-        page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
-        page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
-        page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
-        page = page.replace(/#channel#/g, 'zhekler');
-        page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
-      }
 
       page = page.replace("var tabsEnabled = {}", `var tabsEnabled = {
         'Warzone Stats / Matches': ${userIds[request.params.channel.toLowerCase()].matches},
@@ -1393,17 +1369,37 @@ app.get('/commands/:channel', async (request, response) => {
         'Two vs Two': ${userIds[request.params.channel.toLowerCase()]["two_v_two"]},
         'Duel': ${userIds[request.params.channel.toLowerCase()].duel}
       }`);
+
+      var cookies = await request.cookies;
+      if (cookies["auth"]) {
+        page = page.replace('Login to Twitch', 'Logout of Twitch');
+        page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
+        page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
+        page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
+        page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
+        page = page.replace(/#editors#/g, `href="/editors/${request.params.channel.toLowerCase()}"`);
+        page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel.toLowerCase()}"`);
+      } else {
+        page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
+        page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
+        page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
+        page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
+        page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
+        page = page.replace(/#channel#/g, 'zhekler');
+        page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
+      }
+  
+      response.send(page);
     } else {
       response.status(404);
-      page = fs.readFileSync("./html/not_found.html").toString('utf-8');
+      response.redirect('/not-found');
+      return;
     }
 
   } catch (err) {
     helper.dumpError(err, "Commands page.");
     response.sendStatus(500);
-  } finally {
-    response.send(page);
-  }
+  } 
 });
 
 
@@ -1412,14 +1408,15 @@ app.get('/editors/:channel', async (request, response) => {
   try {
     request.params.channel = request.params.channel.toLowerCase();
     if (!userIds[request.params.channel]) {
-      response.sendStatus(404);
+      response.status(404);
+      response.redirect('/not-found');
       return;
     }
     
-    var cookies = await request.cookies;
+    var cookies = request.cookies;
     if (cookies["auth"]) {
-      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
-      if (!rows.length || rows[0].userid !== request.params.channel.toLowerCase()) {
+      let bearer = await helper.checkBearer(cookies["auth"]);
+      if (!bearer[0] || bearer[1].userid !== request.params.channel) {
         response.status(401);
         response.redirect('/');
         return;
@@ -1439,7 +1436,7 @@ app.get('/editors/:channel', async (request, response) => {
     for (var i = 0; i < rows.length; i++) {
       var perms = rows[i].perms.split(',');
       if (perms.includes(request.params.channel)) {
-        str += `<tr><td style="padding: 2px; text-align: center;">${rows[i].userid}</td><td style="padding: 2px; text-align: center;"><a class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary" onclick="remove(this)">Remove</a></td></tr><tr>&emsp;</tr>`;
+        str += `<tr id="editor-${rows[i].userid}"><td style="padding: 2px; text-align: center;">${rows[i].userid}</td><td style="padding: 2px; text-align: center;" onclick="remove('editor-${rows[i].userid}')"><a class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary" onclick="remove('editor-${rows[i].userid}')">Remove</a></td></tr><tr>&emsp;</tr>`;
       }
     }
 
@@ -1460,19 +1457,22 @@ app.get('/addeditor/:channel', async (request, response) => {
   try {
     request.params.channel = request.params.channel.toLowerCase();
     if (!userIds[request.params.channel] || !request.get('editor')) {
-      response.sendStatus(404);
+      response.status(404);
+      response.redirect('/not-found');
       return;
     }
     
     var cookies = request.cookies;
     if (cookies["auth"]) {
-      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
-      if (!rows.length || rows[0].userid !== request.params.channel.toLowerCase()) {
-        response.sendStatus(401);
+      var bearer = await helper.checkBearer(cookies["auth"]);
+      if (bearer[0] && bearer[1].userid !== request.params.channel) {
+        response.status(401);
+        response.redirect('/');
         return;
       }
     } else {
-      response.sendStatus(401);
+      response.status(401);
+      response.redirect('/');
       return;
     }
 
@@ -1498,24 +1498,28 @@ app.get('/removeeditor/:channel', async (request, response) => {
   try {
     request.params.channel = request.params.channel.toLowerCase();
     if (!userIds[request.params.channel]) {
-      response.sendStatus(404);
+      response.status(404);
+      response.redirect('/not-found');
       return;
     }
     
     var cookies = request.cookies;
     if (cookies["auth"]) {
-      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
-      if (!rows.length || rows[0].userid !== request.params.channel) {
-        response.sendStatus(401);
+      var bearer = await helper.checkBearer(cookies["auth"]);
+      if (bearer[0] && bearer[1].userid !== request.params.channel) {
+        response.status(401);
+        response.redirect('/');
         return;
       }
     } else {
-      response.sendStatus(401);
+      response.status(401);
+      response.redirect('/');
       return;
     }
 
     if (!request.get('editor')) {
-      response.sendStatus(404);
+      response.status(401);
+      response.redirect('/');
       return;
     }
 
@@ -1537,20 +1541,22 @@ app.get('/permissions/:channel', async (request, response) => {
   try {
     request.params.channel = request.params.channel.toLowerCase();
     if (!userIds[request.params.channel]) {
-      response.sendStatus(404);
+      response.status(404);
+      response.redirect('/not-found');
       return;
     }
     
     var cookies = request.cookies;
+    var rows;
     if (cookies["auth"]) {
-      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
-      if (!rows.length || rows[0].userid !== request.params.channel.toLowerCase()) {
-        response.sendStatus(401);
+      rows = await helper.checkBearer(cookies["auth"]);
+      if (!rows[0] || rows[1].userid !== request.params.channel) {
+        response.status(401);
         response.redirect('/');
         return;
       }
     } else {
-      response.sendStatus(401);
+      response.status(401);
       response.redirect('/');
       return;
     }
@@ -1558,14 +1564,13 @@ app.get('/permissions/:channel', async (request, response) => {
     var page = fs.readFileSync('./html/permissions.html').toString('utf-8');
     page = page.replace(/Login to Twitch/g, "Logout of Twitch");
 
-    var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
-    page = page.replace(/#channel#/g, rows[0].userid);
+    page = page.replace(/#channel#/g, rows[1].userid);
     
-    var perms = rows[0]&&rows[0].perms?rows[0].perms.split(','):'';
+    var perms = rows[1].perms?rows[1].perms.split(','):'';
     if (!perms.length) {
       page = page.replace(/#permission#/g, 'You do not have permissions to any channels.');
     } else {
-      var str = '<h3>Permissions:</h3>';
+      var str = '<h3 style="width: 100%; text-align: center;">Permissions:</h3>';
       for (var i = 0; i < perms.length; i++) {
         str += `<tr><td style="padding: 2px; text-align: center;"><a href="/edit/${perms[i]}" class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary">${userIds[perms[i]].pref_name}</a></td></tr><tr>&emsp;</tr>`;
       }
@@ -1589,20 +1594,21 @@ app.get('/modules/:channel', async (request, response) => {
   try {
     request.params.channel = request.params.channel.toLowerCase();
     if (!userIds[request.params.channel]) {
-      response.sendStatus(404);
+      response.status(404);
+      response.redirect('/not-found');
       return;
     }
     
     var cookies = request.cookies;
     if (cookies["auth"]) {
-      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
-      if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
-        response.sendStatus(401);
+      let bearer = await helper.checkBearer(cookies["auth"]);
+      if ((!bearer[0] || !bearer[1].perms || bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
+        response.status(401);
         response.redirect('/');
         return;
       }
     } else {
-      response.sendStatus(401);
+      response.status(401);
       response.redirect('/');
       return;
     }
@@ -1636,20 +1642,22 @@ app.get('/modules/:channel/:module', async (request, response) => {
   try {
     request.params.channel = request.params.channel.toLowerCase();
     if (!userIds[request.params.channel]) {
-      response.sendStatus(405);
+      response.status(404);
+      response.redirect('/not-found');
       return;
     }
     
     var cookies = request.cookies;
     if (cookies["auth"]) {
-      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
-      if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
+      let bearer = await helper.checkBearer(cookies["auth"]);
+      if ((!bearer[0] || !bearer[1].perms || bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
         response.status(401);
         response.redirect('/');
         return;
       }
     } else {
-      response.sendStatus(401);
+      response.status(401);
+      response.redirect('/');
       return;
     }
 
@@ -1799,19 +1807,22 @@ app.get('/newname/:channel', async (request, response) => {
   try {
     request.params.channel = request.params.channel.toLowerCase();
     if (!userIds[request.params.channel]) {
-      response.sendStatus(404);
+      response.status(404);
+      response.redirect('/not-found');
       return;
     }
     
     var cookies = request.cookies;
     if (cookies["auth"]) {
-      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
-      if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
-        response.sendStatus(401);
+      let bearer = await helper.checkBearer(cookies["auth"]);
+      if ((!bearer[0] || !bearer[1].perms || bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
+        response.status(401);
+        response.redirect('/');
         return;
       }
     } else {
-      response.sendStatus(401);
+      response.status(401);
+      response.redirect('/');
       return;
     }
 
@@ -1835,7 +1846,7 @@ app.get('/redirect', async (request, response) => {
 
     var cookies = await request.cookies;
     if (cookies["auth"]) {
-      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${request.get('auth')}';`);
+      var rows = await helper.checkBearer(cookies["auth"]);
       if (!rows[0]) {
         response.sendStatus(500);
         return;
@@ -1886,7 +1897,7 @@ app.get('/login', async (request, response) => {
         if (states.indexOf(state) > -1) delete states[state];
       }, 30000);
     } else {
-      helper.dbQuery(`UPDATE permissions SET bearer = '' WHERE bearer = '${cookies["auth"]}';`);
+      helper.removeBearer(cookies["auth"]);
       response.clearCookie('auth', {
         'domain': '.zhekbot.com',
         secure: true,
@@ -1906,7 +1917,7 @@ app.get('/logout', async (request, response) => {
   try {
     var cookies = request.cookies;
     if (cookies["auth"]) {
-      helper.dbQuery(`UPDATE permissions SET bearer = '' WHERE bearer = '${cookies["auth"]}';`);
+      helper.removeBearer(cookies["auth"]);
       response.clearCookie('auth', {
         'domain': '.zhekbot.com',
         secure: true,
@@ -1951,14 +1962,14 @@ app.get('/verify', (request, response) => {
           
           // @ts-ignore
           if (rows.length && (rows[0].perms > 0 && rows[0].perms.split(',').includes(states[request.get("state")]) || details[0]["display_name"].toLowerCase() === states[request.get("state")] || states[request.get("state")] === "#login#")) {
-            helper.dbQuery(`UPDATE permissions SET bearer = '${resp.data["access_token"]}' WHERE userid = '${details[0]["display_name"].toLowerCase()}';`);
+            helper.addBearer(details[0]["display_name"].toLowerCase(), resp.data["access_token"]);
             response.cookie("auth", resp.data["access_token"], { maxAge: 1000*resp.data.expires_in, secure: true, httpOnly: true, domain: `.zhekbot.com` });
             response.send("Success.");
           } else {
             
             // @ts-ignore
             if (details[0]["display_name"].toLowerCase() === states[request.get("state")] || states[request.get("state")] === '#login#') {
-              helper.dbQuery(`INSERT INTO permissions(userid, bearer) VALUES ('${details[0]["display_name"].toLowerCase()}', '${resp.data["access_token"]}');`);
+              helper.addBearer(details[0]["display_name"].toLowerCase(), resp.data["access_token"]);
               response.cookie("auth", resp.data["access_token"], { maxAge: 1000*resp.data.expires_in, secure: true, httpOnly: true, domain: `.zhekbot.com` });
               response.send("Success.");
             } else { 
@@ -2013,14 +2024,14 @@ app.get('/twovtwo/:channel', async (request, response) => {
     request.params.channel = request.params.channel.toLowerCase();
     if (!userIds[request.params.channel]) {
       response.status(404);
-      response.send(fs.readFileSync('./html/not_found.html'));
+      response.redirect('/not-found');
       return;
     }
     
     var cookies = request.cookies;
     if (cookies["auth"]) {
-      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
-      if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
+      let bearer = await helper.checkBearer(cookies["auth"]);
+      if ((!bearer[0] || !bearer[1].perms || bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
         response.status(401);
         response.redirect('/');
         return;
@@ -2050,8 +2061,8 @@ app.get ('/twovtwoscores/:channel', async (request, response) => {
     
     var cookies = request.cookies, rows;
     if (cookies["auth"]) {
-      rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
-      if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
+      rows = await helper.checkBearer(cookies["auth"]);
+      if ((!rows[0] || !rows[1].perms || rows[1].perms.split(',').includes(request.params.channel)) && rows[1].userid !== request.params.channel) {
         response.status(401);
         response.redirect('/');
         return;
@@ -2077,7 +2088,7 @@ app.get ('/twovtwoscores/:channel', async (request, response) => {
       helper.dbQuery(`INSERT INTO twovtwo(userid, hkills, tkills, o1kills, o2kills, tname, o1name, o2name, mapreset) VALUES ('${request.params.channel}', 0, 0, 0, 0, '', '', '', 0);`);
     }
 
-    response.send(`${res[0].hkills},${res[0].tkills},${res[0].o1kills},${res[0].o2kills},${res[0].tname},${res[0].o1name},${res[0].o2name},${userIds[res[0].userid] && userIds[res[0].userid]["two_v_two"]},${userIds[res[0].tname] && userIds[res[0].tname]["two_v_two"] && rows[0].perms.split(',').includes(res[0].tname.toLowerCase())},${userIds[res[0].o1name] && userIds[res[0].o1name]["two_v_two"] && rows[0].perms.split(',').includes(res[0].o1name.toLowerCase())},${userIds[res[0].o2name] && userIds[res[0].o2name]["two_v_two"] && rows[0].perms.split(',').includes(res[0].o2name.toLowerCase())},${res[0].mapreset}`);
+    response.send(`${res[0].hkills},${res[0].tkills},${res[0].o1kills},${res[0].o2kills},${res[0].tname},${res[0].o1name},${res[0].o2name},${userIds[res[0].userid] && userIds[res[0].userid]["two_v_two"]},${userIds[res[0].tname] && userIds[res[0].tname]["two_v_two"] && rows[1].perms && rows[1].perms.split(',').includes(res[0].tname.toLowerCase())},${userIds[res[0].o1name] && userIds[res[0].o1name]["two_v_two"] && rows[1].perms && rows[1].perms.split(',').includes(res[0].o1name.toLowerCase())},${userIds[res[0].o2name] && userIds[res[0].o2name]["two_v_two"] && rows[1].perms && rows[1].perms.split(',').includes(res[0].o2name.toLowerCase())},${res[0].mapreset}`);
   } catch (err) {
     helper.dumpError(err, `2v2 scores.`);
     response.send(err.message);
@@ -2090,19 +2101,22 @@ app.get('/post/:channel/reset', async (request, response) => {
   try {
     request.params.channel = request.params.channel.toLowerCase();
     if (!userIds[request.params.channel] || !userIds[request.params.channel].twitch) {
-      response.sendStatus(405);
+      response.status(404);
+      response.redirect('/not-found');
       return;
     }
     
     var cookies = request.cookies, rows;
     if (cookies["auth"]) {
-      rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
-      if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
-        response.sendStatus(401);
+      rows = await helper.checkBearer(cookies["auth"]);
+      if ((!rows[0] || !rows[1].perms || rows[1].perms.split(',').includes(request.params.channel)) && rows[1].userid !== request.params.channel) {
+        response.status(401);
+        response.redirect('/');
         return;
       }
     } else {
-      response.sendStatus(401);
+      response.status(401);
+      response.redirect('/');
       return;
     }
 
@@ -2134,16 +2148,17 @@ app.get('/post/:channel/enable', jsonParser, async (request, response) => {
       return;
     }
     
-    var cookies = request.cookies;
-    var rows;
+    var cookies = request.cookies, rows;
     if (cookies["auth"]) {
-      rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
-      if (!rows.length || (rows[0].userid !== request.params.channel && !rows[0].perms.split(',').includes(request.params.channel))) {
-        response.sendStatus(401);
+      rows = await helper.checkBearer(cookies["auth"]);
+      if ((!rows[0] || !rows[1].perms || rows[1].perms.split(',').includes(request.params.channel)) && rows[1].userid !== request.params.channel) {
+        response.status(401);
+        response.redirect('/');
         return;
       }
     } else {
-      response.sendStatus(401);
+      response.status(401);
+      response.redirect('/');
       return;
     }
 
@@ -2168,18 +2183,22 @@ app.get('/send/:channel/:hKills/:tKills/:o1Kills/:o2Kills', async (request, resp
   try {
     request.params.channel = request.params.channel.toLowerCase();
     if (!userIds[request.params.channel] || !userIds[request.params.channel].twitch) {
-      response.sendStatus(405);
+      response.status(404);
+      response.redirect('/not-found');
       return;
     }
+
     var cookies = request.cookies, rows;
     if (cookies["auth"]) {
-      rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
-      if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
-        response.sendStatus(401);
+      rows = await helper.checkBearer(cookies["auth"]);
+      if ((!rows[0] || !rows[1].perms || rows[1].perms.split(',').includes(request.params.channel)) && rows[1].userid !== request.params.channel) {
+        response.status(401);
+        response.redirect('/');
         return;
       }
     } else {
-      response.sendStatus(401);
+      response.status(401);
+      response.redirect('/');
       return;
     }
 
@@ -2280,14 +2299,15 @@ app.get ('/customs/:channel', async (request, response) => {
   try {
     request.params.channel = request.params.channel.toLowerCase();
     if (!userIds[request.params.channel]) {
-      response.sendStatus(405);
+      response.status(404);
+      response.redirect('/not-found');
       return;
     }
     
     var cookies = request.cookies;
     if (cookies["auth"]) {
-      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
-      if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
+      var bearer = await helper.checkBearer(cookies["auth"]);
+      if ((!bearer[0] || !bearer[1].perms || bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
         response.status(401);
         response.redirect('/');
         return;
@@ -2340,19 +2360,22 @@ app.get ('/customs/update/:channel', async (request, response) => {
   request.params.channel = request.params.channel.toLowerCase();
   try {
     if (!userIds[request.params.channel] || !userIds[request.params.channel].twitch) {
-      response.sendStatus(405);
+      response.status(404);
+      response.redirect('/not-found');
       return;
     }
     
     var cookies = request.cookies;
     if (cookies["auth"]) {
-      var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${cookies["auth"]}';`);
-      if (!rows.length || (rows[0].userid !== request.params.channel.toLowerCase() && !rows[0].perms.split(',').includes(request.params.channel.toLowerCase()))) {
+      var bearer = await helper.checkBearer(cookies["auth"]);
+      if ((!bearer[0] || !bearer[1].perms || bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
         response.status(401);
+        response.redirect('/');
         return;
       }
     } else {
       response.status(401);
+      response.redirect('/');
       return;
     }
 
@@ -2866,7 +2889,7 @@ app.get("*", async (req, response) => {
     if (cookies["auth"]) {
       page = page.replace('Login to Twitch', 'Logout of Twitch');
 
-      let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${req.get('auth')}';`);
+      let rows = await helper.checkBearer(cookies["auth"]);
       if (!rows[0]) {
         response.sendStatus(500);
         return;
