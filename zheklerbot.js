@@ -1192,19 +1192,19 @@ app.get('/', async (request, response) => {
 
         if (res.status === 200) {
           page = fs.readFileSync('./html/page.html').toString('utf-8');
-          page = page.replace(/#modules#/g, `href="/modules/${rows[0].userid}"`);
-          page = page.replace(/#twovtwo#/g, `href="/twovtwo/${rows[0].userid}"`);
-          page = page.replace(/#customs#/g, `href="/customs/${rows[0].userid}"`);
-          page = page.replace(/#editors#/g, `href="/editors/${rows[0].userid}"`);
-          page = page.replace(/#permissions#/g, `href="/permissions/${rows[0].userid}"`);
-          page = page.replace(/#pref_name#/g, userIds[rows[0].userid].pref_name);
-          page = page.replace(/#channel#/g, userIds[rows[0].userid].user_id);
-          page = page.replace(/#checked#/g, userIds[rows[0].userid].twitch?'checked':'');
+          page = page.replace(/#modules#/g, `href="/modules/${rows[1].userid}"`);
+          page = page.replace(/#twovtwo#/g, `href="/twovtwo/${rows[1].userid}"`);
+          page = page.replace(/#customs#/g, `href="/customs/${rows[1].userid}"`);
+          page = page.replace(/#editors#/g, `href="/editors/${rows[1].userid}"`);
+          page = page.replace(/#permissions#/g, `href="/permissions/${rows[1].userid}"`);
+          page = page.replace(/#pref_name#/g, userIds[rows[1].userid].pref_name);
+          page = page.replace(/#channel#/g, rows[1].userid);
+          page = page.replace(/#checked#/g, userIds[rows[1].userid].twitch?'checked':'');
           page = page.replace('Login to Twitch', 'Logout of Twitch');
-          if (userIds[rows[0].userid].twitch) page = page.replace('var enabled = false', 'var enabled = true');
+          if (userIds[rows[1].userid].twitch) page = page.replace('var enabled = false', 'var enabled = true');
           response.send(page); 
         } else {
-          helper.removeBearer(cookies["auth"], rows[0].userid);
+          helper.removeBearer(cookies["auth"], rows[1].userid);
           response.clearCookie('auth', {
             'domain': '.zhekbot.com',
             secure: true,
@@ -1214,7 +1214,7 @@ app.get('/', async (request, response) => {
         }
       }).catch(err => {
         if (err.toString().includes('401')) {
-          helper.removeBearer(cookies["auth"], rows[0].userid);
+          helper.removeBearer(cookies["auth"], rows[1].userid);
           response.clearCookie('auth', {
             'domain': '.zhekbot.com',
             secure: true,
