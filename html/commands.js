@@ -1,4 +1,5 @@
-var tabsEnabled = {}, tab;
+var tabsEnabled = {};
+var tab;
 
 var hidden = document.getElementById("client_id");
 var client_id = hidden.value;
