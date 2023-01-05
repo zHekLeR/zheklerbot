@@ -1257,7 +1257,7 @@ app.get('/enable/:channel', async (request, response) => {
     var cookies = request.cookies;
     if (cookies["auth"]) {
       let bearer = await helper.checkBearer(cookies["auth"]);
-      if ((!bearer[0] || !bearer[1].perms || bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
+      if ((!bearer[0] || !bearer[1].perms || !bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
         response.sendStatus(401);
         response.redirect('/');
         return;
@@ -1306,8 +1306,7 @@ app.get('/edit/:channel', async (request, response) => {
     var cookies = request.cookies;
     if (cookies["auth"]) {
       let bearer = await helper.checkBearer(cookies["auth"]);
-      console.log(bearer);
-      if (!bearer[0] || !bearer[1].perms || bearer[1].perms.split(',').includes(request.params.channel)) {
+      if (!bearer[0] || !bearer[1].perms || !bearer[1].perms.split(',').includes(request.params.channel)) {
         response.status(401);
         response.redirect('/');
         return;
@@ -1319,7 +1318,6 @@ app.get('/edit/:channel', async (request, response) => {
     }
 
     var rows = await helper.checkBearer(cookies["auth"]);
-    console.log(rows);
     if (!rows[0]) throw new Error("No bearer in DB - 400.");
 
     await axios.get('https://id.twitch.tv/oauth2/validate', {
@@ -1614,7 +1612,7 @@ app.get('/modules/:channel', async (request, response) => {
     var cookies = request.cookies;
     if (cookies["auth"]) {
       let bearer = await helper.checkBearer(cookies["auth"]);
-      if ((!bearer[0] || !bearer[1].perms || bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
+      if ((!bearer[0] || !bearer[1].perms || !bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
         response.status(401);
         response.redirect('/');
         return;
@@ -1662,7 +1660,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
     var cookies = request.cookies;
     if (cookies["auth"]) {
       let bearer = await helper.checkBearer(cookies["auth"]);
-      if ((!bearer[0] || !bearer[1].perms || bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
+      if ((!bearer[0] || !bearer[1].perms || !bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
         response.status(401);
         response.redirect('/');
         return;
@@ -1827,7 +1825,7 @@ app.get('/newname/:channel', async (request, response) => {
     var cookies = request.cookies;
     if (cookies["auth"]) {
       let bearer = await helper.checkBearer(cookies["auth"]);
-      if ((!bearer[0] || !bearer[1].perms || bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
+      if ((!bearer[0] || !bearer[1].perms || !bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
         response.status(401);
         response.redirect('/');
         return;
@@ -2043,7 +2041,7 @@ app.get('/twovtwo/:channel', async (request, response) => {
     var cookies = request.cookies;
     if (cookies["auth"]) {
       let bearer = await helper.checkBearer(cookies["auth"]);
-      if ((!bearer[0] || !bearer[1].perms || bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
+      if ((!bearer[0] || !bearer[1].perms || !bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
         response.status(401);
         response.redirect('/');
         return;
@@ -2319,7 +2317,7 @@ app.get ('/customs/:channel', async (request, response) => {
     var cookies = request.cookies;
     if (cookies["auth"]) {
       var bearer = await helper.checkBearer(cookies["auth"]);
-      if ((!bearer[0] || !bearer[1].perms || bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
+      if ((!bearer[0] || !bearer[1].perms || !bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
         response.status(401);
         response.redirect('/');
         return;
@@ -2380,7 +2378,7 @@ app.get ('/customs/update/:channel', async (request, response) => {
     var cookies = request.cookies;
     if (cookies["auth"]) {
       var bearer = await helper.checkBearer(cookies["auth"]);
-      if ((!bearer[0] || !bearer[1].perms || bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
+      if ((!bearer[0] || !bearer[1].perms || !bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
         response.status(401);
         response.redirect('/');
         return;
