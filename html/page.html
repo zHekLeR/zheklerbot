@@ -2484,11 +2484,7 @@
       }
 
       async function twitch() {
-        await fetch(`/logout`, {
-          headers: {
-            "state": state
-          }
-        })
+        await fetch(`/logout`)
         .then(res => {
           if (res.status === 201) {
             window.location.href = "/";

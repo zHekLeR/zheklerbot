@@ -1228,12 +1228,6 @@ app.get('/', async (request, response) => {
   } else {
     page = fs.readFileSync('./html/not_enabled.html').toString('utf-8');
     page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
-    page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
-    page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
-    page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
-    page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
-    page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
-    page = page.replace(/#channel#/g, 'zhekler');
   
     response.send(page); 
   }
@@ -1430,7 +1424,7 @@ app.get('/editors/:channel', async (request, response) => {
     for (var i = 0; i < rows.length; i++) {
       var perms = rows[i].perms.split(',');
       if (perms.includes(request.params.channel)) {
-        str += `<tr><td style="padding: 2px; text-align: center;">${rows[i].userid}</td><td onclick="remove(this)" style="padding: 2px; text-align: center;"><a class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary">Remove</a></td></tr><tr>&emsp;</tr>`;
+        str += `<tr><td style="padding: 2px; text-align: center;">${rows[i].userid}</td><td style="padding: 2px; text-align: center;"><a class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary" onclick="remove(this)">Remove</a></td></tr><tr>&emsp;</tr>`;
       }
     }
 
@@ -1556,7 +1550,7 @@ app.get('/permissions/:channel', async (request, response) => {
     } else {
       var str = '<h3>Permissions:</h3>';
       for (var i = 0; i < perms.length; i++) {
-        str += `<tr><a href="/edit/${perms[i]}" class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary">${userIds[perms[i]].pref_name}</a></tr><tr>&emsp;</tr>`;
+        str += `<tr><td style="padding: 2px; text-align: center;"><a href="/edit/${perms[i]}" class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary">${userIds[perms[i]].pref_name}</a></td></tr><tr>&emsp;</tr>`;
       }
       page = page.replace(/#permissions#/g, str);
     }
@@ -1823,7 +1817,10 @@ app.get('/redirect', async (request, response) => {
     var cookies = await request.cookies;
     if (cookies["auth"]) {
       var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${request.get('auth')}';`);
-      if (!rows[0]) throw new Error("No bearer in DB.");
+      if (!rows[0]) {
+        response.sendStatus(500);
+        return;
+      }
 
       page = page.replace('Login to Twitch', 'Logout of Twitch');
       page = page.replace(/#modules#/g, `href="/modules/${rows[0].userid.toLowerCase()}"`);
@@ -2851,7 +2848,10 @@ app.get("*", async (req, response) => {
       page = page.replace('Login to Twitch', 'Logout of Twitch');
 
       let rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE bearer = '${req.get('auth')}';`);
-      if (!rows[0]) throw new Error("No bearer in DB.");
+      if (!rows[0]) {
+        response.sendStatus(500);
+        return;
+      }
 
       page = page.replace('Login to Twitch', 'Logout of Twitch');
       page = page.replace(/#modules#/g, `href="/modules/${rows[0].userid.toLowerCase()}"`);
