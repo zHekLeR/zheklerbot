@@ -139,6 +139,8 @@ function dumpError(err, where) {
           dbQuery(`UPDATE permissions SET bearer = '${rows[0].bearer + ',' + bearer}' WHERE userid = '${userid}';`);
         }
       }
+      console.log(rows);
+      console.log(bearer);
       return true; 
     } catch (err) {
       dumpError(err, "Add bearer.");
