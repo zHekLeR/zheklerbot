@@ -2281,261 +2281,64 @@
     }
   }
 
-</style><div class="fluid-engine fe-63b37c412776dc190acd4054"><div class="fe-block fe-block-yui_3_17_2_1_1672706097558_742444"><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-yui_3_17_2_1_1672706097558_742444"><div class="sqs-block-content">
-
-<p style="text-align:center;white-space:pre-wrap;" class="">Respond to !score</p>
-
-
-</div></div></div><div class="fe-block fe-block-yui_3_17_2_1_1672706097558_15573"><div class="sqs-block button-block sqs-block-button" data-block-type="53" id="block-yui_3_17_2_1_1672706097558_15573"><div class="sqs-block-content">
-
-<div
-  class="sqs-block-button-container sqs-block-button-container--center"
-  data-animation-role="button"
-  data-alignment="center"
-  data-button-size="small"
-  data-button-type="tertiary"
-  onclick="sub('hKills')"
->
-  <a
-    
-    class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
-  >
-    -
-  </a>
+</style><div class="fe-block fe-block-yui_3_17_2_1_1672706097558_742444"><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-yui_3_17_2_1_1672706097558_742444" style="text-align: center;">   
+  <h1>#Placeholder#'s 2v2 Counter</h1>
+  <div>&emsp;&emsp;
+      <button id="send" onclick="sendScore()">Send Scores</button>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+      Respond to !score
+  </div>
+  <div>
+      <input id='hName' type="text" readonly="true" value="#channel#" size="8" style="text-align:center;">
+      Kills: 
+      <button class="change" onclick="add('hKills')">+</button> 
+      <span id="hKills">0</span> 
+      <button class="change" onclick="sub('hKills')">-</button>&ensp;
+      <input type="checkbox" id="hStatus" class="hName" onclick="upStatus('hName')">&ensp;
+      <label for="hStatus">Enabled</label>
+  </div>
+  <div>
+      <input type="text" id="tName" placeholder="Teammate" size="8" style="text-align:center;"> 
+      Kills: 
+      <button class="change" onclick="add('tKills')">+</button> 
+      <span id="tKills">0</span> 
+      <button class="change" onclick="sub('tKills')">-</button>&ensp;
+      <input type="checkbox" id="tStatus" class="tName" onclick="upStatus('tName')">&ensp;
+      <label for="tStatus">Enabled</label>
+  </div>
+  <div>
+      <input type="text" id="o1Name" placeholder="Opponent 1" size="8" style="text-align:center;">
+      Kills: 
+      <button class="change" onclick="add('o1Kills')">+</button> 
+      <span id="o1Kills">0</span> 
+      <button class="change" onclick="sub('o1Kills')">-</button>&ensp;
+      <input type="checkbox" id="o1Status" class="o1Name" onclick="upStatus('o1Name')">&ensp;
+      <label for="o1Status">Enabled</label>
+  </div>
+  <div><input type="text" id="o2Name" placeholder="Opponent 2" size="8" style="text-align:center;">
+      Kills: 
+      <button class="change" onclick="add('o2Kills')">+</button> 
+      <span id="o2Kills">0</span> 
+      <button class="change" onclick="sub('o2Kills')">-</button>&ensp;
+      <input type="checkbox" id="o2Status" class="o2Name" onclick="upStatus('o2Name')">&ensp;
+      <label for="o2Status">Enabled</label>
+  </div><br>
+  <div><button onclick="reset()">Reset All</button></div>
+  <div>
+      Map Reset (carry scores over): 
+      <button class="change" onclick="mapreset(1)">+</button> 
+      <button class="change" onclick="mapreset(0)" style="text-align: center; width: 60px;">Zero</button>
+      <button class="change" onclick="mapreset(-1)">-</button>
+      <span id="updown" style="display: inline-block; font-size: auto; width: 75px;">-</span> 
+  </div>
+  <br><br>
+  <div>Clicking the 'Send Scores' button will update the current scores and put them in chat.</div>
+  <div>If you have the box beside a stream checked, the bot will respond to !score when it is typed in the chat.</div>
+  <div>Note that the name provided must be the Twitch stream (and you must have permissions for that stream).</div>
+  <br>
+  <div>If the map is reset but the current scores will carry over, you can enter this in the appropriate input and it will be accounted for.</div>
 </div>
-</div></div></div><div class="fe-block fe-block-yui_3_17_2_1_1672802072894_172157"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-yui_3_17_2_1_1672802072894_172157"><div class="sqs-block-content"><span style="text-align: center;"><input id="hStatus" type="checkbox" onclick="upStatus('hName', 'hStatus')"></span></div></div></div><div class="fe-block fe-block-f2be8de4d927eff4c310"><div class="sqs-block button-block sqs-block-button" data-block-type="53" id="block-f2be8de4d927eff4c310"><div class="sqs-block-content">
 
-<div
-  class="sqs-block-button-container sqs-block-button-container--center"
-  data-animation-role="button"
-  data-alignment="center"
-  data-button-size="small"
-  data-button-type="tertiary"
-  onclick="add('hKills')"
->
-  <a
-    
-    class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
-  >
-    +
-  </a>
-</div>
-</div></div></div><div class="fe-block fe-block-yui_3_17_2_1_1672706097558_280816"><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-yui_3_17_2_1_1672706097558_280816"><div class="sqs-block-content">
-
-<h4 style="text-align:center;white-space:pre-wrap;" id="hKills">0</h4>
-
-
-</div></div></div><div class="fe-block fe-block-yui_3_17_2_1_1672802072894_110977"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-yui_3_17_2_1_1672802072894_110977"><div class="sqs-block-content"><input id="hName" type="text" value="#channel#" disabled="true" style="width: 90%"></div></div></div><div class="fe-block fe-block-42beafb74dc66b13bf6e"><div class="sqs-block button-block sqs-block-button" data-block-type="53" id="block-42beafb74dc66b13bf6e"><div class="sqs-block-content">
-
-<div
-  class="sqs-block-button-container sqs-block-button-container--center"
-  data-animation-role="button"
-  data-alignment="center"
-  data-button-size="small"
-  data-button-type="tertiary"
-  onclick="sub('tKills')"
->
-  <a
-    
-    class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
-  >
-    -
-  </a>
-</div>
-</div></div></div><div class="fe-block fe-block-77bd76bff7cf9758d4b4"><div class="sqs-block button-block sqs-block-button" data-block-type="53" id="block-77bd76bff7cf9758d4b4"><div class="sqs-block-content">
-
-<div
-  class="sqs-block-button-container sqs-block-button-container--center"
-  data-animation-role="button"
-  data-alignment="center"
-  data-button-size="small"
-  data-button-type="tertiary"
-  onclick="add('tKills')" 
->
-  <a
-    
-    class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
-  >
-    +
-  </a>
-</div>
-</div></div></div><div class="fe-block fe-block-414a8c602616fc68d070"><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-414a8c602616fc68d070"><div class="sqs-block-content">
-
-<h4 style="text-align:center;white-space:pre-wrap;" id="tKills">0</h4>
-
-
-</div></div></div><div class="fe-block fe-block-cd0fa59c824b48b2c22d"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-cd0fa59c824b48b2c22d"><div class="sqs-block-content"><input id="tName" type="text" placeholder="Teammate" style="width: 90%"></div></div></div><div class="fe-block fe-block-c6dc2d95229d03d60cc1"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-c6dc2d95229d03d60cc1"><div class="sqs-block-content"><input id="tStatus" type="checkbox" onclick="upStatus('tName', 'tStatus')"></div></div></div><div class="fe-block fe-block-3aec3c0d4e7ac7e16c6a"><div class="sqs-block button-block sqs-block-button" data-block-type="53" id="block-3aec3c0d4e7ac7e16c6a"><div class="sqs-block-content">
-
-<div
-  class="sqs-block-button-container sqs-block-button-container--center"
-  data-animation-role="button"
-  data-alignment="center"
-  data-button-size="small"
-  data-button-type="tertiary"
-  onclick="sub('o1Kills')"
->
-  <a
-    
-    class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
-  >
-    -
-  </a>
-</div>
-</div></div></div><div class="fe-block fe-block-6a1a571855467f4d2968"><div class="sqs-block button-block sqs-block-button" data-block-type="53" id="block-6a1a571855467f4d2968"><div class="sqs-block-content">
-
-<div
-  class="sqs-block-button-container sqs-block-button-container--center"
-  data-animation-role="button"
-  data-alignment="center"
-  data-button-size="small"
-  data-button-type="tertiary"
-  onclick='add("o1Kills")'
->
-  <a
-    class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
-  >
-    +
-  </a>
-</div>
-</div></div></div><div class="fe-block fe-block-ec6f8ebe113f0a85570d"><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-ec6f8ebe113f0a85570d"><div class="sqs-block-content">
-
-<h4 style="text-align:center;white-space:pre-wrap;" id="o1Kills">0</h4>
-
-
-</div></div></div><div class="fe-block fe-block-683ff6d087fb7aadad0c"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-683ff6d087fb7aadad0c"><div class="sqs-block-content"><input id="o1Name" type="text" placeholder="Opponent 1" style="width: 90%"></div></div></div><div class="fe-block fe-block-ab59023236516569c0d8"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-ab59023236516569c0d8"><div class="sqs-block-content"><input id="o1Status" type="checkbox" onclick="upStatus('o1Name', 'o1Status')"></div></div></div><div class="fe-block fe-block-2eda2f0eeeec6ff1c8de"><div class="sqs-block button-block sqs-block-button" data-block-type="53" id="block-2eda2f0eeeec6ff1c8de"><div class="sqs-block-content">
-
-<div
-  class="sqs-block-button-container sqs-block-button-container--center"
-  data-animation-role="button"
-  data-alignment="center"
-  data-button-size="small"
-  data-button-type="tertiary"
-  onclick="sub('o2Kills')"
->
-  <a
-    
-    class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
-  >
-    -
-  </a>
-</div>
-</div></div></div><div class="fe-block fe-block-d4ef09ff350819e8801d"><div class="sqs-block button-block sqs-block-button" data-block-type="53" id="block-d4ef09ff350819e8801d"><div class="sqs-block-content">
-
-<div
-  class="sqs-block-button-container sqs-block-button-container--center"
-  data-animation-role="button"
-  data-alignment="center"
-  data-button-size="small"
-  data-button-type="tertiary"
-  onclick='add("o2Kills")'
->
-  <a
-    class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
-  >
-    +
-  </a>
-</div>
-</div></div></div><div class="fe-block fe-block-f125a3247dce33fbab01"><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-f125a3247dce33fbab01"><div class="sqs-block-content">
-
-<h4 style="text-align:center;white-space:pre-wrap;" id="o2Kills">0</h4>
-
-
-</div></div></div><div class="fe-block fe-block-eb8c7babe5555155b999"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-eb8c7babe5555155b999"><div class="sqs-block-content"><input id="o2Name" type="text" placeholder="Opponent 2" style="width: 90%"></div></div></div><div class="fe-block fe-block-67031131d406ca28316b"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-67031131d406ca28316b"><div class="sqs-block-content"><input id="o2Status" type="checkbox" onclick="upStatus('o2Name', 'o2Status')"></div></div></div><div class="fe-block fe-block-yui_3_17_2_1_1672706097558_786815"><div class="sqs-block button-block sqs-block-button sqs-stretched" data-block-type="53" id="block-yui_3_17_2_1_1672706097558_786815"><div class="sqs-block-content">
-
-<div
-  class="sqs-block-button-container sqs-block-button-container--center"
-  data-animation-role="button"
-  data-alignment="center"
-  data-button-size="large"
-  data-button-type="secondary"
-  onclick="sendScore()"
->
-  <a
-    id="send"
-    class="sqs-block-button-element--large sqs-button-element--secondary sqs-block-button-element"
-  >
-    Send Score
-  </a>
-</div>
-</div></div></div><div class="fe-block fe-block-9ec084f4f755e8c775c7"><div class="sqs-block button-block sqs-block-button sqs-stretched" data-block-type="53" id="block-9ec084f4f755e8c775c7"><div class="sqs-block-content">
-
-<div
-  class="sqs-block-button-container sqs-block-button-container--center"
-  data-animation-role="button"
-  data-alignment="center"
-  data-button-size="large"
-  data-button-type="secondary"
-  onclick="reset()"
->
-  <a
-    
-    class="sqs-block-button-element--large sqs-button-element--secondary sqs-block-button-element"
-  >
-    Reset All
-  </a>
-</div>
-</div></div></div><div class="fe-block fe-block-yui_3_17_2_1_1672706097558_873790"><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-yui_3_17_2_1_1672706097558_873790"><div class="sqs-block-content">
-
-<p style="text-align:center;white-space:pre-wrap;" class="">Map Reset (carry scores over):</p>
-
-
-</div></div></div><div class="fe-block fe-block-7dd5bb618eb6118d6e31"><div class="sqs-block button-block sqs-block-button" data-block-type="53" id="block-7dd5bb618eb6118d6e31"><div class="sqs-block-content">
-
-<div
-  class="sqs-block-button-container sqs-block-button-container--center"
-  data-animation-role="button"
-  data-alignment="center"
-  data-button-size="small"
-  data-button-type="tertiary"
-  onclick="mapreset(0)"
->
-  <a
-    
-    class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
-  >
-    Zero
-  </a>
-</div>
-</div></div></div><div class="fe-block fe-block-6d7e22035f8a3792e5f1"><div class="sqs-block button-block sqs-block-button" data-block-type="53" id="block-6d7e22035f8a3792e5f1"><div class="sqs-block-content">
-
-<div
-  class="sqs-block-button-container sqs-block-button-container--center"
-  data-animation-role="button"
-  data-alignment="center"
-  data-button-size="small"
-  data-button-type="tertiary"
-  onclick="mapreset(-1)"
->
-  <a
-    
-    class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
-  >
-    -
-  </a>
-</div>
-</div></div></div><div class="fe-block fe-block-772cd7b331e9c3a84362"><div class="sqs-block button-block sqs-block-button" data-block-type="53" id="block-772cd7b331e9c3a84362"><div class="sqs-block-content">
-
-<div
-  class="sqs-block-button-container sqs-block-button-container--center"
-  data-animation-role="button"
-  data-alignment="center"
-  data-button-size="small"
-  data-button-type="tertiary"
-  onclick="mapreset(1)"
->
-  <a
-    
-    class="sqs-block-button-element--small sqs-button-element--tertiary sqs-block-button-element"
-  >
-    +
-  </a>
-</div>
-</div></div></div><div class="fe-block fe-block-9a7a0b38b4e4ea692c08"><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-9a7a0b38b4e4ea692c08"><div class="sqs-block-content">
-
-<h4 style="text-align:center;white-space:pre-wrap;" id="updown">0</h4>
-
-
-</div></div></div></div></div>
+</div></div></div>
     </div>
   </div>
   
