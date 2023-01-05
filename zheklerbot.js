@@ -1188,7 +1188,6 @@ app.get('/', async (request, response) => {
           "Authorization": `Bearer ${cookies["auth"]}`
         }
       }).then(async res => {
-        console.log(userIds);
 
         if (res.status === 200) {
           page = fs.readFileSync('./html/page.html').toString('utf-8');
