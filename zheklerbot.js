@@ -1176,61 +1176,67 @@ app.use(favicon(path.join(__dirname, 'images/favicon.ico')));
 
 // Home page.
 app.get('/', async (request, response) => {
-  var cookies = await request.cookies;
-  var page;
-  if (cookies["auth"]) {
-    var rows = await helper.checkBearer(cookies["auth"]);
-    if (!rows[0]) throw new Error("No bearer in DB - 401.");
+  try {
+    var cookies = await request.cookies;
+    var page;
+    if (cookies["auth"]) {
+      var rows = await helper.checkBearer(cookies["auth"]);
+      if (!rows[0]) throw new Error("No bearer in DB - 401.");
 
-    await axios.get('https://id.twitch.tv/oauth2/validate', {
-      headers: {
-        "Authorization": `Bearer ${cookies["auth"]}`
-      }
-    }).then(async res => {
+      await axios.get('https://id.twitch.tv/oauth2/validate', {
+        headers: {
+          "Authorization": `Bearer ${cookies["auth"]}`
+        }
+      }).then(async res => {
+        console.log(userIds);
 
-      if (res.status === 200) {
-        page = fs.readFileSync('./html/page.html').toString('utf-8');
-        page = page.replace(/#modules#/g, `href="/modules/${rows[0].userid}"`);
-        page = page.replace(/#twovtwo#/g, `href="/twovtwo/${rows[0].userid}"`);
-        page = page.replace(/#customs#/g, `href="/customs/${rows[0].userid}"`);
-        page = page.replace(/#editors#/g, `href="/editors/${rows[0].userid}"`);
-        page = page.replace(/#permissions#/g, `href="/permissions/${rows[0].userid}"`);
-        page = page.replace(/#pref_name#/g, userIds[rows[0].userid].pref_name)
-        page = page.replace(/#channel#/g, userIds[rows[0].userid].user_id);
-        page = page.replace(/#checked#/g, userIds[rows[0].userid].twitch?'checked':'');
-        page = page.replace('Login to Twitch', 'Logout of Twitch');
-        if (userIds[rows[0].userid].twitch) page = page.replace('var enabled = false', 'var enabled = true');
-        response.send(page); 
-      } else {
-        helper.removeBearer(cookies["auth"], rows[0].userid);
-        response.clearCookie('auth', {
-          'domain': '.zhekbot.com',
-          secure: true,
-          httpOnly: true
-        });
-        response.redirect('/');
-      }
-    }).catch(err => {
-      if (err.toString().includes('401')) {
-        helper.removeBearer(cookies["auth"], rows[0].userid);
-        response.clearCookie('auth', {
-          'domain': '.zhekbot.com',
-          secure: true,
-          httpOnly: true
-        });
-        response.redirect('/');
-      } else {
-        helper.dumpError(err, `Home page validation.`);
-        response.send(err);
-      }
-      return;
-    });
+        if (res.status === 200) {
+          page = fs.readFileSync('./html/page.html').toString('utf-8');
+          page = page.replace(/#modules#/g, `href="/modules/${rows[0].userid}"`);
+          page = page.replace(/#twovtwo#/g, `href="/twovtwo/${rows[0].userid}"`);
+          page = page.replace(/#customs#/g, `href="/customs/${rows[0].userid}"`);
+          page = page.replace(/#editors#/g, `href="/editors/${rows[0].userid}"`);
+          page = page.replace(/#permissions#/g, `href="/permissions/${rows[0].userid}"`);
+          page = page.replace(/#pref_name#/g, userIds[rows[0].userid].pref_name);
+          page = page.replace(/#channel#/g, userIds[rows[0].userid].user_id);
+          page = page.replace(/#checked#/g, userIds[rows[0].userid].twitch?'checked':'');
+          page = page.replace('Login to Twitch', 'Logout of Twitch');
+          if (userIds[rows[0].userid].twitch) page = page.replace('var enabled = false', 'var enabled = true');
+          response.send(page); 
+        } else {
+          helper.removeBearer(cookies["auth"], rows[0].userid);
+          response.clearCookie('auth', {
+            'domain': '.zhekbot.com',
+            secure: true,
+            httpOnly: true
+          });
+          response.redirect('/');
+        }
+      }).catch(err => {
+        if (err.toString().includes('401')) {
+          helper.removeBearer(cookies["auth"], rows[0].userid);
+          response.clearCookie('auth', {
+            'domain': '.zhekbot.com',
+            secure: true,
+            httpOnly: true
+          });
+          response.redirect('/');
+        } else {
+          helper.dumpError(err, `Home page validation.`);
+          response.send(err);
+        }
+        return;
+      });
 
-  } else {
-    page = fs.readFileSync('./html/not_enabled.html').toString('utf-8');
-    page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
-  
-    response.send(page); 
+    } else {
+      page = fs.readFileSync('./html/not_enabled.html').toString('utf-8');
+      page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
+    
+      response.send(page); 
+    }
+  } catch (err) {
+    helper.dumpError(err, "Main page.");
+    response.sendStatus(500);
   }
 });
 
