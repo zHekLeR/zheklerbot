@@ -106,10 +106,6 @@ function dumpError(err, where) {
       var rows = await dbQueryPromise(`SELECT * FROM permissions WHERE bearer LIKE '%${bearer}%';`);
       if (!rows.length) {
         return [false, {}];
-      } else if (rows.length === 1) {
-        if (rows[0].userid !== request.params.channel.toLowerCase()) {
-          return [false, {}];
-        } 
       } else {
         for (var i = 0; i < rows.length; i++) {
           if (rows[i].bearer === bearer) {
