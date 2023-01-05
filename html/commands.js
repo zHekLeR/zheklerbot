@@ -1,7 +1,9 @@
 var tabsEnabled = {}, tab;
 
+var hidden = document.getElementById("client_id");
+var client_id = hidden.value;
 var state = makeid(20);
-var url = `https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=${process.env.CLIENT_ID}&force_verify=true&redirect_uri=https://www.zhekbot.com/redirect&scope=&state=${state}`;
+var url = `https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=${client_id}&force_verify=true&redirect_uri=https://www.zhekbot.com/redirect&scope=&state=${state}`;
 
 console.log(url);
 
