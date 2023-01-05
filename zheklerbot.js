@@ -1378,10 +1378,11 @@ app.get('/commands/:channel', async (request, response) => {
       page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
       page = page.replace(/#channel#/g, 'zhekler');
     }
-    response.send(page);
   } catch (err) {
     helper.dumpError(err, "Commands page.");
     response.sendStatus(500);
+  } finally {
+    response.send(page);
   }
 });
 

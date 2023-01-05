@@ -2592,7 +2592,7 @@
       };
 
       async function twitch() {
-        await fetch(`/out`)
+        await fetch(`/logout`)
         .then(res => {
           if (res.status === 201) {
             window.location.href = "/";
