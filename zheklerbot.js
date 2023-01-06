@@ -3292,21 +3292,17 @@ app.post('/eventsub', (req, res) => {
 
 
 function getSecret() {
-  return process.env.SECRET;
+  return process.env.CLIENT_SECRET;
 }
 
 // Build the message used to get the HMAC.
 function getHmacMessage(request) {
-  return (request.headers[TWITCH_MESSAGE_ID] + 
-    request.headers[TWITCH_MESSAGE_TIMESTAMP] + 
-    JSON.stringify(request.body));
+  return `${request.headers[TWITCH_MESSAGE_ID]}${request.headers[TWITCH_MESSAGE_TIMESTAMP]}${JSON.stringify(request.body)}`;
 }
 
 // Get the HMAC.
 function getHmac(secret, message) {
-  return crypto.createHmac('sha256', secret)
-  .update(message)
-  .digest('hex');
+  return crypto.createHmac('sha256', secret).update(message).digest('hex');
 }
 
 // Verify whether your signature matches Twitch's signature.
