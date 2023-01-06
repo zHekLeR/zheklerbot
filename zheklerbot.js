@@ -1457,7 +1457,7 @@ app.get('/editors/:channel', async (request, response) => {
     for (var i = 0; i < rows.length; i++) {
       var perms = rows[i].perms.split(',');
       if (perms.includes(request.params.channel)) {
-        str += `<tr id="editor-${rows[i].userid}"><td style="padding: 0.2vh 0.2vw; text-align: center;">${rows[i].userid}</td><td style="padding: 0.2vh 0.2vw; text-align: center;" onclick="remove('editor-${rows[i].userid}')"><a class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary" onclick="remove('editor-${rows[i].userid}')">Remove</a></td></tr><tr>&emsp;</tr>`;
+        str += `<tr id="editor-${rows[i].userid}"><td style="border: 1px solid gray; padding: 0.2vh 0.2vw; text-align: center;">${rows[i].userid}</td><td style="border: 1px solid gray; padding: 0.2vh 0.2vw; text-align: center;")"><a class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary" onclick="rem('editor-${rows[i].userid}')">Remove</a></td></tr><tr>&emsp;</tr>`;
       }
     }
 
