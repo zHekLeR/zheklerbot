@@ -1842,8 +1842,6 @@
                   let cell2 = row1.insertCell(1);
                   cell2.innerHTML = `<a onclick="remove(this)" class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary">Remove</a>`;
                   cell2.style = 'border: 1px solid gray;';
-
-                  let row2 = document.getElementById("editors").insertRow();
                   
               } else {
                   throw new Error(`Error: status ${res.status}`);
