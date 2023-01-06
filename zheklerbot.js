@@ -1172,6 +1172,9 @@ app.use(express.static(__dirname));
 app.use(express.static(path.join(__dirname, 'node_modules')));
 app.use(cookieParser());
 app.use(favicon(path.join(__dirname, 'images/favicon.ico')));
+app.use(express.raw({          // Need the raw message body for signature verification
+  type: 'application/json'
+})) 
 
 
 // Home page.
@@ -3178,6 +3181,9 @@ app.post('/eventsub', (req, res) => {
   var secret = getSecret();
   var message = getHmacMessage(req);
   var hmac = HMAC_PREFIX + getHmac(secret, message);  // Signature to compare
+  console.log(secret);
+  console.log(message);
+  console.log(hmac);
 
   if (true === verifyMessage(hmac, req.headers[TWITCH_MESSAGE_SIGNATURE])) {
 
@@ -3291,12 +3297,16 @@ function getSecret() {
 
 // Build the message used to get the HMAC.
 function getHmacMessage(request) {
-  return `${request.headers[TWITCH_MESSAGE_ID]}${request.headers[TWITCH_MESSAGE_TIMESTAMP]}${JSON.stringify(request.body)}`;
+  return (request.headers[TWITCH_MESSAGE_ID] + 
+    request.headers[TWITCH_MESSAGE_TIMESTAMP] + 
+    request.body);
 }
 
 // Get the HMAC.
 function getHmac(secret, message) {
-  return crypto.createHmac('sha256', secret).update(message).digest('hex');
+  return crypto.createHmac('sha256', secret)
+  .update(message)
+  .digest('hex');
 }
 
 // Verify whether your signature matches Twitch's signature.
