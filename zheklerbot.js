@@ -1402,7 +1402,7 @@ app.get('/commands/:channel', async (request, response) => {
         page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
       }
 
-      var bearer = helper.checkBearer(cookies["auth"]);
+      var bearer = await helper.checkBearer(cookies["auth"]);
 
       if (bearer[0] && bearer[1].userid === request.params.channel) {
         page = page.replace(/#editors#/g, `href="/editors/${request.params.channel}`);
@@ -2795,6 +2795,16 @@ async function semtex() {
 };
 
 
+// Format number with commas between each set of 3 numbers.
+function numberWithCommas(x) {
+  x = x.toString();
+  var pattern = /(-?\d+)(\d{3})/;
+  while (pattern.test(x))
+      x = x.replace(pattern, "$1,$2");
+  return x;
+}
+
+
 // Wordle!
 app.get('/wordle/:id', async (req, response) => {
   try {
@@ -3181,9 +3191,6 @@ app.post('/eventsub', (req, res) => {
   var secret = getSecret();
   var message = getHmacMessage(req);
   var hmac = HMAC_PREFIX + getHmac(secret, message);  // Signature to compare
-  console.log(secret);
-  console.log(message);
-  console.log(hmac);
 
   if (true === verifyMessage(hmac, req.headers[TWITCH_MESSAGE_SIGNATURE])) {
 
@@ -3226,7 +3233,7 @@ app.post('/eventsub', (req, res) => {
             if (outcome) {
               var result = outcome.title;
               var topBetter = outcome.top_predictors[0];
-              say(notification.event.broadcaster_user_login, `Prediction over! The result was '${result}'! ${topBetter.user_name?topBetter.user_name:topBetter.user_login} won ${topBetter.channel_points_won} points!`);
+              say(notification.event.broadcaster_user_login, `Prediction over! The result was '${result}'! ${topBetter.user_name?topBetter.user_name:topBetter.user_login} won ${numberWithCommas(topBetter.channel_points_won)} points!`);
             } else {
               if (intArray[notification.event.broadcaster_user_login]) {
                 clearInterval(intArray[notification.event.broadcaster_user_login]);
@@ -3246,7 +3253,7 @@ app.post('/eventsub', (req, res) => {
               clearInterval(intArray[notification.event.broadcaster_user_login]);
               delete intArray[notification.event.broadcaster_user_login];
             }
-            say(notification.event.broadcaster_user_login, `Prediction locked! There are ${points} points on the line for '${pred}'`);
+            say(notification.event.broadcaster_user_login, `Prediction locked! There are ${numberWithCommas(points)} points on the line for '${pred}'`);
             break;
 
           case "stream.online":
