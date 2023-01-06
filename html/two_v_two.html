@@ -495,7 +495,7 @@
   
     <div class="header-nav-item header-nav-item--collection">
       <a
-        href="/editors/#channel#"
+        #editors#
         data-animation-role="header-element"
         
       >
@@ -510,7 +510,7 @@
   
     <div class="header-nav-item header-nav-item--collection">
       <a
-        href="/permissions/#channel#"
+        #permissions#
         data-animation-role="header-element"
         
       >
@@ -760,7 +760,7 @@
   
     <div class="header-nav-item header-nav-item--collection">
       <a
-        href="/editors/#channel#"
+        #editors#
         data-animation-role="header-element"
         
       >
@@ -775,7 +775,7 @@
   
     <div class="header-nav-item header-nav-item--collection">
       <a
-        href="/permissions/#channel#"
+        #permissions#
         data-animation-role="header-element"
         
       >
@@ -1136,7 +1136,7 @@
 
   <div class="container header-menu-nav-item header-menu-nav-item--collection">
     <a
-      href="/editors/#channel#"
+      #editors#
       
     >
       <div class="header-menu-nav-item-content">
@@ -1147,7 +1147,7 @@
 
   <div class="container header-menu-nav-item header-menu-nav-item--collection">
     <a
-      href="/permissions/#channel#"
+      #permissions
       
     >
       <div class="header-menu-nav-item-content">
@@ -2291,6 +2291,7 @@
       width: 28px;
       height: 28px;
       text-align: center;
+      padding: 2px;
     }
   </style>
   <div>
@@ -2512,9 +2513,6 @@
   }
 
 </style><div class="fluid-engine fe-63b38afdea5a9573c418090c"><div class="fe-block fe-block-yui_3_17_2_1_1672706097558_913699"><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-yui_3_17_2_1_1672706097558_913699"><div class="sqs-block-content">
-
-<p class="" style="white-space:pre-wrap;"><br>Clicking the 'Send Scores' button will update the current scores and put them in chat. The “Respond to !score” checkbox does not affect this.</p><p class="" style="white-space:pre-wrap;">If you have the box beside a stream checked, the bot will respond to !score when it is typed in the chat. Setting this for the Teammate or Opponents will cause scores to be put in that chat as well (provided you have permissions for that stream).</p><p class="" style="white-space:pre-wrap;">Note that the name provided must be the Twitch stream.</p><p class="" data-rte-preserve-empty="true" style="white-space:pre-wrap;"></p><p class="" style="white-space:pre-wrap;">If the map is reset but the current scores will carry over, you can enter this in the appropriate input and it will be accounted for.</p>
-
 
 </div></div></div></div></div>
     </div>
@@ -2831,8 +2829,7 @@
           }).then(res => res.text())
           .then(body => {
               scores = body.split(',');
-              console.log(scores.join(', '));
-              console.log(body);
+              
               if (scores.length == 12) {
                   document.getElementById('hKills').innerHTML = parseInt(scores[0]);
                   document.getElementById('tKills').innerHTML = parseInt(scores[1]);
