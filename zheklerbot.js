@@ -3189,7 +3189,6 @@ app.post('/eventsub', (req, res) => {
   var secret = getSecret();
   var message = getHmacMessage(req);
   var hmac = HMAC_PREFIX + getHmac(secret, message);  // Signature to compare
-  console.log(message, hmac, req.headers[TWITCH_MESSAGE_SIGNATURE]);
 
   if (true === verifyMessage(hmac, req.headers[TWITCH_MESSAGE_SIGNATURE])) {
 
@@ -3292,13 +3291,14 @@ app.post('/eventsub', (req, res) => {
   }
   else {
     console.log('403');    // Signatures didn't match.
-    res.setHeader('Content-Type', 'text/html').sendStatus(204);
+    console.log(message, hmac, req.headers[TWITCH_MESSAGE_SIGNATURE]);
+    res.setHeader('Content-Type', 'text/html').sendStatus(403);
   }
 })
 
 
 function getSecret() {
-  return process.env.CLIENT_SECRET;
+  return process.env.SECRET;
 }
 
 // Build the message used to get the HMAC.
