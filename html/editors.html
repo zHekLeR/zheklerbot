@@ -1856,11 +1856,10 @@
       async function rem(btn) {
         console.log("Remove...");
         btn = document.getElementById(btn);
-        await fetch('/removeeditor/#channel#', { headers: { 'editor': btn.parentNode.childNodes[0].innerHTML }})
+        await fetch('/removeeditor/#channel#', { headers: { 'editor': btn.id.substring(7) }})
         .then(res => {
             if (res.status == 200) {
-                let row = btn.parentNode.parentNode;
-                row.parentNode.removeChild(row);
+                row.parentNode.removeChild(btn);
             } else {
                 throw new Error(`Error: status ${res.status}`);
             }
