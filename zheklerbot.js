@@ -1385,13 +1385,21 @@ app.get('/commands/:channel', async (request, response) => {
 
       var cookies = await request.cookies;
       if (cookies["auth"]) {
+        var bearer = await helper.checkBearer(cookies["auth"]);
+
         page = page.replace('Login to Twitch', 'Logout of Twitch');
         page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
         page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
         page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
         page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
-        page = page.replace(/#editors#/g, `href="/editors/${request.params.channel.toLowerCase()}"`);
-        page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel.toLowerCase()}"`);
+
+        if (bearer[0] && bearer[1].userid === request.params.channel) {
+          page = page.replace(/#editors#/g, `href="/editors/${request.params.channel}`);
+          page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel}`);
+        } else {
+          page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
+          page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
+        }
       } else {
         page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
         page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
@@ -1400,16 +1408,6 @@ app.get('/commands/:channel', async (request, response) => {
         page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
         page = page.replace(/#channel#/g, 'zhekler');
         page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
-      }
-
-      var bearer = await helper.checkBearer(cookies["auth"]);
-
-      if (bearer[0] && bearer[1].userid === request.params.channel) {
-        page = page.replace(/#editors#/g, `href="/editors/${request.params.channel}`);
-        page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel}`);
-      } else {
-        page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
-        page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
       }
   
       response.send(page);
