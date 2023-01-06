@@ -3299,7 +3299,7 @@ function getSecret() {
 function getHmacMessage(request) {
   return (request.headers[TWITCH_MESSAGE_ID] + 
     request.headers[TWITCH_MESSAGE_TIMESTAMP] + 
-    request.body);
+    JSON.stringify(request.body));
 }
 
 // Get the HMAC.
