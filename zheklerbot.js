@@ -1486,7 +1486,7 @@ app.get('/addeditor/:channel', async (request, response) => {
     var cookies = request.cookies;
     if (cookies["auth"]) {
       var bearer = await helper.checkBearer(cookies["auth"]);
-      if (bearer[0] && bearer[1].userid !== request.params.channel) {
+      if (!bearer[0] || bearer[1].userid !== request.params.channel) {
         response.status(401);
         response.redirect('/');
         return;
@@ -1527,7 +1527,7 @@ app.get('/removeeditor/:channel', async (request, response) => {
     var cookies = request.cookies;
     if (cookies["auth"]) {
       var bearer = await helper.checkBearer(cookies["auth"]);
-      if (bearer[0] && bearer[1].userid !== request.params.channel) {
+      if (!bearer[0] || bearer[1].userid !== request.params.channel) {
         response.status(401);
         response.redirect('/');
         return;
@@ -3189,6 +3189,7 @@ app.post('/eventsub', (req, res) => {
   var secret = getSecret();
   var message = getHmacMessage(req);
   var hmac = HMAC_PREFIX + getHmac(secret, message);  // Signature to compare
+  console.log(hmac, req.headers[TWITCH_MESSAGE_SIGNATURE]);
 
   if (true === verifyMessage(hmac, req.headers[TWITCH_MESSAGE_SIGNATURE])) {
 
