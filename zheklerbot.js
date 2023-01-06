@@ -2192,14 +2192,12 @@ app.get('/post/:channel/enable', jsonParser, async (request, response) => {
 // Receive scores
 app.get('/send/:channel/:hKills/:tKills/:o1Kills/:o2Kills', async (request, response) => {
   try {
-    console.log('1');
     request.params.channel = request.params.channel.toLowerCase();
     if (!userIds[request.params.channel] || !userIds[request.params.channel].twitch) {
       response.status(404);
       response.redirect('/not-found');
       return;
     }
-    console.log('1');
 
     var cookies = request.cookies, rows;
     if (cookies["auth"]) {
@@ -2209,13 +2207,11 @@ app.get('/send/:channel/:hKills/:tKills/:o1Kills/:o2Kills', async (request, resp
         response.redirect('/');
         return;
       }
-      console.log('2');
     } else {
       response.status(401);
       response.redirect('/');
       return;
     }
-    console.log('3');
 
     await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.hKills}, tkills = ${request.params.tKills}, o1kills = ${request.params.o1Kills}, o2kills = ${request.params.o2Kills}, tname = '${request.get('tname')}', o1name = '${request.get('o1name')}', o2name = '${request.get('o2name')}', mapreset = ${parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.params.channel}';`);
     await tvtscores(request.params.channel.toLowerCase());
