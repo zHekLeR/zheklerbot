@@ -1457,7 +1457,7 @@ app.get('/editors/:channel', async (request, response) => {
     for (var i = 0; i < rows.length; i++) {
       var perms = rows[i].perms.split(',');
       if (perms.includes(request.params.channel)) {
-        str += `<tr id="editor-${rows[i].userid}"><td style="padding: 2px; text-align: center;">${rows[i].userid}</td><td style="padding: 2px; text-align: center;" onclick="remove('editor-${rows[i].userid}')"><a class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary" onclick="remove('editor-${rows[i].userid}')">Remove</a></td></tr><tr>&emsp;</tr>`;
+        str += `<tr id="editor-${rows[i].userid}"><td style="padding: 0.2vh 0.2vw; text-align: center;">${rows[i].userid}</td><td style="padding: 0.2vh 0.2vw; text-align: center;" onclick="remove('editor-${rows[i].userid}')"><a class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary" onclick="remove('editor-${rows[i].userid}')">Remove</a></td></tr><tr>&emsp;</tr>`;
       }
     }
 
@@ -1652,8 +1652,8 @@ app.get('/modules/:channel', async (request, response) => {
     page = page.replace(/#pref_name#/g, userIds[request.params.channel.toLowerCase()].pref_name || '');
 
     if (bearer[1].userid === request.params.channel) {
-      page = page.replace(/#editors#/g, `href="/editors/${request.params.channel}`);
-      page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel}`);
+      page = page.replace(/#editors#/g, `href="/editors/${request.params.channel}"`);
+      page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel}"`);
     } else {
       page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
       page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
@@ -2079,8 +2079,8 @@ app.get('/twovtwo/:channel', async (request, response) => {
     page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
 
     if (bearer[1].userid === request.params.channel) {
-      page = page.replace(/#editors#/g, `href="/editors/${request.params.channel}`);
-      page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel}`);
+      page = page.replace(/#editors#/g, `href="/editors/${request.params.channel}"`);
+      page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel}"`);
     } else {
       page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
       page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
@@ -2364,8 +2364,8 @@ app.get ('/customs/:channel', async (request, response) => {
     page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
 
     if (bearer[1].userid === request.params.channel) {
-      page = page.replace(/#editors#/g, `href="/editors/${request.params.channel}`);
-      page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel}`);
+      page = page.replace(/#editors#/g, `href="/editors/${request.params.channel}"`);
+      page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel}"`);
     } else {
       page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
       page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
