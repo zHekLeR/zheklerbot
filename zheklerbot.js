@@ -1398,6 +1398,16 @@ app.get('/commands/:channel', async (request, response) => {
         page = page.replace(/#channel#/g, 'zhekler');
         page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
       }
+
+      var bearer = helper.checkBearer(cookies["auth"]);
+
+      if (bearer[0] && bearer[1].userid === request.params.channel) {
+        page = page.replace(/#editors#/g, `href="/editors/${request.params.channel}`);
+        page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel}`);
+      } else {
+        page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
+        page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
+      }
   
       response.send(page);
     } else {
