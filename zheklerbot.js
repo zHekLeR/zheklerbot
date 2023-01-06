@@ -1610,8 +1610,9 @@ app.get('/modules/:channel', async (request, response) => {
     }
     
     var cookies = request.cookies;
+    var bearer;
     if (cookies["auth"]) {
-      let bearer = await helper.checkBearer(cookies["auth"]);
+      bearer = await helper.checkBearer(cookies["auth"]);
       if ((!bearer[0] || !bearer[1].perms || !bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
         response.status(401);
         response.redirect('/');
@@ -1638,6 +1639,14 @@ app.get('/modules/:channel', async (request, response) => {
     };`);
     page = page.replace(/#acti#/g, userIds[request.params.channel.toLowerCase()] && userIds[request.params.channel.toLowerCase()].acti_id?userIds[request.params.channel.toLowerCase()].acti_id:'Activision ID'); 
     page = page.replace(/#pref_name#/g, userIds[request.params.channel.toLowerCase()].pref_name || '');
+
+    if (bearer[1].userid === request.params.channel) {
+      page = page.replace(/#editors#/g, `href="/editors/${request.params.channel}`);
+      page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel}`);
+    } else {
+      page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
+    }
 
     response.send(page);
   } catch (err) {
@@ -2039,8 +2048,9 @@ app.get('/twovtwo/:channel', async (request, response) => {
     }
     
     var cookies = request.cookies;
+    var bearer;
     if (cookies["auth"]) {
-      let bearer = await helper.checkBearer(cookies["auth"]);
+      bearer = await helper.checkBearer(cookies["auth"]);
       if ((!bearer[0] || !bearer[1].perms || !bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
         response.status(401);
         response.redirect('/');
@@ -2056,6 +2066,15 @@ app.get('/twovtwo/:channel', async (request, response) => {
     page = page.replace(/Login to Twitch/g, "Logout of Twitch");
     page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
     page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
+
+    if (bearer[1].userid === request.params.channel) {
+      page = page.replace(/#editors#/g, `href="/editors/${request.params.channel}`);
+      page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel}`);
+    } else {
+      page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
+    }
+
     response.send(page);
   } catch (err) {
     helper.dumpError(err, `2v2 overall.`);
@@ -2332,6 +2351,14 @@ app.get ('/customs/:channel', async (request, response) => {
     page = page.replace(/Login to Twitch/g, "Logout of Twitch");
     page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
     page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
+
+    if (bearer[1].userid === request.params.channel) {
+      page = page.replace(/#editors#/g, `href="/editors/${request.params.channel}`);
+      page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel}`);
+    } else {
+      page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
+    }
 
     var rows = await helper.dbQueryPromise(`SELECT * FROM customs WHERE user_id = '${request.params.channel}';`);
 
