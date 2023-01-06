@@ -1394,8 +1394,8 @@ app.get('/commands/:channel', async (request, response) => {
         page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
 
         if (bearer[0] && bearer[1].userid === request.params.channel) {
-          page = page.replace(/#editors#/g, `href="/editors/${request.params.channel}`);
-          page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel}`);
+          page = page.replace(/#editors#/g, `href="/editors/${request.params.channel}"`);
+          page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel}"`);
         } else {
           page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
           page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
