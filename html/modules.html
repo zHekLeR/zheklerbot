@@ -2273,7 +2273,7 @@
     id="Update Name"
   >
     <a
-      id="update"
+      id="update_name"
       class="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element"
       
     >
@@ -2676,6 +2676,9 @@
           button.disabled = false;
         }, 1000);
 
+        console.log(name);
+        console.log(prefName);
+        
         if (name === prefName) {
           alert("This is already your preferred name.");
           return;
