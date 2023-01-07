@@ -1649,6 +1649,7 @@ app.get('/modules/:channel', async (request, response) => {
       'Duels': ${userIds[request.params.channel.toLowerCase()].duel}
     };`);
     page = page.replace(/#acti#/g, userIds[request.params.channel.toLowerCase()] && userIds[request.params.channel.toLowerCase()].acti_id?`value="${userIds[request.params.channel.toLowerCase()].acti_id}"`:'placeholder="Activision ID"'); 
+    console.log(userIds[request.params.channel.toLowerCase()].pref_name);
     page = page.replace(/#pref_name#/g, userIds[request.params.channel.toLowerCase()].pref_name || '');
 
     if (bearer[1].userid === request.params.channel) {
