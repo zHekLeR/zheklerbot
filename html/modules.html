@@ -2587,7 +2587,7 @@
 
     <script>
       var tabsEnabled = {};
-      var prefName = document.getElementById('pref_name');
+      var prefName = document.getElementById('pref_name').value;
       var oActi = document.getElementById('acti').value;
 
       var tabs = Object.keys(tabsEnabled);
@@ -2678,7 +2678,7 @@
 
         console.log(name);
         console.log(prefName);
-        
+
         if (name === prefName) {
           alert("This is already your preferred name.");
           return;
