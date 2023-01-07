@@ -1295,7 +1295,7 @@
   .fe-63b390c255d34d06302409e1 {
     --grid-gutter: calc(var(--sqs-site-gutter, 4vw) - 11.0px);
     --cell-max-width: calc( ( var(--sqs-site-max-width, 1500px) - (11.0px * (24 - 1)) ) / 24 );
-    /* --inset-padding: 0vw; */
+    --inset-padding: 100vw; 
 
     --row-height-scaling-factor: 0.0215;
     --container-width: min(var(--sqs-site-max-width, 1500px), calc(100vw - var(--sqs-site-gutter, 4vw) * 2 - var(--inset-padding) ));
@@ -1324,7 +1324,7 @@
 
   @media (min-width: 768px) {
     .fe-block-yui_3_17_2_1_1672706097558_1239906 {
-      grid-area: 4/8/6/14;
+      grid-area: 2/8/3/14;
       z-index: 1;
     }
 
@@ -1352,7 +1352,7 @@
 
   @media (min-width: 768px) {
     .fe-block-yui_3_17_2_1_1672706097558_1255163 {
-      grid-area: 4/14/5/17;
+      grid-area: 2/14/3/17;
       z-index: 2;
     }
 
@@ -1380,7 +1380,7 @@
 
   @media (min-width: 768px) {
     .fe-block-a3c73f1eaa7791d6c794 {
-      grid-area: 5/8/6/14;
+      grid-area: 3/8/4/14;
       z-index: 2;
     }
 
@@ -1408,7 +1408,7 @@
 
   @media (min-width: 768px) {
     .fe-block-yui_3_17_2_1_1672706097558_1288536 {
-      grid-area: 5/14/6/17;
+      grid-area: 3/14/4/17;
       z-index: 3;
     }
 
@@ -1417,6 +1417,62 @@
     }
 
     .fe-block-yui_3_17_2_1_1672706097558_1288536 .sqs-block-alignment-wrapper {
+      align-items: flex-start;
+    }
+  }
+
+  .fe-block-yui_3_17_2_1_6969 {
+    grid-area: 7/2/9/7;
+    z-index: 3;
+  }
+
+  .fe-block-yui_3_17_2_1_6969 .sqs-block {
+    justify-content: center;
+  }
+
+  .fe-block-yui_3_17_2_1_6969 .sqs-block-alignment-wrapper {
+    align-items: center;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-yui_3_17_2_1_6969 {
+      grid-area: 4/10/5/14;
+      z-index: 1;
+    }
+
+    .fe-block-yui_3_17_2_1_6969 .sqs-block {
+      justify-content: flex-start;
+    }
+
+    .fe-block-yui_3_17_2_1_6969 .sqs-block-alignment-wrapper {
+      align-items: flex-start;
+    }
+  }
+
+  .fe-block-abcd6969 {
+    grid-area: 7/7/9/10;
+    z-index: 3;
+  }
+
+  .fe-block-abcd6969 .sqs-block {
+    justify-content: center;
+  }
+
+  .fe-block-abcd6969 .sqs-block-alignment-wrapper {
+    align-items: center;
+  }
+
+  @media (min-width: 768px) {
+    .fe-block-abcd6969 {
+      grid-area: 4/14/5/17;
+      z-index: 3;
+    }
+
+    .fe-block-abcd6969 .sqs-block {
+      justify-content: flex-start;
+    }
+
+    .fe-block-abcd6969 .sqs-block-alignment-wrapper {
       align-items: flex-start;
     }
   }
@@ -1436,7 +1492,7 @@
 
   @media (min-width: 768px) {
     .fe-block-d03715d1debea095120e {
-      grid-area: 7/8/8/14;
+      grid-area: 6/10/7/14;
       z-index: 3;
     }
 
@@ -1450,7 +1506,7 @@
   }
 
   .fe-block-a3416d9d7eda46dff550 {
-    grid-area: 5/7/7/10;
+    grid-area: 7/7/9/10;
     z-index: 3;
   }
 
@@ -1464,7 +1520,7 @@
 
   @media (min-width: 768px) {
     .fe-block-a3416d9d7eda46dff550 {
-      grid-area: 7/14/8/17;
+      grid-area: 6/14/7/17;
       z-index: 3;
     }
 
@@ -1478,7 +1534,7 @@
   }
 
   .fe-block-06f27cd7d3bc4ad9eab6 {
-    grid-area: 8/2/10/7;
+    grid-area: 10/2/12/7;
     z-index: 4;
   }
 
@@ -1492,7 +1548,7 @@
 
   @media (min-width: 768px) {
     .fe-block-06f27cd7d3bc4ad9eab6 {
-      grid-area: 9/8/10/14;
+      grid-area: 8/8/9/14;
       z-index: 4;
     }
 
@@ -1506,7 +1562,7 @@
   }
 
   .fe-block-551d132f58d46410d16e {
-    grid-area: 8/7/10/10;
+    grid-area: 10/7/12/10;
     z-index: 4;
   }
 
@@ -1520,7 +1576,7 @@
 
   @media (min-width: 768px) {
     .fe-block-551d132f58d46410d16e {
-      grid-area: 9/14/10/17;
+      grid-area: 8/14/9/17;
       z-index: 4;
     }
 
@@ -1534,7 +1590,7 @@
   }
 
   .fe-block-0e5ac50fde57695ac74b {
-    grid-area: 11/2/13/7;
+    grid-area: 13/2/15/7;
     z-index: 5;
   }
 
@@ -1548,7 +1604,7 @@
 
   @media (min-width: 768px) {
     .fe-block-0e5ac50fde57695ac74b {
-      grid-area: 11/8/12/14;
+      grid-area: 10/8/11/14;
       z-index: 5;
     }
 
@@ -1562,7 +1618,7 @@
   }
 
   .fe-block-748e6606ddbe251f4343 {
-    grid-area: 11/7/13/10;
+    grid-area: 13/7/15/10;
     z-index: 5;
   }
 
@@ -1576,7 +1632,7 @@
 
   @media (min-width: 768px) {
     .fe-block-748e6606ddbe251f4343 {
-      grid-area: 11/14/12/17;
+      grid-area: 10/14/11/17;
       z-index: 5;
     }
 
@@ -1590,7 +1646,7 @@
   }
 
   .fe-block-3c54f319541690247f1b {
-    grid-area: 14/2/16/7;
+    grid-area: 16/2/18/7;
     z-index: 6;
   }
 
@@ -1604,7 +1660,7 @@
 
   @media (min-width: 768px) {
     .fe-block-3c54f319541690247f1b {
-      grid-area: 13/8/14/14;
+      grid-area: 12/8/13/14;
       z-index: 6;
     }
 
@@ -1618,7 +1674,7 @@
   }
 
   .fe-block-a725769c8423b642e86a {
-    grid-area: 14/7/16/10;
+    grid-area: 16/7/18/10;
     z-index: 6;
   }
 
@@ -1632,7 +1688,7 @@
 
   @media (min-width: 768px) {
     .fe-block-a725769c8423b642e86a {
-      grid-area: 13/14/14/17;
+      grid-area: 12/14/13/17;
       z-index: 6;
     }
 
@@ -1646,7 +1702,7 @@
   }
 
   .fe-block-8d9c2e9299366dd8f19b {
-    grid-area: 17/2/19/7;
+    grid-area: 19/2/21/7;
     z-index: 7;
   }
 
@@ -1660,7 +1716,7 @@
 
   @media (min-width: 768px) {
     .fe-block-8d9c2e9299366dd8f19b {
-      grid-area: 15/8/16/14;
+      grid-area: 14/8/15/14;
       z-index: 7;
     }
 
@@ -1674,7 +1730,7 @@
   }
 
   .fe-block-6e96343444b0f0675000 {
-    grid-area: 17/7/19/10;
+    grid-area: 19/7/21/10;
     z-index: 7;
   }
 
@@ -1688,7 +1744,7 @@
 
   @media (min-width: 768px) {
     .fe-block-6e96343444b0f0675000 {
-      grid-area: 15/14/16/17;
+      grid-area: 14/14/15/17;
       z-index: 7;
     }
 
@@ -1702,7 +1758,7 @@
   }
 
   .fe-block-5b2f19ced6c5ffb6c3f5 {
-    grid-area: 20/2/22/7;
+    grid-area: 22/2/24/7;
     z-index: 8;
   }
 
@@ -1716,7 +1772,7 @@
 
   @media (min-width: 768px) {
     .fe-block-5b2f19ced6c5ffb6c3f5 {
-      grid-area: 17/8/18/14;
+      grid-area: 16/8/17/14;
       z-index: 8;
     }
 
@@ -1730,7 +1786,7 @@
   }
 
   .fe-block-b254a116855fa2f1d07c {
-    grid-area: 20/7/22/10;
+    grid-area: 22/7/24/10;
     z-index: 8;
   }
 
@@ -1744,7 +1800,7 @@
 
   @media (min-width: 768px) {
     .fe-block-b254a116855fa2f1d07c {
-      grid-area: 17/14/18/17;
+      grid-area: 16/14/17/17;
       z-index: 8;
     }
 
@@ -1758,7 +1814,7 @@
   }
 
   .fe-block-7db38b5209726526dea0 {
-    grid-area: 23/2/25/7;
+    grid-area: 25/2/27/7;
     z-index: 9;
   }
 
@@ -1772,7 +1828,7 @@
 
   @media (min-width: 768px) {
     .fe-block-7db38b5209726526dea0 {
-      grid-area: 19/8/20/14;
+      grid-area: 18/8/19/14;
       z-index: 9;
     }
 
@@ -1786,7 +1842,7 @@
   }
 
   .fe-block-b87e4e7fc0d37b4190c8 {
-    grid-area: 23/7/25/10;
+    grid-area: 25/7/27/10;
     z-index: 9;
   }
 
@@ -1800,7 +1856,7 @@
 
   @media (min-width: 768px) {
     .fe-block-b87e4e7fc0d37b4190c8 {
-      grid-area: 19/14/20/17;
+      grid-area: 18/14/19/17;
       z-index: 9;
     }
 
@@ -1814,7 +1870,7 @@
   }
 
   .fe-block-5d6750cf34d8e5e88ec2 {
-    grid-area: 26/2/28/7;
+    grid-area: 28/2/30/7;
     z-index: 10;
   }
 
@@ -1828,7 +1884,7 @@
 
   @media (min-width: 768px) {
     .fe-block-5d6750cf34d8e5e88ec2 {
-      grid-area: 21/8/22/14;
+      grid-area: 20/8/21/14;
       z-index: 10;
     }
 
@@ -1842,7 +1898,7 @@
   }
 
   .fe-block-3ca2c113db1896a3a7f2 {
-    grid-area: 26/7/28/10;
+    grid-area: 28/7/30/10;
     z-index: 4;
   }
 
@@ -1856,7 +1912,7 @@
 
   @media (min-width: 768px) {
     .fe-block-3ca2c113db1896a3a7f2 {
-      grid-area: 21/14/22/17;
+      grid-area: 20/14/21/17;
       z-index: 4;
     }
 
@@ -1870,7 +1926,7 @@
   }
 
   .fe-block-0755e4bd4ef074ecb851 {
-    grid-area: 28/7/30/10;
+    grid-area: 30/7/32/10;
     z-index: 10;
   }
 
@@ -1884,7 +1940,7 @@
 
   @media (min-width: 768px) {
     .fe-block-0755e4bd4ef074ecb851 {
-      grid-area: 22/14/23/17;
+      grid-area: 21/14/25/17;
       z-index: 10;
     }
 
@@ -1898,7 +1954,7 @@
   }
 
   .fe-block-yui_3_17_2_1_1672716512673_32227 {
-    grid-area: 30/2/32/10;
+    grid-area: 32/2/34/10;
     z-index: 11;
   }
 
@@ -1912,7 +1968,7 @@
 
   @media (min-width: 768px) {
     .fe-block-yui_3_17_2_1_1672716512673_32227 {
-      grid-area: 4/17/5/23;
+      grid-area: 2/17/3/23;
       z-index: 11;
     }
 
@@ -1926,7 +1982,7 @@
   }
 
   .fe-block-yui_3_17_2_1_1672761820259_111663 {
-    grid-area: 34/2/36/10;
+    grid-area: 36/2/38/10;
     z-index: 13;
   }
 
@@ -1961,7 +2017,8 @@
   
   
   </div></div></div>
-<div class="fluid-engine fe-63b390c255d34d06302409e1"><div class="fe-block fe-block-yui_3_17_2_1_1672706097558_1239906"><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-yui_3_17_2_1_1672706097558_1239906"><div class="sqs-block-content">
+<div class="fluid-engine fe-63b390c255d34d06302409e1">
+<div class="fe-block fe-block-yui_3_17_2_1_1672706097558_1239906"><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-yui_3_17_2_1_1672706097558_1239906"><div class="sqs-block-content">
 
 <h4 style="text-align:right;white-space:pre-wrap;">Warzone Stats:<br></h4>
 
@@ -1992,10 +2049,41 @@
 
 </div></div></div><div class="fe-block fe-block-yui_3_17_2_1_1672706097558_1288536"><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-yui_3_17_2_1_1672706097558_1288536"><div class="sqs-block-content">
 
-<p class="" style="white-space:pre-wrap;"><input id="acti" type="text" placeholder="#acti#" style="width: 90%;"></p>
+<p class="" style="white-space:pre-wrap;"><input id="acti" type="text" #acti# style="width: 95%;"></p>
 
 
-</div></div></div><div class="fe-block fe-block-d03715d1debea095120e"><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-d03715d1debea095120e"><div class="sqs-block-content">
+</div></div></div>
+
+<div class="fe-block fe-block-yui_3_17_2_1_6969"><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-yui_3_17_2_1_6969"><div class="sqs-block-content">
+
+  <p class="" style="white-space:pre-wrap; text-align: right;"><select><option>Warzone 1</option><option>Warzone 2</option></select></p>
+  
+  
+  </div></div></div>
+
+  <div class="fe-block fe-block-abcd6969"><div class="sqs-block button-block sqs-block-button sqs-stretched" data-block-type="53" id="block-abcd6969"><div class="sqs-block-content">
+
+    <div
+      class="sqs-block-button-container sqs-block-button-container--center"
+      data-animation-role="button"
+      data-alignment="center"
+      data-button-size="medium"
+      data-button-type="primary"
+      onclick="update()"
+      id="Update Warzone"
+    >
+      <a
+        id="update"
+        class="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element"
+        
+      >
+        Update
+      </a>
+    </div>
+    </div></div></div>
+
+
+<div class="fe-block fe-block-d03715d1debea095120e"><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-d03715d1debea095120e"><div class="sqs-block-content">
 
 <h4 style="text-align:right;white-space:pre-wrap;">Two vs Two:</h4>
 
@@ -2170,27 +2258,29 @@
 
 </div></div></div><div class="fe-block fe-block-3ca2c113db1896a3a7f2"><div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-3ca2c113db1896a3a7f2"><div class="sqs-block-content">
 
-<p class="" style="white-space:pre-wrap;"><input id="pref_name" type="text" placeholder="#pref_name#" style="width: 90%;"></p>
+<p class="" style="white-space:pre-wrap;"><input id="pref_name" type="text" value="#pref_name#" style="width: 95%;"></p>
 
 
-</div></div></div><div class="fe-block fe-block-0755e4bd4ef074ecb851"><div class="sqs-block button-block sqs-block-button sqs-stretched" data-block-type="53" id="block-0755e4bd4ef074ecb851"><div class="sqs-block-content">
+</div></div></div>  <div class="fe-block fe-block-0755e4bd4ef074ecb851"><div class="sqs-block button-block sqs-block-button sqs-stretched" data-block-type="53" id="block-0755e4bd4ef074ecb851"><div class="sqs-block-content">
 
-<div
-  class="sqs-block-button-container sqs-block-button-container--center"
-  data-animation-role="button"
-  data-alignment="center"
-  data-button-size="medium"
-  data-button-type="primary"
-  onclick="newname()"
->
-  <a
-    class="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element"
-    
+  <div
+    class="sqs-block-button-container sqs-block-button-container--center"
+    data-animation-role="button"
+    data-alignment="center"
+    data-button-size="medium"
+    data-button-type="primary"
+    onclick="newname()"
+    id="Update Name"
   >
-    Update
-  </a>
-</div>
-</div></div></div></div>
+    <a
+      id="update"
+      class="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element"
+      
+    >
+      Update
+    </a>
+  </div>
+  </div></div></div></div>
     </div>
   </div>
   
@@ -2497,10 +2587,11 @@
 
     <script>
       var tabsEnabled = {};
+      var prefName = document.getElementById('pref_name');
+      var oActi = document.getElementById('acti').value;
 
       var tabs = Object.keys(tabsEnabled);
       for (var i = 0; i < tabs.length; i++) {
-        console.log(tabs[i]);
         if (tabsEnabled[tabs[i]]) {
           var elem = document.getElementById(tabs[i]);
           elem.childNodes[1].style.backgroundColor = "darkred";
@@ -2536,6 +2627,10 @@
             var acti = document.getElementById('acti').value;
             if (!acti.length || acti === '') {
                 alert('You must enter an Activision ID to turn on match tracking.');
+                return;
+            } else if (acti.toLowerCase() === oActi.toLowerCase()) {
+              alert('This is already your Activision ID.');
+              return;
             } else {
               await fetch(`/modules/#channel#/${module}`, { headers: { 'Acti': encodeURIComponent(acti) } })
               .then(res => {
@@ -2572,14 +2667,21 @@
       };
 
       async function newname() {
-        var button = document.getElementById('pref_name');
+        var button = document.getElementById('Update Name');
+        var name = document.getElementById('pref_name').value;
         button.style = `background-color: gray; border: 1px solid gray;`;
         button.disabled = true;
         setTimeout(function() { 
           button.style = `background-color: white; border: 1px solid gray;`; 
           button.disabled = false;
         }, 1000);
-        await fetch(`/newname/#channel#`, { headers: { 'pref_name': encodeURIComponent(document.getElementById('pref_name').value) }})
+
+        if (name === prefName) {
+          alert("This is already your preferred name.");
+          return;
+        }
+
+        await fetch(`/newname/#channel#`, { headers: { 'pref_name': encodeURIComponent(name) }})
         .then(res => {
           if (res.status != 200) {
             throw new Error(`Unknown error.`);
