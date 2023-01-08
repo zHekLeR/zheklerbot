@@ -2589,6 +2589,7 @@
       var tabsEnabled = {};
       var prefName = document.getElementById('pref_name').value;
       var oActi = document.getElementById('acti').value;
+      var oType = document.getELementById('wz_type').value;
 
       var tabs = Object.keys(tabsEnabled);
       for (var i = 0; i < tabs.length; i++) {
@@ -2686,12 +2687,37 @@
           if (res.status != 200) {
             throw new Error(`Unknown error.`);
           }
+          prefName = name;
         })
         .catch(err => {
           console.log(err);
           alert(err.message);
         });
       };
+
+      async function update() {
+        var acti = document.getElementById('acti').value;
+        var wzType = document.getElementById('wz_type').value;
+
+        if ((!acti) || (acti.toLowerCase() === oActi.toLowerCase() && wzType === oType)) {
+          alert('These settings are already in use.');
+        } else {
+          await fetch(`/updateacti/#channel#`, {
+            headers: {
+              'Acti': encodeURIComponent(acti),
+              'wzType': encodeURIComponent(wzType)
+            }
+          })
+          .then(res => {
+            if (res.status !== 200) {
+              throw new Error(`Error updating: status ${res.status}`);
+            }
+          })
+          .catch(err => {
+            alert(err.message);
+          });
+        }
+      }
 
       async function twitch() {
         await fetch(`/logout`)

@@ -1832,6 +1832,48 @@ app.get('/modules/:channel/:module', async (request, response) => {
 });
 
 
+// Update Acti settings.
+app.get('/updateacti/:channel', async (request, response) => {
+  try {
+    request.params.channel = request.params.channel.toLowerCase();
+    if (!userIds[request.params.channel]) {
+      response.status(404);
+      response.redirect('/not-found');
+      return;
+    }
+    
+    var cookies = request.cookies;
+    if (cookies["auth"]) {
+      let bearer = await helper.checkBearer(cookies["auth"]);
+      if ((!bearer[0] || !bearer[1].perms || !bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
+        response.status(401);
+        response.redirect('/');
+        return;
+      }
+    } else {
+      response.status(401);
+      response.redirect('/');
+      return;
+    }
+
+    var acti = decodeURIComponent(request.get('Acti') || '');
+    var wzType = decodeURIComponent(request.get('wzType') || '');
+
+    if (profanity.isProfane(acti || '')) throw new Error('No profanity allowed.');
+  
+    var data = await last20(acti, 'uno');
+    var uno = data.matches[0].player.uno;
+
+    helper.dbQuery(`UPDATE allusers SET acti_id = '${acti}', uno = '${uno}', wz_type = ${wzType==='Warzone 1'?1:2} WHERE user_id = '${request.params.channel}';`);
+
+    response.sendStatus(200);
+  } catch (err) {
+    helper.dumpError(err, "Update Acti.");
+    response.sendStatus(400);
+  }
+});
+
+
 // Set new preferred name.
 app.get('/newname/:channel', async (request, response) => {
   try {

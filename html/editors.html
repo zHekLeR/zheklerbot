@@ -1506,7 +1506,7 @@
   </div>
 </div>
 </div></div></div><div class="fe-block fe-block-yui_3_17_2_1_1672761820259_255391"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-yui_3_17_2_1_1672761820259_255391"><div class="sqs-block-content">
-  <table id="editors">#editors#</table></div></div></div></div></div>
+  <table id="editors" style="width: 100%;">#editors#</table></div></div></div></div></div>
     </div>
   </div>
   
@@ -1859,9 +1859,9 @@
         await fetch('/removeeditor/#channel#', { headers: { 'editor': btn.id.substring(7) }})
         .then(res => {
             if (res.status == 200) {
-                row.parentNode.removeChild(btn);
+                btn.parentNode.removeChild(btn);
             } else {
-                throw new Error(`Error: status ${res.status}`);
+                throw new Error(`Error removing editor: status ${res.status}`);
             }
         })
         .catch(err => {
