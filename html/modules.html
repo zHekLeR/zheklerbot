@@ -2069,11 +2069,11 @@
       data-alignment="center"
       data-button-size="medium"
       data-button-type="primary"
-      onclick="update()"
       id="Update Warzone"
     >
       <a
         id="update"
+        onclick="updateacti()"
         class="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element"
         
       >
@@ -2695,7 +2695,7 @@
         });
       };
 
-      async function update() {
+      async function updateacti() {
         var acti = document.getElementById('acti').value;
         var wzType = document.getElementById('wz_type').value;
 

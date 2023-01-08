@@ -1854,7 +1854,6 @@
       }
 
       async function rem(btn) {
-        console.log("Remove...");
         btn = document.getElementById(btn);
         await fetch('/removeeditor/#channel#', { headers: { 'editor': btn.id.substring(7) }})
         .then(res => {
