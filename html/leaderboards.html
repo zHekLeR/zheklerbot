@@ -2439,12 +2439,10 @@
             if (!duels) {
                 await fetch('/leaderboards/#channel#/duels')
                 .then(async res => {
-                    res = await res.json();
-                    console.log(JSON.stringify(res));
                     if (res.status != 200) {
                         throw new Error("Status " + res.status);
                     }
-                    duels = JSON.parse(res.body);
+                    duels = JSON.parse(res);
                 })
                 .catch(err => {
                     alert(`An error occurred: ${err.message}`);
@@ -2549,7 +2547,7 @@
                     if (res.status != 200) {
                         throw new Error("Status " + res.status);
                     }
-                    rr = JSON.parse(res.body);
+                    rr = JSON.parse(res);
                 })
                 .catch(err => {
                     alert(`An error occurred: ${err.message}`);
@@ -2639,7 +2637,7 @@
                   if (res.status != 200) {
                       throw new Error("Status " + res.status);
                   }
-                  rps = JSON.parse(res.body);
+                  rps = JSON.parse(res);
               })
               .catch(err => {
                   alert(`An error occurred: ${err.message}`);
@@ -2714,7 +2712,7 @@
                   if (res.status != 200) {
                       throw new Error("Status " + res.status);
                   }
-                  coin = JSON.pasre(res.body);
+                  coin = JSON.pasre(res);
               })
               .catch(err => {
                   alert(`An error occurred: ${err.message}`);
@@ -2774,7 +2772,7 @@
                   if (res.status != 200) {
                       throw new Error("Status " + res.status);
                   }
-                  bigvanish = JSON.parse(res.body);
+                  bigvanish = JSON.parse(res);
               })
               .catch(err => {
                   alert(`An error occurred: ${err.message}`);
