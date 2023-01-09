@@ -443,7 +443,9 @@
     </div>
   
   
-  
+    <div class="header-nav-item header-nav-item--collection">
+      <a href="/leaderboards/#channel#" data-animation-role="header-element"> Game Leaderboards </a>
+    </div>
 
 
   
@@ -700,7 +702,7 @@
   
     <div class="header-nav-item header-nav-item--collection">
       <a
-        href="/commands/zhekler"
+        href="/commands/#channel#"
         data-animation-role="header-element"
         
       >
@@ -709,13 +711,15 @@
     </div>
   
   
-  
+    <div class="header-nav-item header-nav-item--collection header-nav-item--active">
+      <a href="/leaderboards/#channel#" data-animation-role="header-element"> Game Leaderboards </a>
+    </div>
 
 
   
     <div class="header-nav-item header-nav-item--collection header-nav-item--active">
       <a
-        href="/modules"
+        href="/modules/#channel#"
         data-animation-role="header-element"
         
           aria-current="page"
@@ -732,7 +736,7 @@
   
     <div class="header-nav-item header-nav-item--collection">
       <a
-        href="/twovtwo"
+        href="/twovtwo/#channel#"
         data-animation-role="header-element"
         
       >
@@ -747,7 +751,7 @@
   
     <div class="header-nav-item header-nav-item--collection">
       <a
-        href="/customs"
+        href="/customs/#channel#"
         data-animation-role="header-element"
         
       >
@@ -762,7 +766,7 @@
   
     <div class="header-nav-item header-nav-item--collection">
       <a
-        href="/editors"
+        #editors#
         data-animation-role="header-element"
         
       >
@@ -777,7 +781,7 @@
   
     <div class="header-nav-item header-nav-item--collection">
       <a
-        href="/permissions"
+        #permissions#
         data-animation-role="header-element"
         
       >
@@ -1097,6 +1101,10 @@
         Commands
       </div>
     </a>
+  </div>
+
+  <div class="header-nav-item header-nav-item--collection">
+    <a href="/leaderboards/#channel#" data-animation-role="header-element"> Game Leaderboards </a>
   </div>
 
   <div class="container header-menu-nav-item header-menu-nav-item--collection header-menu-nav-item--active">
@@ -2589,7 +2597,7 @@
       var tabsEnabled = {};
       var prefName = document.getElementById('pref_name').value;
       var oActi = document.getElementById('acti').value;
-      var oType = document.getELementById('wz_type').value;
+      var oType = document.getElementById('wz_type').value;
 
       var tabs = Object.keys(tabsEnabled);
       for (var i = 0; i < tabs.length; i++) {
@@ -2734,17 +2742,6 @@
         });
 
       };
-
-      // Random string.
-      function makeid(length) {
-        var result = '';
-        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        var charactersLength = characters.length;
-        for ( var i = 0; i < length; i++ ) {
-          result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        }
-        return result;
-      }
 
 
       // Update warzone peripherals. 

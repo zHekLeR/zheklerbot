@@ -1159,6 +1159,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import favicon from 'serve-favicon';
 import Profanity from 'profanity-js';
+import { ppid } from 'node:process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -1421,6 +1422,219 @@ app.get('/commands/:channel', async (request, response) => {
     helper.dumpError(err, "Commands page.");
     response.sendStatus(500);
   } 
+});
+
+
+// Leaderboards page.
+app.get('/leaderboards/:channel', async (request, response) => {
+  var page = '';
+  try {
+    if (Object.keys(userIds).includes(request.params.channel.toLowerCase())) {
+      page = fs.readFileSync("./html/leaderboards.html").toString('utf-8');
+      page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
+
+      var cookies = await request.cookies;
+      if (cookies["auth"]) {
+        var bearer = await helper.checkBearer(cookies["auth"]);
+
+        page = page.replace('Login to Twitch', 'Logout of Twitch');
+        page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
+        page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
+        page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
+        page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
+
+        if (bearer[0] && bearer[1].userid === request.params.channel) {
+          page = page.replace(/#editors#/g, `href="/editors/${request.params.channel}"`);
+          page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel}"`);
+        } else {
+          page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
+          page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
+        }
+      } else {
+        page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
+        page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
+        page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
+        page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
+        page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
+        page = page.replace(/#channel#/g, 'zhekler');
+        page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
+      }
+  
+      response.send(page);
+    } else {
+      response.status(404);
+      response.redirect('/not-found');
+      return;
+    }
+
+  } catch (err) {
+    helper.dumpError(err, "Commands page.");
+    response.sendStatus(500);
+  } 
+});
+
+
+// Duel leaderboard.
+app.get('/leaderboards/:channel/duels', async (request, response) => {
+  try {
+    request.params.channel = request.params.channel.toLowerCase();
+
+    var stats = {
+      "wins": {},
+      "losses": {},
+      "streak": {},
+      "best_ratio": {},
+      "worst_ratio": {}
+    };
+
+    stats["wins"]["stream"] = await helper.dbQueryPromise(`SELECT userid, wins FROM duelduel WHERE stream = '${request.params.channel}' ORDER BY wins DESC LIMIT 10;`);
+    stats["wins"]["all-time"] = await helper.dbQueryPromise(`SELECT userid, wins FROM duelduel ORDER BY wins DESC LIMIT 10;`);
+  
+    stats["losses"]["stream"] = await helper.dbQueryPromise(`SELECT userid, losses FROM duelduel WHERE stream = '${request.params.channel}' ORDER BY losses DESC LIMIT 10;`);
+    stats["losses"]["all-time"] = await helper.dbQueryPromise(`SELECT userid, losses FROM duelduel ORDER BY losses DESC LIMIT 10;`);
+
+    stats["streak"]["stream"] = await helper.dbQueryPromise(`SELECT userid, longest FROM duelduel WHERE stream = '${request.params.channel}' ORDER BY longest DESC LIMIT 10;`);
+    stats["streak"]["all-time"] = await helper.dbQueryPromise(`SELECT userid, longest FROM duelduel ORDER BY longest DESC LIMIT 10;`);
+
+    var bRatioS = await helper.dbQueryPromise(`SELECT userid, wins, losses FROM duelduel WHERE stream = '${request.params.channel}' AND losses = 0 AND wins > 10;`);
+    for (var i = 0; i < bRatioS.length; i++) {
+      bRatioS[i]["percent"] = 100;
+    }
+    stats["best_ratio"]["stream"] = bRatioS.concat(await helper.dbQueryPromise(`SELECT userid, wins, losses, ROUND(wins * 100.0 / (wins + losses), 2) AS percent FROM (SELECT * FROM duelduel WHERE wins + losses >= 10 AND stream = '${request.params.channel}') AS duels ORDER BY percent DESC LIMIT ${10 - bRatioS.length};`));
+    
+    var bRatioAT = await helper.dbQueryPromise(`SELECT userid, wins, losses FROM duelduel WHERE stream = '${request.params.channel}' AND losses = 0 AND wins > 10;`);
+    for (var i = 0; i < bRatioAT.length; i++) {
+      bRatioAT[i]["percent"] = 100;
+    }
+    stats["best_ratio"]["all-time"] = bRatioAT.concat(await helper.dbQueryPromise(`SELECT userid, wins FROM duelduel ORDER BY wins DESC LIMIT ${10 - bRatioAT.length};`));
+
+    stats["worst_ratio"]["stream"] = await helper.dbQueryPromise(`SELECT userid, wins, losses, ROUND(wins * 100.0 / (wins + losses), 2) AS percent FROM (SELECT * FROM duelduel WHERE wins + losses >= 10 AND stream = '${request.params.channel}') AS duels ORDER BY percent ASC LIMIT 10;`);
+    stats["worst_ratio"]["all-time"] = await helper.dbQueryPromise(`SELECT userid, wins, losses, ROUND(wins * 100.0 / (wins + losses), 2) AS percent FROM (SELECT * FROM duelduel WHERE wins + losses >= 10) AS duels ORDER BY percent ASC LIMIT 10;`);
+
+    response.status(200);
+    response.send(JSON.stringify(stats));
+  } catch (err) {
+    helper.dumpError(err, "Duel leaderboard for " + request.params.channel);
+    response.sendStatus(500);
+  }
+});
+
+
+// Revolver Roulette leaderboard.
+app.get('/leaderboards/:channel/rr', async (request, response) => {
+  try {
+    request.params.channel = request.params.channel.toLowerCase();
+
+    var stats = {
+      "survive": {},
+      "die": {},
+      "best_ratio": {},
+      "worst_ratio": {}
+    }
+
+    stats["survive"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, survive FROM revolverroulette WHERE stream = '${request.params.channel}' ORDER BY survive DESC LIMIT 10;`);
+    stats["survive"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, survive FROM revolverroulette ORDER BY survive DESC LIMIT 10;`);
+
+    stats["die"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, die FROM revolverroulette WHERE stream = '${request.params.channel}' ORDER BY die DESC LIMIT 10;`);
+    stats["die"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, die FROM revolverroulette ORDER BY die DESC LIMIT 10;`);
+
+    var bRatioS = await helper.dbQueryPromise(`SELECT user_id, survive, die FROM revolverroulette WHERE stream = '${request.params.channel}' AND die = 0 AND survive > 10;`);
+    for (var i = 0; i < bRatioS.length; i++) {
+      bRatioS[i]["percent"] = 100;
+    }
+    stats["best_ratio"]["stream"] = bRatioS.concat(await helper.dbQueryPromise(`SELECT user_id, survive, die, ROUND(survive * 100.0 / (survive + die), 2) AS percent FROM (SELECT * FROM revolverroulette WHERE survive + die >= 10 AND stream = '${request.params.channel}') AS rr ORDER BY percent DESC LIMIT ${10 - bRatioS.length};`));
+    
+    var bRatioAT = await helper.dbQueryPromise(`SELECT user_id, survive, die FROM revolverroulette WHERE stream = '${request.params.channel}' AND die = 0 AND survive > 10;`);
+    for (var i = 0; i < bRatioAT.length; i++) {
+      bRatioAT[i]["percent"] = 100;
+    }
+    stats["best_ratio"]["all-time"] = bRatioAT.concat(await helper.dbQueryPromise(`SELECT user_id, survive FROM revolverroulette ORDER BY survive DESC LIMIT ${10 - bRatioAT.length};`));
+
+    stats["worst_ratio"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, survive, die, ROUND(survive * 100.0 / (survive + die), 2) AS percent FROM (SELECT * FROM revolverroulette WHERE survive + die >= 10 AND stream = '${request.params.channel}') AS rr ORDER BY percent ASC LIMIT 10;`);
+    stats["worst_ratio"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, survive, die, ROUND(survive * 100.0 / (survive + die), 2) AS percent FROM (SELECT * FROM revolverroulette WHERE survive + die >= 10) AS rr ORDER BY percent ASC LIMIT 10;`);
+
+    response.status(200);
+    response.send(JSON.stringify(stats));
+  } catch (err) {
+    helper.dumpError(err, "RR leaderboard for " + request.params.channel);
+  }
+});
+
+
+// Rock Paper Scissors leaderboard.
+app.get('/leaderboards/:channel/rps', async (request, response) => {
+  try {
+    request.params.channel = request.params.channel.toLowerCase();
+
+    var stats = {
+      "win": {},
+      "loss": {},
+      "tie": {}
+    }
+
+    stats["win"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, win FROM rockpaperscissors WHERE stream = '${request.params.channel}' ORDER BY win DESC LIMIT 10;`);
+    stats["win"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, win FROM rockpaperscissors ORDER BY win DESC LIMIT 10;`);
+
+    stats["die"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, loss FROM rockpaperscissors WHERE stream = '${request.params.channel}' ORDER BY loss DESC LIMIT 10;`);
+    stats["die"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, loss FROM rockpaperscissors ORDER BY loss DESC LIMIT 10;`);
+
+    stats["tie"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, tie FROM rockpaperscissors WHERE stream = '${request.params.channel}' ORDER BY tie DESC LIMIT 10;`);
+    stats["tie"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, tie FROM rockpaperscissors ORDER BY tie DESC LIMIT 10;`);
+
+    response.status(200);
+    response.send(JSON.stringify(stats));
+  } catch (err) {
+    helper.dumpError(err, "RR leaderboard for " + request.params.channel);
+  }
+});
+
+
+// Rock Paper Scissors leaderboard.
+app.get('/leaderboards/:channel/coin', async (request, response) => {
+  try {
+    request.params.channel = request.params.channel.toLowerCase();
+
+    var stats = {
+      "correct": {},
+      "wrong": {}
+    }
+
+    stats["correct"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, correct FROM rockpaperscissors WHERE stream = '${request.params.channel}' ORDER BY correct DESC LIMIT 10;`);
+    stats["correct"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, correct FROM rockpaperscissors ORDER BY correct DESC LIMIT 10;`);
+
+    stats["wrong"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, wrong FROM rockpaperscissors WHERE stream = '${request.params.channel}' ORDER BY wrong DESC LIMIT 10;`);
+    stats["wrong"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, wrong FROM rockpaperscissors ORDER BY wrong DESC LIMIT 10;`);
+
+    response.status(200);
+    response.send(JSON.stringify(stats));
+  } catch (err) {
+    helper.dumpError(err, "RR leaderboard for " + request.params.channel);
+  }
+});
+
+
+// Big Vanish leaderboard.
+// Rock Paper Scissors leaderboard.
+app.get('/leaderboards/:channel/bigvanish', async (request, response) => {
+  try {
+    request.params.channel = request.params.channel.toLowerCase();
+
+    var stats = {
+      "high": {},
+      "low": {}
+    }
+
+    stats["high"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, vanish FROM bigvanish WHERE stream = '${request.params.channel}' ORDER BY vanish DESC LIMIT 10;`);
+    stats["high"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, vanish FROM bigvanish ORDER BY vanish DESC LIMIT 10;`);
+
+    stats["low"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, lowest FROM bigvanish WHERE stream = '${request.params.channel}' ORDER BY lowest ASC LIMIT 10;`);
+    stats["low"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, lowest FROM bigvanish ORDER BY lowest DESC LIMIT 10;`);
+
+    response.status(200);
+    response.send(JSON.stringify(stats));
+  } catch (err) {
+    helper.dumpError(err, "RR leaderboard for " + request.params.channel);
+  }
 });
 
 
