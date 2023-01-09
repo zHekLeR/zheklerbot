@@ -2454,8 +2454,8 @@
               if (duels.wins.stream[i]) {
                 var row1 = document.getElementsByClassName('table-1')[0].insertRow();
                 row1.insertCell(0).innerHTML = i;
-                row1.insertCell(1).innerHTML = duels.stream.wins[i].userid;
-                row1.insertCell(2).innerHTML = duels.stream.wins[i].wins;
+                row1.insertCell(1).innerHTML = duels.wins.stream[i].userid;
+                row1.insertCell(2).innerHTML = duels.wins.stream[i].wins;
               }
 
               if (duels.losses.stream[i]) {
