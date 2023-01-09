@@ -2411,14 +2411,7 @@
 
         async function getStuff(btn) {
           let button = document.getElementById(btn);
-
-          button.style.backgroundColor = "gray";
-          button.disabled = true;
-          setTimeout(function () {
-            button.style.backgroundColor = "var(--list-section-simple-button-background-color)"
-            button.disabled = false;
-          }, 2000);
-
+          button.style.backgroundColor = "var(--list-section-simple-button-background-color)";
           document.getElementById(current.game).style.backgroundColor = "darkred";
           current.game = btn;
 
@@ -2477,14 +2470,14 @@
                 var row1 = document.getElementsByClassName('table-4')[0].insertRow();
                 row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = duels.best_ratio.stream[i].userid;
-                row1.insertCell(2).innerHTML = "%" + duels.best_ratio.stream[i].percent;
+                row1.insertCell(2).innerHTML = duels.best_ratio.stream[i].percent + "%";
               }
 
               if (duels.worst_ratio.stream[i]) {
                 var row1 = document.getElementsByClassName('table-4')[0].insertRow();
                 row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = duels.worst_ratio.stream[i].userid;
-                row1.insertCell(2).innerHTML = "%" + duels.worst_ratio.stream[i].percent;
+                row1.insertCell(2).innerHTML = duels.worst_ratio.stream[i].percent + "%";
               }
 
               if (duels.wins["all-time"][i]) {
@@ -2512,14 +2505,14 @@
                 var row1 = document.getElementsByClassName('table-4')[1].insertRow();
                 row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = duels.best_ratio["all-time"][i].userid;
-                row1.insertCell(2).innerHTML = "%" + duels.best_ratio["all-time"][i].percent;
+                row1.insertCell(2).innerHTML = duels.best_ratio["all-time"][i].percent + "%";
               }
 
               if (duels.worst_ratio["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-5')[1].insertRow();
                 row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = duels.worst_ratio["all-time"][i].userid;
-                row1.insertCell(2).innerHTML = "%" + duels.worst_ratio["all-time"][i].percent;
+                row1.insertCell(2).innerHTML = duels.worst_ratio["all-time"][i].percent + "%";
               }
             }
 
@@ -2575,14 +2568,14 @@
                 var row1 = document.getElementsByClassName('table-3')[0].insertRow();
                 row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = rr.best_ratio.stream[i].user_id;
-                row1.insertCell(2).innerHTML = "%" + rr.best_ratio.stream[i].percent;
+                row1.insertCell(2).innerHTML = rr.best_ratio.stream[i].percent + "%";
               }
 
               if (rr.worst_ratio.stream[i]) {
                 var row1 = document.getElementsByClassName('table-4')[0].insertRow();
                 row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = rr.worst_ratio.stream[i].user_id;
-                row1.insertCell(2).innerHTML = "%" + rr.worst_ratio.stream[i].percent;
+                row1.insertCell(2).innerHTML = rr.worst_ratio.stream[i].percent + "%";
               }
 
               if (rr.survive["all-time"][i]) {
@@ -2603,14 +2596,14 @@
                 var row1 = document.getElementsByClassName('table-3')[1].insertRow();
                 row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = rr.best_ratio["all-time"][i].user_id;
-                row1.insertCell(2).innerHTML = "%" + rr.best_ratio["all-time"][i].percent;
+                row1.insertCell(2).innerHTML = rr.best_ratio["all-time"][i].percent + "%";
               }
 
               if (rr.worst_ratio["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-4')[1].insertRow();
                 row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = rr.worst_ratio["all-time"][i].user_id;
-                row1.insertCell(2).innerHTML = "%" + rr.worst_ratio["all-time"][i].percent;
+                row1.insertCell(2).innerHTML = rr.worst_ratio["all-time"][i].percent + "%";
               }
             }
               
