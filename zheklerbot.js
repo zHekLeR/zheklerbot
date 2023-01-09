@@ -1576,8 +1576,8 @@ app.get('/leaderboards/:channel/rps', async (request, response) => {
     stats["win"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, win FROM rockpaperscissors WHERE stream = '${request.params.channel}' ORDER BY win DESC LIMIT 10;`);
     stats["win"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, win FROM rockpaperscissors ORDER BY win DESC LIMIT 10;`);
 
-    stats["die"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, loss FROM rockpaperscissors WHERE stream = '${request.params.channel}' ORDER BY loss DESC LIMIT 10;`);
-    stats["die"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, loss FROM rockpaperscissors ORDER BY loss DESC LIMIT 10;`);
+    stats["loss"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, loss FROM rockpaperscissors WHERE stream = '${request.params.channel}' ORDER BY loss DESC LIMIT 10;`);
+    stats["loss"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, loss FROM rockpaperscissors ORDER BY loss DESC LIMIT 10;`);
 
     stats["tie"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, tie FROM rockpaperscissors WHERE stream = '${request.params.channel}' ORDER BY tie DESC LIMIT 10;`);
     stats["tie"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, tie FROM rockpaperscissors ORDER BY tie DESC LIMIT 10;`);
@@ -1585,7 +1585,7 @@ app.get('/leaderboards/:channel/rps', async (request, response) => {
     response.status(200);
     response.send(JSON.stringify(stats));
   } catch (err) {
-    helper.dumpError(err, "RR leaderboard for " + request.params.channel);
+    helper.dumpError(err, "RPS leaderboard for " + request.params.channel);
     response.sendStatus(500);
   }
 });
@@ -1610,7 +1610,7 @@ app.get('/leaderboards/:channel/coin', async (request, response) => {
     response.status(200);
     response.send(JSON.stringify(stats));
   } catch (err) {
-    helper.dumpError(err, "RR leaderboard for " + request.params.channel);
+    helper.dumpError(err, "Coinflip leaderboard for " + request.params.channel);
     response.sendStatus(500);
   }
 });
@@ -1635,7 +1635,7 @@ app.get('/leaderboards/:channel/bigvanish', async (request, response) => {
     response.status(200);
     response.send(JSON.stringify(stats));
   } catch (err) {
-    helper.dumpError(err, "RR leaderboard for " + request.params.channel);
+    helper.dumpError(err, "Big Vanish leaderboard for " + request.params.channel);
     response.sendStatus(500);
   }
 });

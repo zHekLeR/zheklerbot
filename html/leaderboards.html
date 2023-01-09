@@ -1985,13 +1985,13 @@
 <label for="stream">#Placeholder#</label><br>
 <input type="radio" id="all-time" name="out-of" value="All-Time" onclick="switchBoard(1)">
 <label for="all-time">All-Time</label>
-</div></div></div></div><div class="fe-block fe-block-yui_3_17_2_1_1673144690577_34418"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-yui_3_17_2_1_1673144690577_34418"><div class="sqs-block-content"><label>Category</label>
-<select id="subcat" style="width: 100%; text-align: center;">
-  <option id="option-1" onclick="subSwitch('table-1')">Option 1</option>
-  <option id="option-2" onclick="subSwitch('table-2')">Option 2</option>
-  <option id="option-3" onclick="subSwitch('table-3')">Option 3</option>
-  <option id="option-4" onclick="subSwitch('table-4')">Option 4</option>
-  <option id="option-5" onclick="subSwitch('table-5')">Option 5</option>
+</div></div></div></div><div class="fe-block fe-block-yui_3_17_2_1_1673144690577_34418"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-yui_3_17_2_1_1673144690577_34418"><div class="sqs-block-content"><label for="subcat">Category</label>
+<select id="subcat" style="width: 100%; text-align: center;" onchange="subSwitch()">
+  <option id="option-1">Option 1</option>
+  <option id="option-2">Option 2</option>
+  <option id="option-3">Option 3</option>
+  <option id="option-4">Option 4</option>
+  <option id="option-5">Option 5</option>
 </select>
 </div></div></div><div class="fe-block fe-block-yui_3_17_2_1_1673144690577_23890"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-yui_3_17_2_1_1673144690577_23890"><div class="sqs-block-content">
 <style>
@@ -2411,12 +2411,13 @@
 
         async function getStuff(btn) {
           let button = document.getElementById(btn);
+
           button.style.backgroundColor = "gray";
           button.disabled = true;
           setTimeout(function () {
             button.style.backgroundColor = "var(--list-section-simple-button-background-color)"
             button.disabled = false;
-          }, 3000);
+          }, 2000);
 
           document.getElementById(current.game).backgroundColor = "darkred";
           current.game = btn;
@@ -2453,70 +2454,70 @@
             for (var i = 0; i < 10; i++) {
               if (duels.wins.stream[i]) {
                 var row1 = document.getElementsByClassName('table-1')[0].insertRow();
-                row1.insertCell(0).innerHTML = i;
+                row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = duels.wins.stream[i].userid;
                 row1.insertCell(2).innerHTML = duels.wins.stream[i].wins;
               }
 
               if (duels.losses.stream[i]) {
                 var row1 = document.getElementsByClassName('table-2')[0].insertRow();
-                row1.insertCell(0).innerHTML = i;
+                row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = duels.losses.stream[i].userid;
                 row1.insertCell(2).innerHTML = duels.losses.stream[i].losses;
               }
 
               if (duels.streak.stream[i]) {
                 var row1 = document.getElementsByClassName('table-3')[0].insertRow();
-                row1.insertCell(0).innerHTML = i;
+                row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = duels.streak.stream[i].userid;
                 row1.insertCell(2).innerHTML = duels.streak.stream[i].longest;
               }
 
               if (duels.best_ratio.stream[i]) {
                 var row1 = document.getElementsByClassName('table-4')[0].insertRow();
-                row1.insertCell(0).innerHTML = i;
+                row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = duels.best_ratio.stream[i].userid;
                 row1.insertCell(2).innerHTML = duels.best_ratio.stream[i].percent;
               }
 
               if (duels.worst_ratio.stream[i]) {
                 var row1 = document.getElementsByClassName('table-4')[0].insertRow();
-                row1.insertCell(0).innerHTML = i;
+                row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = duels.worst_ratio.stream[i].userid;
                 row1.insertCell(2).innerHTML = duels.worst_ratio.stream[i].percent;
               }
 
               if (duels.wins["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-1')[1].insertRow();
-                row1.insertCell(0).innerHTML = i;
+                row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = duels.wins["all-time"][i].userid;
                 row1.insertCell(2).innerHTML = duels.wins["all-time"][i].wins;
               }
 
               if (duels.losses["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-2')[1].insertRow();
-                row1.insertCell(0).innerHTML = i;
+                row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = duels.losses["all-time"][i].userid;
                 row1.insertCell(2).innerHTML = duels.losses["all-time"][i].losses;
               }
 
               if (duels.streak["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-3')[1].insertRow();
-                row1.insertCell(0).innerHTML = i;
+                row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = duels.streak["all-time"][i].userid;
                 row1.insertCell(2).innerHTML = duels.streak["all-time"][i].longest;
               }
 
               if (duels.best_ratio["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-4')[1].insertRow();
-                row1.insertCell(0).innerHTML = i;
+                row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = duels.best_ratio["all-time"][i].userid;
                 row1.insertCell(2).innerHTML = duels.best_ratio["all-time"][i].percent;
               }
 
               if (duels.worst_ratio["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-5')[1].insertRow();
-                row1.insertCell(0).innerHTML = i;
+                row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = duels.worst_ratio["all-time"][i].userid;
                 row1.insertCell(2).innerHTML = duels.worst_ratio["all-time"][i].percent;
               }
@@ -2557,60 +2558,62 @@
             for (var i = 0; i < 10; i++) {
               if (rr.survive.stream[i]) {
                 var row1 = document.getElementsByClassName('table-1')[0].insertRow();
-                row1.insertCell(0).innerHTML = i;
-                row1.insertCell(1).innerHTML = rr.survive.stream[i].userid;
+                row1.insertCell(0).innerHTML = i + 1;
+                row1.insertCell(1).innerHTML = rr.survive.stream[i].user_id;
                 row1.insertCell(2).innerHTML = rr.survive.stream[i].survive;
               }
 
               if (rr.die.stream[i]) {
                 var row1 = document.getElementsByClassName('table-2')[0].insertRow();
-                row1.insertCell(0).innerHTML = i;
-                row1.insertCell(1).innerHTML = rr.die.stream[i].userid;
+                row1.insertCell(0).innerHTML = i + 1;
+                row1.insertCell(1).innerHTML = rr.die.stream[i].user_id;
                 row1.insertCell(2).innerHTML = rr.die.stream[i].die;
               }
 
               if (rr.best_ratio.stream[i]) {
                 var row1 = document.getElementsByClassName('table-3')[0].insertRow();
-                row1.insertCell(0).innerHTML = i;
-                row1.insertCell(1).innerHTML = rr.best_ratio.stream[i].userid;
+                row1.insertCell(0).innerHTML = i + 1;
+                row1.insertCell(1).innerHTML = rr.best_ratio.stream[i].user_id;
                 row1.insertCell(2).innerHTML = rr.best_ratio.stream[i].percent;
               }
 
               if (rr.worst_ratio.stream[i]) {
                 var row1 = document.getElementsByClassName('table-4')[0].insertRow();
-                row1.insertCell(0).innerHTML = i;
-                row1.insertCell(1).innerHTML = rr.worst_ratio.stream[i].userid;
+                row1.insertCell(0).innerHTML = i + 1;
+                row1.insertCell(1).innerHTML = rr.worst_ratio.stream[i].user_id;
                 row1.insertCell(2).innerHTML = rr.worst_ratio.stream[i].percent;
               }
 
               if (rr.survive["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-1')[1].insertRow();
-                row1.insertCell(0).innerHTML = i;
-                row1.insertCell(1).innerHTML = rr.survive["all-time"][i].userid;
+                row1.insertCell(0).innerHTML = i + 1;
+                row1.insertCell(1).innerHTML = rr.survive["all-time"][i].user_id;
                 row1.insertCell(2).innerHTML = rr.survive["all-time"][i].survive;
               }
 
               if (rr.die["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-2')[1].insertRow();
-                row1.insertCell(0).innerHTML = i;
-                row1.insertCell(1).innerHTML = rr.die["all-time"][i].userid;
+                row1.insertCell(0).innerHTML = i + 1;
+                row1.insertCell(1).innerHTML = rr.die["all-time"][i].user_id;
                 row1.insertCell(2).innerHTML = rr.die["all-time"][i].die;
               }
 
               if (rr.best_ratio["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-3')[1].insertRow();
-                row1.insertCell(0).innerHTML = i;
-                row1.insertCell(1).innerHTML = rr.best_ratio["all-time"][i].userid;
+                row1.insertCell(0).innerHTML = i + 1;
+                row1.insertCell(1).innerHTML = rr.best_ratio["all-time"][i].user_id;
                 row1.insertCell(2).innerHTML = rr.best_ratio["all-time"][i].percent;
               }
 
               if (rr.worst_ratio["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-4')[1].insertRow();
-                row1.insertCell(0).innerHTML = i;
-                row1.insertCell(1).innerHTML = rr.worst_ratio["all-time"][i].userid;
+                row1.insertCell(0).innerHTML = i + 1;
+                row1.insertCell(1).innerHTML = rr.worst_ratio["all-time"][i].user_id;
                 row1.insertCell(2).innerHTML = rr.worst_ratio["all-time"][i].percent;
               }
             }
+
+            document.getElementById('subcat').value = "Survivals";
               
             document.getElementById("option-1").innerHTML = "Survivals";
             document.getElementById("option-1").hidden = false;
@@ -2646,46 +2649,48 @@
             for (var i = 0; i < 10; i++) {
               if (rps.win.stream[i]) {
                 var row1 = document.getElementsByClassName('table-1')[0].insertRow();
-                row1.insertCell(0).innerHTML = i;
+                row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = rps.win.stream[i].userid;
                 row1.insertCell(2).innerHTML = rps.win.stream[i].win;
               }
 
               if (rps.loss.stream[i]) {
                 var row1 = document.getElementsByClassName('table-2')[0].insertRow();
-                row1.insertCell(0).innerHTML = i;
+                row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = rps.loss.stream[i].userid;
                 row1.insertCell(2).innerHTML = rps.loss.stream[i].loss;
               }
 
               if (rps.tie.stream[i]) {
                 var row1 = document.getElementsByClassName('table-3')[0].insertRow();
-                row1.insertCell(0).innerHTML = i;
+                row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = rps.tie.stream[i].userid;
                 row1.insertCell(2).innerHTML = rps.tie.stream[i].percent;
               }
 
               if (rps.win["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-1')[1].insertRow();
-                row1.insertCell(0).innerHTML = i;
+                row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = rps.win["all-time"][i].userid;
                 row1.insertCell(2).innerHTML = rps.win["all-time"][i].win;
               }
 
               if (rps.loss["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-2')[1].insertRow();
-                row1.insertCell(0).innerHTML = i;
+                row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = rps.loss["all-time"][i].userid;
                 row1.insertCell(2).innerHTML = rps.loss["all-time"][i].loss;
               }
 
               if (rps.tie["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-3')[1].insertRow();
-                row1.insertCell(0).innerHTML = i;
+                row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = rps.tie["all-time"][i].userid;
                 row1.insertCell(2).innerHTML = rps.tie["all-time"][i].percent;
               }
             }
+
+            document.getElementById('subcat').value = "Wins";
               
             document.getElementById("option-1").innerHTML = "Wins";
             document.getElementById("option-1").hidden = false;
@@ -2720,32 +2725,34 @@
             for (var i = 0; i < 10; i++) {
               if (coin.correct.stream[i]) {
                 var row1 = document.getElementsByClassName('table-1')[0].insertRow();
-                row1.insertCell(0).innerHTML = i;
-                row1.insertCell(1).innerHTML = coin.correct.stream[i].userid;
+                row1.insertCell(0).innerHTML = i + 1;
+                row1.insertCell(1).innerHTML = coin.correct.stream[i].user_id;
                 row1.insertCell(2).innerHTML = coin.correct.stream[i].correct;
               }
 
               if (coin.wrong.stream[i]) {
                 var row1 = document.getElementsByClassName('table-2')[0].insertRow();
-                row1.insertCell(0).innerHTML = i;
-                row1.insertCell(1).innerHTML = coin.wrong.stream[i].userid;
+                row1.insertCell(0).innerHTML = i + 1;
+                row1.insertCell(1).innerHTML = coin.wrong.stream[i].user_id;
                 row1.insertCell(2).innerHTML = coin.wrong.stream[i].wrong;
               }
 
               if (coin.correct["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-1')[1].insertRow();
-                row1.insertCell(0).innerHTML = i;
-                row1.insertCell(1).innerHTML = coin.correct["all-time"][i].userid;
+                row1.insertCell(0).innerHTML = i + 1;
+                row1.insertCell(1).innerHTML = coin.correct["all-time"][i].user_id;
                 row1.insertCell(2).innerHTML = coin.correct["all-time"][i].correct;
               }
 
               if (coin.wrong["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-2')[1].insertRow();
-                row1.insertCell(0).innerHTML = i;
-                row1.insertCell(1).innerHTML = coin.wrong["all-time"][i].userid;
+                row1.insertCell(0).innerHTML = i + 1;
+                row1.insertCell(1).innerHTML = coin.wrong["all-time"][i].user_id;
                 row1.insertCell(2).innerHTML = coin.wrong["all-time"][i].wrong;
               }
             }
+
+            document.getElementById('subcat').value = "Correct Guesses";
               
             document.getElementById("option-1").innerHTML = "Correct Guesses";
             document.getElementById("option-1").hidden = false;
@@ -2779,32 +2786,34 @@
             for (var i = 0; i < 10; i++) {
               if (bigvanish.high.stream[i]) {
                 var row1 = document.getElementsByClassName('table-1')[0].insertRow();
-                row1.insertCell(0).innerHTML = i;
-                row1.insertCell(1).innerHTML = bigvanish.high.stream[i].userid;
+                row1.insertCell(0).innerHTML = i + 1;
+                row1.insertCell(1).innerHTML = bigvanish.high.stream[i].user_id;
                 row1.insertCell(2).innerHTML = bigvanish.high.stream[i].vanish;
               }
 
               if (bigvanish.low.stream[i]) {
                 var row1 = document.getElementsByClassName('table-2')[0].insertRow();
-                row1.insertCell(0).innerHTML = i;
-                row1.insertCell(1).innerHTML = bigvanish.low.stream[i].userid;
+                row1.insertCell(0).innerHTML = i + 1;
+                row1.insertCell(1).innerHTML = bigvanish.low.stream[i].user_id;
                 row1.insertCell(2).innerHTML = bigvanish.low.stream[i].lowest;
               }
 
               if (bigvanish.high["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-1')[1].insertRow();
-                row1.insertCell(0).innerHTML = i;
-                row1.insertCell(1).innerHTML = bigvanish.high["all-time"][i].userid;
+                row1.insertCell(0).innerHTML = i + 1;
+                row1.insertCell(1).innerHTML = bigvanish.high["all-time"][i].user_id;
                 row1.insertCell(2).innerHTML = bigvanish.high["all-time"][i].vanish;
               }
 
               if (bigvanish.low["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-2')[1].insertRow();
-                row1.insertCell(0).innerHTML = i;
-                row1.insertCell(1).innerHTML = bigvanish.low["all-time"][i].userid;
+                row1.insertCell(0).innerHTML = i + 1;
+                row1.insertCell(1).innerHTML = bigvanish.low["all-time"][i].user_id;
                 row1.insertCell(2).innerHTML = bigvanish.low["all-time"][i].lowest;
               }
             }
+
+            document.getElementById('subcat').value = "Highest Timeout";
               
             document.getElementById("option-1").innerHTML = "Highest Timeout";
             document.getElementById("option-1").hidden = false;
@@ -2822,8 +2831,8 @@
           }
         }
 
-        function subSwitch(option) {
-          if (current.option === option) return;
+        function subSwitch() {
+          var option = document.getElementById('subcat').value;
 
           document.getElementsByClassName(current.option)[current.board].hidden = true;
             
