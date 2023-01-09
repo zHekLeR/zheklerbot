@@ -1981,17 +1981,17 @@
   }
 
 </style><div class="fluid-engine fe-63ba2c0ea468b03793f578c0"><div class="fe-block fe-block-537f6c29ab38714a6237"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-537f6c29ab38714a6237"><div class="sqs-block-content"><div style="padding: 8px 15px;">
-<input type="radio" id="stream" name="out-of" value="#Placeholder#" checked onclick="switchBoard()">
+<input type="radio" id="stream" name="out-of" value="#Placeholder#" checked onclick="switchBoard(0)">
 <label for="stream">#Placeholder#</label><br>
-<input type="radio" id="all-time" name="out-of" value="All-Time" onclick="switchBoard()">
+<input type="radio" id="all-time" name="out-of" value="All-Time" onclick="switchBoard(1)">
 <label for="all-time">All-Time</label>
 </div></div></div></div><div class="fe-block fe-block-yui_3_17_2_1_1673144690577_34418"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-yui_3_17_2_1_1673144690577_34418"><div class="sqs-block-content"><label>Category</label>
 <select id="subcat" style="width: 100%; text-align: center;">
-  <option id="option-1">Option 1</option>
-  <option id="option-2">Option 2</option>
-  <option id="option-3">Option 3</option>
-  <option id="option-4">Option 4</option>
-  <option id="option-5">Option 5</option>
+  <option id="option-1" onclick="subSwitch('table-1')">Option 1</option>
+  <option id="option-2" onclick="subSwitch('table-2')">Option 2</option>
+  <option id="option-3" onclick="subSwitch('table-3')">Option 3</option>
+  <option id="option-4" onclick="subSwitch('table-4')">Option 4</option>
+  <option id="option-5" onclick="subSwitch('table-5')">Option 5</option>
 </select>
 </div></div></div><div class="fe-block fe-block-yui_3_17_2_1_1673144690577_23890"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-yui_3_17_2_1_1673144690577_23890"><div class="sqs-block-content">
 <style>
@@ -2397,7 +2397,11 @@
     <script>
         var duels, rr, rps, coin, bigvanish;
 
-        var current = "duels";
+        var current = { 
+          "game": "duels", 
+          "option": "table-1",
+          "board": 0
+        };
 
         var layout = `<tr>
                         <th class="th-1" style="text-align: center;">Place</th>
@@ -2415,7 +2419,7 @@
           }, 3000);
 
           document.getElementById(current).backgroundColor = "darkred";
-          current = btn;
+          current.game = btn;
 
           document.getElementsByClassName('table-1')[0].innerHTML = layout;
           document.getElementsByClassName('table-2')[0].innerHTML = layout;
@@ -2443,6 +2447,7 @@
                 })
                 .catch(err => {
                     alert(`An error occurred: ${err.message}`);
+                    return;
                 });
             } 
 
@@ -2547,6 +2552,7 @@
                 })
                 .catch(err => {
                     alert(`An error occurred: ${err.message}`);
+                    return;
                 });
             }
 
@@ -2636,6 +2642,7 @@
               })
               .catch(err => {
                   alert(`An error occurred: ${err.message}`);
+                    return;
               });
             }
 
@@ -2710,6 +2717,7 @@
               })
               .catch(err => {
                   alert(`An error occurred: ${err.message}`);
+                  return;
               });
             }
 
@@ -2769,6 +2777,7 @@
               })
               .catch(err => {
                   alert(`An error occurred: ${err.message}`);
+                  return;
               });
             }
 
@@ -2816,6 +2825,26 @@
 
             break;
           }
+        }
+
+        function subSwitch(option) {
+          if (current.option === option) return;
+
+          document.getElementsByClassName(current.option)[current.board].hidden = true;
+            
+          document.getElementsByClassName(option)[current.board].hidden = false;
+
+          current.option = option;
+        }
+
+        function siwtchBoard(board) {
+          if (current.board === board) return;
+
+          document.getElementsByClassName(current.option)[current.board].hidden = true;
+
+          document.getElementsByClassName(current.option)[board].hidden = false;
+
+          current.board = board;
         }
 
         getStuff('duels');
