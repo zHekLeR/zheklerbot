@@ -2465,7 +2465,7 @@
                 row1.insertCell(2).innerHTML = duels.losses.stream[i].losses;
               }
 
-              if (duels.stream.streak[i]) {
+              if (duels.streak.stream[i]) {
                 var row1 = document.getElementsByClassName('table-3')[0].insertRow();
                 row1.insertCell(0).innerHTML = i;
                 row1.insertCell(1).innerHTML = duels.streak.stream[i].userid;
@@ -2668,22 +2668,22 @@
               if (rps.win["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-1')[1].insertRow();
                 row1.insertCell(0).innerHTML = i;
-                row1.insertCell(1).innerHTML = rps.win.stream[i].userid;
-                row1.insertCell(2).innerHTML = rps.win.stream[i].win;
+                row1.insertCell(1).innerHTML = rps.win["all-time"][i].userid;
+                row1.insertCell(2).innerHTML = rps.win["all-time"][i].win;
               }
 
               if (rps.loss["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-2')[1].insertRow();
                 row1.insertCell(0).innerHTML = i;
-                row1.insertCell(1).innerHTML = rps.loss.stream[i].userid;
-                row1.insertCell(2).innerHTML = rps.loss.stream[i].loss;
+                row1.insertCell(1).innerHTML = rps.loss["all-time"][i].userid;
+                row1.insertCell(2).innerHTML = rps.loss["all-time"][i].loss;
               }
 
               if (rps.tie["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-3')[1].insertRow();
                 row1.insertCell(0).innerHTML = i;
-                row1.insertCell(1).innerHTML = rps.tie.stream[i].userid;
-                row1.insertCell(2).innerHTML = rps.tie.stream[i].percent;
+                row1.insertCell(1).innerHTML = rps.tie["all-time"][i].userid;
+                row1.insertCell(2).innerHTML = rps.tie["all-time"][i].percent;
               }
             }
               
@@ -2735,15 +2735,15 @@
               if (coin.correct["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-1')[1].insertRow();
                 row1.insertCell(0).innerHTML = i;
-                row1.insertCell(1).innerHTML = coin.correct.stream[i].userid;
-                row1.insertCell(2).innerHTML = coin.correct.stream[i].correct;
+                row1.insertCell(1).innerHTML = coin.correct["all-time"][i].userid;
+                row1.insertCell(2).innerHTML = coin.correct["all-time"][i].correct;
               }
 
               if (coin.wrong["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-2')[1].insertRow();
                 row1.insertCell(0).innerHTML = i;
-                row1.insertCell(1).innerHTML = coin.wrong.stream[i].userid;
-                row1.insertCell(2).innerHTML = coin.wrong.stream[i].wrong;
+                row1.insertCell(1).innerHTML = coin.wrong["all-time"][i].userid;
+                row1.insertCell(2).innerHTML = coin.wrong["all-time"][i].wrong;
               }
             }
               
@@ -2791,18 +2791,18 @@
                 row1.insertCell(2).innerHTML = bigvanish.low.stream[i].lowest;
               }
 
-              if (bigvanish.high.stream[i]) {
+              if (bigvanish.high["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-1')[1].insertRow();
                 row1.insertCell(0).innerHTML = i;
-                row1.insertCell(1).innerHTML = bigvanish.high.stream[i].userid;
-                row1.insertCell(2).innerHTML = bigvanish.high.stream[i].vanish;
+                row1.insertCell(1).innerHTML = bigvanish.high["all-time"][i].userid;
+                row1.insertCell(2).innerHTML = bigvanish.high["all-time"][i].vanish;
               }
 
-              if (bigvanish.low.stream[i]) {
+              if (bigvanish.low["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-2')[1].insertRow();
                 row1.insertCell(0).innerHTML = i;
-                row1.insertCell(1).innerHTML = bigvanish.low.stream[i].userid;
-                row1.insertCell(2).innerHTML = bigvanish.low.stream[i].lowest;
+                row1.insertCell(1).innerHTML = bigvanish.low["all-time"][i].userid;
+                row1.insertCell(2).innerHTML = bigvanish.low["all-time"][i].lowest;
               }
             }
               
@@ -2832,7 +2832,7 @@
           current.option = option;
         }
 
-        function siwtchBoard(board) {
+        function switchBoard(board) {
           if (current.board === board) return;
 
           document.getElementsByClassName(current.option)[current.board].hidden = true;
