@@ -1676,10 +1676,10 @@
   data-alignment="center"
   data-button-size="medium"
   data-button-type="primary"
+  onclick="getStuff('duels')"
 >
   <a
     class="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element"
-    onclick="getStuff('duels')"
     id="duels"
   >
     Duels
@@ -1694,10 +1694,10 @@
   data-button-size="medium"
   data-button-type="primary"
   style="background-color: darkred;"
+  onclick="getStuff('rr')"
 >
   <a
     class="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element"
-    onclick="getStuff('rr')"
     id="rr"
   >
     Revolver Roulette
@@ -1712,10 +1712,10 @@
   data-button-size="medium"
   data-button-type="primary"
   style="background-color: darkred;"
+  onclick="getStuff('rps')"
 >
   <a
     class="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element"
-    onclick="getStuff('rps')"
     id="rps"
   >
     Rock Paper Scissors
@@ -1730,10 +1730,10 @@
   data-button-size="medium"
   data-button-type="primary"
   style="background-color: darkred;"
+  onclick="getStuff('coin')"
 >
   <a
     class="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element"
-    onclick="getStuff('coin')"
     id="coin"
   >
     Coinflip
@@ -1748,10 +1748,10 @@
   data-button-size="medium"
   data-button-type="primary"
   style="background-color: darkred;"
+  onclick="getStuff('bigvanish')"
 >
   <a
     class="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element"
-    onclick="getStuff('bigvanish')"
     id="bigvanish"
   >
     Big Vanish
@@ -1981,9 +1981,9 @@
   }
 
 </style><div class="fluid-engine fe-63ba2c0ea468b03793f578c0"><div class="fe-block fe-block-537f6c29ab38714a6237"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-537f6c29ab38714a6237"><div class="sqs-block-content"><div style="padding: 8px 15px;">
-<input type="radio" id="stream" name="out-of" value="#channel#" checked>
+<input type="radio" id="stream" name="out-of" value="#Placeholder#" checked onclick="switchBoard()">
 <label for="stream">#Placeholder#</label><br>
-<input type="radio" id="all-time" name="out-of" value="All-Time">
+<input type="radio" id="all-time" name="out-of" value="All-Time" onclick="switchBoard()">
 <label for="all-time">All-Time</label>
 </div></div></div></div><div class="fe-block fe-block-yui_3_17_2_1_1673144690577_34418"><div class="sqs-block code-block sqs-block-code" data-block-type="23" id="block-yui_3_17_2_1_1673144690577_34418"><div class="sqs-block-content"><label>Category</label>
 <select id="subcat" style="width: 100%; text-align: center;">
@@ -2434,7 +2434,8 @@
             case "duels": 
             if (!duels) {
                 await fetch('/leaderboards/#channel#/duels')
-                .then(res => {
+                .then(async res => {
+                    res = await res.json();
                     if (res.status != 200) {
                         throw new Error("Status " + res.status);
                     }
@@ -2537,7 +2538,8 @@
             case "rr":
             if (!rr) {
                 await fetch('/leaderboards/#channel#/rr')
-                .then(res => {
+                .then(async res => {
+                  res = await res.json();
                     if (res.status != 200) {
                         throw new Error("Status " + res.status);
                     }
@@ -2625,7 +2627,8 @@
             case "rps":
             if (!rps) {
               await fetch('/leaderboards/#channel#/rps')
-              .then(res => {
+              .then(async res => {
+                  res = await res.json();
                   if (res.status != 200) {
                       throw new Error("Status " + res.status);
                   }
@@ -2698,7 +2701,8 @@
             case "coin":
             if (!coin) {
               await fetch('/leaderboards/#channel#/coin')
-              .then(res => {
+              .then(async res => {
+                  res = await res.json();
                   if (res.status != 200) {
                       throw new Error("Status " + res.status);
                   }
@@ -2756,7 +2760,8 @@
             case "bigvanish":
             if (!bigvanish) {
               await fetch('/leaderboards/#channel#/bigvanish')
-              .then(res => {
+              .then(async res => {
+                  res = await res.json();
                   if (res.status != 200) {
                       throw new Error("Status " + res.status);
                   }
