@@ -2433,7 +2433,7 @@
           switch (btn) {
             case "duels": 
             if (!duels) {
-                await fetch('/leaderboard/#channel#/duels')
+                await fetch('/leaderboards/#channel#/duels')
                 .then(res => {
                     if (res.status != 200) {
                         throw new Error("Status " + res.status);
@@ -2536,7 +2536,7 @@
 
             case "rr":
             if (!rr) {
-                await fetch('/leaderboard/#channel#/rr')
+                await fetch('/leaderboards/#channel#/rr')
                 .then(res => {
                     if (res.status != 200) {
                         throw new Error("Status " + res.status);
@@ -2624,7 +2624,7 @@
 
             case "rps":
             if (!rps) {
-              await fetch('/leaderboard/#channel#/rps')
+              await fetch('/leaderboards/#channel#/rps')
               .then(res => {
                   if (res.status != 200) {
                       throw new Error("Status " + res.status);
@@ -2697,7 +2697,7 @@
 
             case "coin":
             if (!coin) {
-              await fetch('/leaderboard/#channel#/coin')
+              await fetch('/leaderboards/#channel#/coin')
               .then(res => {
                   if (res.status != 200) {
                       throw new Error("Status " + res.status);
@@ -2755,7 +2755,7 @@
 
             case "bigvanish":
             if (!bigvanish) {
-              await fetch('/leaderboard/#channel#/bigvanish')
+              await fetch('/leaderboards/#channel#/bigvanish')
               .then(res => {
                   if (res.status != 200) {
                       throw new Error("Status " + res.status);

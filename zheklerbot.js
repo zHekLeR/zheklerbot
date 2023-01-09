@@ -1589,7 +1589,7 @@ app.get('/leaderboards/:channel/rps', async (request, response) => {
 });
 
 
-// Rock Paper Scissors leaderboard.
+// Coinflip leaderboard.
 app.get('/leaderboards/:channel/coin', async (request, response) => {
   try {
     request.params.channel = request.params.channel.toLowerCase();
@@ -1614,7 +1614,6 @@ app.get('/leaderboards/:channel/coin', async (request, response) => {
 
 
 // Big Vanish leaderboard.
-// Rock Paper Scissors leaderboard.
 app.get('/leaderboards/:channel/bigvanish', async (request, response) => {
   try {
     request.params.channel = request.params.channel.toLowerCase();
