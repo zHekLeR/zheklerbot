@@ -2442,7 +2442,7 @@
                     if (res.status != 200) {
                         throw new Error("Status " + res.status);
                     }
-                    duels = JSON.parse(res);
+                    duels = await res.json();
                 })
                 .catch(err => {
                     alert(`An error occurred: ${err.message}`);
@@ -2543,11 +2543,10 @@
             if (!rr) {
                 await fetch('/leaderboards/#channel#/rr')
                 .then(async res => {
-                  res = await res.json();
                     if (res.status != 200) {
                         throw new Error("Status " + res.status);
                     }
-                    rr = JSON.parse(res);
+                    rr = await res.json();
                 })
                 .catch(err => {
                     alert(`An error occurred: ${err.message}`);
@@ -2633,11 +2632,10 @@
             if (!rps) {
               await fetch('/leaderboards/#channel#/rps')
               .then(async res => {
-                  res = await res.json();
                   if (res.status != 200) {
                       throw new Error("Status " + res.status);
                   }
-                  rps = JSON.parse(res);
+                  rps = await res.json();
               })
               .catch(err => {
                   alert(`An error occurred: ${err.message}`);
@@ -2708,11 +2706,10 @@
             if (!coin) {
               await fetch('/leaderboards/#channel#/coin')
               .then(async res => {
-                  res = await res.json();
                   if (res.status != 200) {
                       throw new Error("Status " + res.status);
                   }
-                  coin = JSON.pasre(res);
+                  coin = await res.json();
               })
               .catch(err => {
                   alert(`An error occurred: ${err.message}`);
@@ -2768,11 +2765,10 @@
             if (!bigvanish) {
               await fetch('/leaderboards/#channel#/bigvanish')
               .then(async res => {
-                  res = await res.json();
                   if (res.status != 200) {
                       throw new Error("Status " + res.status);
                   }
-                  bigvanish = JSON.parse(res);
+                  bigvanish = await res.json();
               })
               .catch(err => {
                   alert(`An error occurred: ${err.message}`);
