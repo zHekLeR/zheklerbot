@@ -2419,7 +2419,7 @@
             button.disabled = false;
           }, 2000);
 
-          document.getElementById(current.game).backgroundColor = "darkred";
+          document.getElementById(current.game).style.backgroundColor = "darkred";
           current.game = btn;
 
           document.getElementsByClassName('table-1')[0].innerHTML = layout;
@@ -2477,14 +2477,14 @@
                 var row1 = document.getElementsByClassName('table-4')[0].insertRow();
                 row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = duels.best_ratio.stream[i].userid;
-                row1.insertCell(2).innerHTML = duels.best_ratio.stream[i].percent;
+                row1.insertCell(2).innerHTML = "%" + duels.best_ratio.stream[i].percent;
               }
 
               if (duels.worst_ratio.stream[i]) {
                 var row1 = document.getElementsByClassName('table-4')[0].insertRow();
                 row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = duels.worst_ratio.stream[i].userid;
-                row1.insertCell(2).innerHTML = duels.worst_ratio.stream[i].percent;
+                row1.insertCell(2).innerHTML = "%" + duels.worst_ratio.stream[i].percent;
               }
 
               if (duels.wins["all-time"][i]) {
@@ -2512,14 +2512,14 @@
                 var row1 = document.getElementsByClassName('table-4')[1].insertRow();
                 row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = duels.best_ratio["all-time"][i].userid;
-                row1.insertCell(2).innerHTML = duels.best_ratio["all-time"][i].percent;
+                row1.insertCell(2).innerHTML = "%" + duels.best_ratio["all-time"][i].percent;
               }
 
               if (duels.worst_ratio["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-5')[1].insertRow();
                 row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = duels.worst_ratio["all-time"][i].userid;
-                row1.insertCell(2).innerHTML = duels.worst_ratio["all-time"][i].percent;
+                row1.insertCell(2).innerHTML = "%" + duels.worst_ratio["all-time"][i].percent;
               }
             }
 
@@ -2574,14 +2574,14 @@
                 var row1 = document.getElementsByClassName('table-3')[0].insertRow();
                 row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = rr.best_ratio.stream[i].user_id;
-                row1.insertCell(2).innerHTML = rr.best_ratio.stream[i].percent;
+                row1.insertCell(2).innerHTML = "%" + rr.best_ratio.stream[i].percent;
               }
 
               if (rr.worst_ratio.stream[i]) {
                 var row1 = document.getElementsByClassName('table-4')[0].insertRow();
                 row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = rr.worst_ratio.stream[i].user_id;
-                row1.insertCell(2).innerHTML = rr.worst_ratio.stream[i].percent;
+                row1.insertCell(2).innerHTML = "%" + rr.worst_ratio.stream[i].percent;
               }
 
               if (rr.survive["all-time"][i]) {
@@ -2602,14 +2602,14 @@
                 var row1 = document.getElementsByClassName('table-3')[1].insertRow();
                 row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = rr.best_ratio["all-time"][i].user_id;
-                row1.insertCell(2).innerHTML = rr.best_ratio["all-time"][i].percent;
+                row1.insertCell(2).innerHTML = "%" + rr.best_ratio["all-time"][i].percent;
               }
 
               if (rr.worst_ratio["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-4')[1].insertRow();
                 row1.insertCell(0).innerHTML = i + 1;
                 row1.insertCell(1).innerHTML = rr.worst_ratio["all-time"][i].user_id;
-                row1.insertCell(2).innerHTML = rr.worst_ratio["all-time"][i].percent;
+                row1.insertCell(2).innerHTML = "%" + rr.worst_ratio["all-time"][i].percent;
               }
             }
 
@@ -2650,43 +2650,43 @@
               if (rps.win.stream[i]) {
                 var row1 = document.getElementsByClassName('table-1')[0].insertRow();
                 row1.insertCell(0).innerHTML = i + 1;
-                row1.insertCell(1).innerHTML = rps.win.stream[i].userid;
+                row1.insertCell(1).innerHTML = rps.win.stream[i].user_id;
                 row1.insertCell(2).innerHTML = rps.win.stream[i].win;
               }
 
               if (rps.loss.stream[i]) {
                 var row1 = document.getElementsByClassName('table-2')[0].insertRow();
                 row1.insertCell(0).innerHTML = i + 1;
-                row1.insertCell(1).innerHTML = rps.loss.stream[i].userid;
+                row1.insertCell(1).innerHTML = rps.loss.stream[i].user_id;
                 row1.insertCell(2).innerHTML = rps.loss.stream[i].loss;
               }
 
               if (rps.tie.stream[i]) {
                 var row1 = document.getElementsByClassName('table-3')[0].insertRow();
                 row1.insertCell(0).innerHTML = i + 1;
-                row1.insertCell(1).innerHTML = rps.tie.stream[i].userid;
-                row1.insertCell(2).innerHTML = rps.tie.stream[i].percent;
+                row1.insertCell(1).innerHTML = rps.tie.stream[i].user_id;
+                row1.insertCell(2).innerHTML = rps.tie.stream[i].tie;
               }
 
               if (rps.win["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-1')[1].insertRow();
                 row1.insertCell(0).innerHTML = i + 1;
-                row1.insertCell(1).innerHTML = rps.win["all-time"][i].userid;
+                row1.insertCell(1).innerHTML = rps.win["all-time"][i].user_id;
                 row1.insertCell(2).innerHTML = rps.win["all-time"][i].win;
               }
 
               if (rps.loss["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-2')[1].insertRow();
                 row1.insertCell(0).innerHTML = i + 1;
-                row1.insertCell(1).innerHTML = rps.loss["all-time"][i].userid;
+                row1.insertCell(1).innerHTML = rps.loss["all-time"][i].user_id;
                 row1.insertCell(2).innerHTML = rps.loss["all-time"][i].loss;
               }
 
               if (rps.tie["all-time"][i]) {
                 var row1 = document.getElementsByClassName('table-3')[1].insertRow();
                 row1.insertCell(0).innerHTML = i + 1;
-                row1.insertCell(1).innerHTML = rps.tie["all-time"][i].userid;
-                row1.insertCell(2).innerHTML = rps.tie["all-time"][i].percent;
+                row1.insertCell(1).innerHTML = rps.tie["all-time"][i].user_id;
+                row1.insertCell(2).innerHTML = rps.tie["all-time"][i].tie;
               }
             }
 
