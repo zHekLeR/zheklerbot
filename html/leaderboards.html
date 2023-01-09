@@ -2440,6 +2440,7 @@
                 await fetch('/leaderboards/#channel#/duels')
                 .then(async res => {
                     res = await res.json();
+                    console.log(JSON.stringify(res));
                     if (res.status != 200) {
                         throw new Error("Status " + res.status);
                     }
@@ -2450,8 +2451,6 @@
                     return;
                 });
             } 
-
-            console.log(duels);
 
             for (var i = 0; i < 10; i++) {
               if (duels.wins.stream[i]) {
