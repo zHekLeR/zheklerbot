@@ -1507,7 +1507,7 @@ app.get('/leaderboards/:channel/duels', async (request, response) => {
     for (var i = 0; i < bRatioAT.length; i++) {
       bRatioAT[i]["percent"] = 100;
     }
-    var ATratios = await helper.dbQueryPromise(`SELECT userid, wins FROM duelduel ORDER BY wins DESC LIMIT ${10 - bRatioAT.length};`);
+    var ATratios = await helper.dbQueryPromise(`SELECT userid, wins, losses, ROUND(wins * 100.0 / (wins + losses), 2) AS percent FROM (SELECT * FROM duelduel WHERE wins + losses >= 10') AS duels ORDER BY percent DESC LIMIT ${10 - bRatioAT.length};`);
     stats["best_ratio"]["all-time"] = bRatioAT.length?bRatioAT.concat(ATratios):ATratios;
 
     stats["worst_ratio"]["stream"] = await helper.dbQueryPromise(`SELECT userid, wins, losses, ROUND(wins * 100.0 / (wins + losses), 2) AS percent FROM (SELECT * FROM duelduel WHERE wins + losses >= 10 AND stream = '${request.params.channel}') AS duels ORDER BY percent ASC LIMIT 10;`);
@@ -1551,7 +1551,7 @@ app.get('/leaderboards/:channel/rr', async (request, response) => {
     for (var i = 0; i < bRatioAT.length; i++) {
       bRatioAT[i]["percent"] = 100;
     }
-    var ATratios = await helper.dbQueryPromise(`SELECT user_id, survive FROM revolverroulette ORDER BY survive DESC LIMIT ${10 - bRatioAT.length};`);
+    var ATratios = await helper.dbQueryPromise(`SELECT user_id, survive, die, ROUND(survive * 100.0 / (survive + die), 2) AS percent FROM (SELECT * FROM revolverroulette WHERE survive + die >= 10') AS rr ORDER BY percent DESC LIMIT ${10 - bRatioAT.length};`);
     stats["best_ratio"]["all-time"] = bRatioAT.length?bRatioAT.concat(ATratios):ATratios;
 
     stats["worst_ratio"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, survive, die, ROUND(survive * 100.0 / (survive + die), 2) AS percent FROM (SELECT * FROM revolverroulette WHERE survive + die >= 10 AND stream = '${request.params.channel}') AS rr ORDER BY percent ASC LIMIT 10;`);

@@ -2525,6 +2525,7 @@
 
             document.getElementById("option-1").innerHTML = "Wins";
             document.getElementById("option-1").hidden = false;
+            document.getElementById("option-1").selected = true;
             
             document.getElementById("option-2").innerHTML = "Losses";
             document.getElementById("option-2").hidden = false;
@@ -2612,11 +2613,10 @@
                 row1.insertCell(2).innerHTML = "%" + rr.worst_ratio["all-time"][i].percent;
               }
             }
-
-            document.getElementById('subcat').value = "Survivals";
               
             document.getElementById("option-1").innerHTML = "Survivals";
             document.getElementById("option-1").hidden = false;
+            document.getElementById("option-1").selected = true;
             
             document.getElementById("option-2").innerHTML = "Deaths";
             document.getElementById("option-2").hidden = false;
@@ -2689,11 +2689,10 @@
                 row1.insertCell(2).innerHTML = rps.tie["all-time"][i].tie;
               }
             }
-
-            document.getElementById('subcat').value = "Wins";
               
             document.getElementById("option-1").innerHTML = "Wins";
             document.getElementById("option-1").hidden = false;
+            document.getElementById("option-1").selected = true;
             
             document.getElementById("option-2").innerHTML = "Losses";
             document.getElementById("option-2").hidden = false;
@@ -2751,11 +2750,10 @@
                 row1.insertCell(2).innerHTML = coin.wrong["all-time"][i].wrong;
               }
             }
-
-            document.getElementById('subcat').value = "Correct Guesses";
               
             document.getElementById("option-1").innerHTML = "Correct Guesses";
             document.getElementById("option-1").hidden = false;
+            document.getElementById("option-1").selected = true;
             
             document.getElementById("option-2").innerHTML = "Wrong Guesses";
             document.getElementById("option-2").hidden = false;
@@ -2812,11 +2810,10 @@
                 row1.insertCell(2).innerHTML = bigvanish.low["all-time"][i].lowest;
               }
             }
-
-            document.getElementById('subcat').value = "Highest Timeout";
               
             document.getElementById("option-1").innerHTML = "Highest Timeout";
             document.getElementById("option-1").hidden = false;
+            document.getElementById("option-1").selected = true;
             
             document.getElementById("option-2").innerHTML = "Lowest Timeout";
             document.getElementById("option-2").hidden = false;
