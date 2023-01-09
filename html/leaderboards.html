@@ -2623,16 +2623,18 @@
             break;
 
             case "rps":
-            await fetch('/leaderboard/#module#/duels')
-            .then(res => {
-                if (res.status != 200) {
-                    throw new Error("Status " + res.status);
-                }
-                rps = JSON.parse(res.body);
-            })
-            .catch(err => {
-                alert(`An error occurred: ${err.message}`);
-            });
+            if (!rps) {
+              await fetch('/leaderboard/#module#/rps')
+              .then(res => {
+                  if (res.status != 200) {
+                      throw new Error("Status " + res.status);
+                  }
+                  rps = JSON.parse(res.body);
+              })
+              .catch(err => {
+                  alert(`An error occurred: ${err.message}`);
+              });
+            }
 
             for (var i = 0; i < 10; i++) {
               if (rps.stream.win[i]) {
@@ -2694,16 +2696,18 @@
             break;
 
             case "coin":
-            await fetch('/leaderboard/#module#/duels')
-            .then(res => {
-                if (res.status != 200) {
-                    throw new Error("Status " + res.status);
-                }
-                coin = JSON.pasre(res.body);
-            })
-            .catch(err => {
-                alert(`An error occurred: ${err.message}`);
-            });
+            if (!coin) {
+              await fetch('/leaderboard/#module#/coin')
+              .then(res => {
+                  if (res.status != 200) {
+                      throw new Error("Status " + res.status);
+                  }
+                  coin = JSON.pasre(res.body);
+              })
+              .catch(err => {
+                  alert(`An error occurred: ${err.message}`);
+              });
+            }
 
             for (var i = 0; i < 10; i++) {
               if (coin.stream.correct[i]) {
@@ -2750,16 +2754,18 @@
             break;
 
             case "bigvanish":
-            await fetch('/leaderboard/#module#/duels')
-            .then(res => {
-                if (res.status != 200) {
-                    throw new Error("Status " + res.status);
-                }
-                bigvanish = JSON.parse(res.body);
-            })
-            .catch(err => {
-                alert(`An error occurred: ${err.message}`);
-            });
+            if (!bigvanish) {
+              await fetch('/leaderboard/#module#/bigvanish')
+              .then(res => {
+                  if (res.status != 200) {
+                      throw new Error("Status " + res.status);
+                  }
+                  bigvanish = JSON.parse(res.body);
+              })
+              .catch(err => {
+                  alert(`An error occurred: ${err.message}`);
+              });
+            }
 
             for (var i = 0; i < 10; i++) {
               if (bigvanish.stream.high[i]) {
