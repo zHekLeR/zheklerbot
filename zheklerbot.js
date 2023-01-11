@@ -2812,7 +2812,6 @@ app.get('/nomoscore', async (request, response) => {
     var cookies = request.cookies, rows;
     if (cookies["auth"]) {
       rows = await helper.checkBearer(cookies["auth"]);
-      console.log(rows);
       if (!rows[0]) {
         response.status(401);
         response.redirect('/');
@@ -2823,7 +2822,6 @@ app.get('/nomoscore', async (request, response) => {
       response.redirect('/');
       return;
     }
-    console.log(scoreBots[rows[1].userid]);
 
     if (scoreBots[rows[1].userid]) {
       await scoreBots[rows[1].userid].scoreBot.disconnect();
