@@ -1704,7 +1704,11 @@
                                  <div>If you have the box beside a stream checked, the bot will respond to !score when it is typed in the chat.</div>
                                  <div>Note that the name provided must be the Twitch stream (and you must have permissions for that stream).</div>
                                  <br>
-                                 <div>If the map is reset but the current scores will carry over, you can enter this in the appropriate input and it will be accounted for.</div>
+                                 <div id="mescore">If the map is reset but the current scores will carry over, you can enter this in the appropriate input and it will be accounted for.</div>
+                                 <br>
+                                 <br>
+                                 <div>#mescore#</div>
+                                 <div></div>
                               </div>
                            </div>
                         </div>
@@ -1964,9 +1968,9 @@
                      document.getElementById('tKills').innerHTML = parseInt(scores[1]);
                      document.getElementById('o1Kills').innerHTML = parseInt(scores[2]);
                      document.getElementById('o2Kills').innerHTML = parseInt(scores[3]);
-                     document.getElementById('tName').value = scores[4];
-                     document.getElementById('o1Name').value = scores[5];
-                     document.getElementById('o2Name').value = scores[6];
+                     document.getElementById('tName').value = scores[4] || '';
+                     document.getElementById('o1Name').value = scores[5] || '';
+                     document.getElementById('o2Name').value = scores[6] || '';
                      document.getElementById('hStatus').checked = scores[7] === 'true';
                      document.getElementById('tStatus').checked = scores[8] === 'true';
                      document.getElementById('o1Status').checked = scores[9] === 'true';
@@ -2065,6 +2069,47 @@
              resetvalue = change == 0?0:resetvalue + change;
              document.getElementById('updown').innerHTML = (resetvalue > 0?'Up':resetvalue < 0?'Down':'') + ` ${Math.abs(resetvalue)}`;
          }
+
+         function mescore() {
+            var state = makeid();
+            var str = "https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=#CLIENT_ID#&redirect_uri=https://www.zhekbot.com/twitch/redirect&scope=chat%3Aread+chat%3Aedit&state=" + state;
+
+            document.getElementById("mescore").disabled = true;
+            setTimeout(function() {
+               document.getElementById("mescore").disabled = false;
+            }, 5000);
+
+            fetch('/twovtwo/#channel#/mescore', {
+               headers: {
+                  "state": state
+               }
+            })
+            .then(res => {
+               window.location.href = str;               
+            })
+            .catch(err => {
+               console.log(err);
+               alert(err);
+            });
+         }
+
+
+         function nomoscore() {
+            document.getElementById("mescore").disabled = true;
+            setTimeout(function() {
+               document.getElementById("mescore").disabled = false;
+            }, 5000);
+
+            fetch('/twovtwo/nomoscore')
+            .then(res => {
+               if (res.status != 200) {
+                  throw new Error("Unexpected status code: " + res.status);
+               } else {
+                  document.getElementById("mescore").innerHTML = `If you would like the scores to be updated through your account, click <a onclick="mescore()">here</a>`;
+                  alert("Success! zHekBot will be putting the scores out.");
+               }
+            })
+         }
          
            
          async function twitch() {
@@ -2080,8 +2125,19 @@
              console.log(err);
              alert(err);
            });
-         
          };
+         
+         
+         // Random string.
+         function makeid(length) {
+           var result = '';
+           var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+           var charactersLength = characters.length;
+           for ( var i = 0; i < length; i++ ) {
+             result += characters.charAt(Math.floor(Math.random() * charactersLength));
+           }
+           return result;
+         }
       </script>
    </body>
 </html>

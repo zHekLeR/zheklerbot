@@ -8,7 +8,6 @@ async function bigVanish(id, channel) {
 
         // Get value and construct response string.
         let rand = Math.floor(Math.random()*999000)+100;
-        let str = `/timeout ${id} ${rand} BIG Vanish! Random timeout between 100 and 1,000,000 seconds. `;
         
         // Pull user from database.
         let person = (await helper.dbQueryPromise(`SELECT * FROM bigvanish WHERE user_id = '${id}' AND stream = '${channel.substring(1)}';`))[0];
@@ -35,11 +34,14 @@ async function bigVanish(id, channel) {
         }
     
         // Return response.
-        return `${str}Your record high is ${person.vanish} seconds and low is ${person.lowest} seconds!`;
+        return {
+            time: rand, 
+            person: person
+        };
 
     } catch (err) {
         helper.dumpError(err, "Big Vanish.");
-        return '';
+        return {};
     }
   }
 

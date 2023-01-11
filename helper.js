@@ -40,32 +40,32 @@ discord.login(process.env.TOKEN)
 
 // DB with error handling.
 /**
+* @param {string} query
+*/
+function dbQuery(query) {
+  pool.query(query)
+  .catch(err => {
+    dumpError(err, `Query with return: ${query}`);
+  });
+}
+  
+// DB with return with error handling.
+/**
  * @param {string} query
+ * @return {Promise<Array>} 
  */
- function dbQuery(query) {
+function dbQueryPromise(query) {
+  return new Promise((resolve, reject) => {
     pool.query(query)
+    .then(resp => {
+      resolve(resp.rows);
+    })
     .catch(err => {
       dumpError(err, `Query with return: ${query}`);
+      reject([]);
     });
-  }
-  
-  // DB with return with error handling.
-  /**
-   * @param {string} query
-   * @return {Promise<Array>} 
-   */
-  function dbQueryPromise(query) {
-    return new Promise((resolve, reject) => {
-      pool.query(query)
-      .then(resp => {
-        resolve(resp.rows);
-      })
-      .catch(err => {
-        dumpError(err, `Query with return: ${query}`);
-        reject([]);
-      });
-    });
-  }
+  });
+}
   
   
 // Error handling.

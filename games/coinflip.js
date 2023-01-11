@@ -10,20 +10,18 @@ const choices = { "h": 1, "heads": 1, "t": 0, "tails": 0 };
 async function coinflip(id, input, stream) {
   try {
 
-    // Declare variable..
+    // Declare variable.
     let choice;
 
     // Determine if input is valid.
     if (Object.keys(choices).includes(input.toLowerCase())) {
       choice = choices[input.toLowerCase()];
     } else {
-      return `@${id}: valid input is like this -> !coin [heads / tails / h / t]`;
+      return { input: false, err: true, correct: false, user: {} };
     }
 
     // Determine outcome.
     let rand = Math.floor(Math.random()*2);
-    let timeout = await helper.dbQueryPromise(`SELECT timeout FROM allusers WHERE user_id = '${stream.substring(1)}';`); 
-    let shoot = rand==choice?`/me ${id} has guessed correctly!`:`/timeout ${id} ${timeout[0].timeout} You did NOT guess correctly!`;
 
     // Pull user from the database.
     let person = (await helper.dbQueryPromise(`SELECT * FROM coinflip WHERE user_id = '${id}' AND stream = '${stream.substring(1)}';`))[0];
@@ -44,11 +42,11 @@ async function coinflip(id, input, stream) {
     }
 
     // Return response.
-    return shoot + ` ${id} has guessed correctly ${person.correct} time${person.correct==1?'':'s'} and wrong ${person.wrong} time${person.wrong==1?'':'s'}!`;
+    return({ input: true, err: false, correct: rand===choice, user: person });
 
   } catch (err) {
     helper.dumpError(err, "Coinflip.");
-    return '';
+    return { input: true, err: true, correct: false, user: {} };
   }
 }
 

@@ -17,7 +17,7 @@ helper.discord.on("messageCreate", (message) => {
       }
       } else if (message.channel.id === "860699279017639936") {
       if (message.content.indexOf('/ban ') >= 0) {
-        say('huskerrs', message.content.substring(message.content.indexOf('/ban ')) + ' | Global ban');
+        say('huskerrs', message.content.substring(message.content.indexOf('/ban ')) + ' | Global ban', bot);
       } 
     }
 });
@@ -88,22 +88,26 @@ const bot = new tmi.Client({
   channels: [ ]
 });
 
+// Twitch bots for scorekeeping.
+var scoreBots = {};
+
 
 /**
  * Handle chats to Twitch.
  * @param {string} channel
  * @param {string} message
+ * @param {tmi.Client} chatBot
  */
-function say(channel, message) {
+function say(channel, message, chatBot) {
   if (profanity.isProfane(message)) {
     helper.dumpError(message, "Bot.say: channel " + channel);
     return;
   }
-  bot.say(channel, message)
+  chatBot.say(channel, message)
   .catch(err => {
     helper.dumpError(err, "Say: " + message);
-  })
-}
+  });
+};
 
 // Two vs Two arrays.
 var tvtUpdate = {};
@@ -173,7 +177,7 @@ bot.on('chat', async (channel, tags, message) => {
       // Return commands for this channel.
       case '!commands':
         if (!userIds[channel.substring(1)].commands) break;
-        say(channel, `zHekBot commands: https://www.zhekbot.com/commands/${channel.substring(1)}`);
+        say(channel, `zHekBot commands: https://www.zhekbot.com/commands/${channel.substring(1)}`, bot);
         gcd[channel.substring(1)][short] = Date.now() + 10000;
         break;
 
@@ -185,7 +189,7 @@ bot.on('chat', async (channel, tags, message) => {
         if (intArray[channel.substring(1)][splits[1]]) break;
         var time = parseInt(splits[2]);
         intArray[channel.substring(1)][splits[1]] = setInterval(function () {
-          say(channel.substring(1), splits.slice(3).join(' '));
+          say(channel.substring(1), splits.slice(3).join(' '), bot);
         }, time);
         break;
 
@@ -202,7 +206,7 @@ bot.on('chat', async (channel, tags, message) => {
       case '!pause':
         if (tags["username"] !== 'zhekler' || pause[channel.substring(1)]) break;
         pause[channel.substring(1)] = true;
-        say(channel, 'The free trial for zHekBot has expired #payzhekler');
+        say(channel, 'The free trial for zHekBot has expired #payzhekler', bot);
         break;
 
       // Unpause.
@@ -221,7 +225,7 @@ bot.on('chat', async (channel, tags, message) => {
         if (userIds[channel.substring(1)].revolverroulette || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
         helper.dbQuery(`UPDATE allusers SET revolverroulette = true WHERE user_id = '${channel.substring(1)}';`);
         userIds[channel.substring(1)].revolverroulette = true;
-        say(channel, `Revolver Roulette has been enabled. Type !rr to play!`);
+        say(channel, `Revolver Roulette has been enabled. Type !rr to play!`, bot);
         break;
 
       // Disable Revolver Roulette.
@@ -229,14 +233,32 @@ bot.on('chat', async (channel, tags, message) => {
         if (!userIds[channel.substring(1)].revolverroulette || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
         helper.dbQuery(`UPDATE allusers SET revolverroulette = false WHERE user_id = '${channel.substring(1)}';`);
         userIds[channel.substring(1)].revolverroulette = false;
-        say(channel, `Revolver Roulette has been disabled.`);
+        say(channel, `Revolver Roulette has been disabled.`, bot);
         break;
 
       // Play Revolver Roulette.
       case '!rr': 
         if (!userIds[channel.substring(1)].revolverroulette) break;
+        if (!bot.isMod(channel, 'zhekler')) {
+          say(channel, 'Revolver Roulette is unavailable since the bot is not modded.', bot);
+          userIds[channel.substring(1)].revolverroulette = false;
+          helper.dbQuery(`UPDATE allusers SET revolverroulette = false::bool WHERE user_id = '${channel.substring(1)}';`);
+        }
         if (!rrcd[tags["username"] || ''] || rrcd[tags["username"] || ''] < Date.now()) {
-          say(channel, await revolverroulette.revolverroulette(tags["display-name"] || tags["username"] || '', channel));
+          rows = await revolverroulette.revolverroulette(tags["display-name"] || tags["username"] || '', channel);
+          if (rows.error) {
+            helper.dumpError(rows.error, "Revolver Roulette.");
+          } else  if (rows.first) {
+            say(channel.substring(1), `${tags["display-name"] || tags["username"]}: Revolver Roulette is a game where you have 1/3 chance to be timed out for 5 min. You have been warned.`, bot);
+          } else if (rows.win) {
+            say(channel, `${tags["display-name"] || tags["username"]} has survived RR! Their record is ${rows.user["survive"]}W / ${rows.user["die"]}L`, bot);
+          } else {
+            if (!bot.isMod(channel, tags["username"] || '')) {
+              bot.timeout(channel, tags["username"] || '', userIds[channel.substring(1)].timeout, `You lost RR! Your record is ${rows.user["survive"]} survivals and ${rows.user["die"]} deaths.`);
+            } else {
+              say(channel, `${rows.user.user_id} lost RR! L mod immunity. Their record is ${rows.user["survive"]}W / ${rows.user["die"]}L`, bot);
+            }
+          }
           rrcd[tags["username"] || ''] = Date.now() + 30000;
         }
         break;
@@ -245,43 +267,43 @@ bot.on('chat', async (channel, tags, message) => {
       case '!rrscore':
       case '!rrstats':
         if (!userIds[channel.substring(1)].revolverroulette) break;
-        say(channel, await revolverroulette.revolverrouletteScore(tags["display-name"] || tags["username"] || '', channel));
+        say(channel, await revolverroulette.revolverrouletteScore(tags["display-name"] || tags["username"] || '', channel), bot);
         break;
 
       // Get another user's Revolver Roulette score.
       case '!rrscoreother':
         if (!userIds[channel.substring(1)].revolverroulette) break;
-        say(channel, await revolverroulette.revolverrouletteScore(message.split(' ')[1], channel));
+        say(channel, await revolverroulette.revolverrouletteScore(message.split(' ')[1], channel), bot);
         break;
 
       // Get the 3 users with the top survivals in Revolver Roulette.
       case '!rrlb':
         if (!userIds[channel.substring(1)].revolverroulette) break;
-        say(channel, await revolverroulette.revolverrouletteLb(channel));
+        say(channel, await revolverroulette.revolverrouletteLb(channel), bot);
         break;
 
       // Get the 3 users with the top deaths in Revolver Roulette.
       case '!rrlbdie':
         if (!userIds[channel.substring(1)].revolverroulette) break;
-        say(channel, await revolverroulette.revolverrouletteLbDie(channel));
+        say(channel, await revolverroulette.revolverrouletteLbDie(channel), bot);
         break;
 
       // Get the 3 users with the best win / loss ratios in Revolver Roulette.
       case '!rrlbratio':
         if (!userIds[channel.substring(1)].revolverroulette) break;
-        say(channel, await revolverroulette.revolverrouletteLbRatio(channel));
+        say(channel, await revolverroulette.revolverrouletteLbRatio(channel), bot);
         break;
 
       // Get the 3 users with the worst win / loss ratios in Revolver Roulette.
       case '!rrlbratiolow':
         if (!userIds[channel.substring(1)].revolverroulette) break;
-        say(channel, await revolverroulette.revolverrouletteLbRatioLow(channel));
+        say(channel, await revolverroulette.revolverrouletteLbRatioLow(channel), bot);
         break;
 
       // Get the total survivals and deaths for this channel in Revolver Roulette.
       case '!rrtotals':
         if (!userIds[channel.substring(1)].revolverroulette) break;
-        say(channel, await revolverroulette.revolverrouletteTotals(channel));
+        say(channel, await revolverroulette.revolverrouletteTotals(channel), bot);
         break;
 
 
@@ -294,7 +316,7 @@ bot.on('chat', async (channel, tags, message) => {
         if (userIds[channel.substring(1)].coinflip || !tags["mod"] || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
         helper.dbQuery(`UPDATE allusers SET coinflip = true WHERE user_id = '${channel.substring(1)}';`);
         userIds[channel.substring(1)].coinflip = true;
-        say(channel, `Coinflip enabled.`);
+        say(channel, `Coinflip enabled.`, bot);
         break;
 
       // Disable Coinflip.
@@ -302,14 +324,29 @@ bot.on('chat', async (channel, tags, message) => {
         if (!userIds[channel.substring(1)].coinflip || !tags["mod"] || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
         helper.dbQuery(`UPDATE allusers SET coinflip = false WHERE user_id = '${channel.substring(1)}';`);
         userIds[channel.substring(1)].coinflip = false;
-        say(channel, `Coinflip disabled.`);
+        say(channel, `Coinflip disabled.`, bot);
         break;
 
       // Play Coinflip.
       case '!coin':
         if (!userIds[channel.substring(1)].coinflip || splits.length < 2) break;
         if (!cfcd[tags["username"] || ''] || cfcd[tags["username"] || ''] < Date.now()) {
-          say(channel, await coinflip.coinflip(tags["display-name"]?tags["display-name"]:tags["username"], message.split(' ')[1], channel));
+          rows = await coinflip.coinflip(tags["display-name"]?tags["display-name"]:tags["username"], message.split(' ')[1], channel);
+          if (!rows.input) {
+            say(channel.substring(1), `Proper input is: !rps [ rock, paper, scissors, r, p, s ]`, bot);
+          } else if (rows.err) {
+            helper.dumpError(rows.err, "Coinflip.");
+          } else {
+            if (rows.correct) {
+              say(channel.substring(1), `${rows.user.user_id} guessed correctly! Their record is ${rows.user.correct} correct and ${rows.user.wrong} wrong.`, bot);
+            } else {
+              if (bot.isMod(channel, 'zhekler') && !bot.isMod(channel, tags["username"] || '')) {
+                bot.timeout(channel.substring(1), `${tags["username"]}`, userIds[channel.substring(1)].timeout, `You guessed wrong! Your record is ${rows.user.correct} correct and ${rows.user.wrong} wrong.`);
+              } else {
+                say(channel, `You guessed wrong! Your record is ${rows.user.correct} correct and ${rows.user.wrong} wrong.`, bot);
+              }
+            }
+          }
           rrcd[tags["username"] || ''] = Date.now() + 15000;
         }
         break;
@@ -318,13 +355,13 @@ bot.on('chat', async (channel, tags, message) => {
       case '!coinscore':
       case '!coinstats':
         if (!userIds[channel.substring(1)].coinflip) break;
-        say(channel, await coinflip.coinflipScore(tags["display-name"]?tags["display-name"]:tags["username"], channel));
+        say(channel, await coinflip.coinflipScore(tags["display-name"]?tags["display-name"]:tags["username"], channel), bot);
         break;
 
       // Get the users with the most wins and the most losses in Coinflip. 
       case '!coinlb':
         if (!userIds[channel.substring(1)].coinflip) break;
-        say(channel, await coinflip.coinflipLb(channel));
+        say(channel, await coinflip.coinflipLb(channel), bot);
         break;
 
 
@@ -337,7 +374,7 @@ bot.on('chat', async (channel, tags, message) => {
         if (userIds[channel.substring(1)].rps || !tags["mod"] || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
         helper.dbQuery(`UPDATE allusers SET rps = true WHERE user_id = '${channel.substring(1)}';`);
         userIds[channel.substring(1)].rps = true;
-        say(channel, `Rock paper scissors enabled.`);
+        say(channel, `Rock paper scissors enabled.`, bot);
         break;
 
       // Disable Rock Paper Scissors.
@@ -345,14 +382,29 @@ bot.on('chat', async (channel, tags, message) => {
         if (!userIds[channel.substring(1)].rps || !tags["mod"] || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
         helper.dbQuery(`UPDATE allusers SET rps = false WHERE user_id = '${channel.substring(1)}';`);
         userIds[channel.substring(1)].rps = false;
-        say(channel, `Rock paper scissors disabled.`);
+        say(channel, `Rock paper scissors disabled.`, bot);
         break;
 
       // Play Rock Paper Scissors.
       case '!rps': 
         if (!userIds[channel.substring(1)].rps || splits.length < 2) break;
         if (!rpscd[tags["username"] || ''] || rpscd[tags["username"] || ''] < Date.now()) {
-          say(channel, await rps.rps(tags["display-name"]?tags["display-name"]:tags["username"], splits[1], channel));
+          rows = await rps.rps(tags["display-name"]?tags["display-name"]:tags["username"], splits[1], channel);
+          if (rows.error) {
+            helper.dumpError(rows.error, "Rock Paper Scissors.");
+          } else if (!rows.input) {
+            say(channel.substring(1), 'Proper input is !rps [ rock / paper / scissors / r / p / s ]', bot);
+          } else {
+            if (rows.result >= 0) {
+              say(channel.substring(1), `zHekBot got ${rows.me}. ${tags["display-name"] || tags["username"]} ${rows.result?"won":"tied"}!`, bot);
+            } else {
+              if (bot.isMod(channel, 'zhekler') && !bot.isMod(channel, tags["username"] ||'')) {
+                bot.timeout(channel.substring(1), tags["display-name"] || tags["username"] || '', userIds[channel.substring(1)].timeout, `zHekBot got ${rows.me}. You lost!`);
+              } else {
+                say(channel, `zHekBot got ${rows.me}. ${tags["display-name"] || tags["username"]} lost!`, bot);
+              }
+            }
+          }
           rrcd[tags["username"] || ''] = Date.now() + 15000;
         }
         break;
@@ -361,13 +413,13 @@ bot.on('chat', async (channel, tags, message) => {
       case '!rpsscore': 
       case '!rpsstats':
       if (!userIds[channel.substring(1)].rps) break;
-        say(channel, await rps.rpsScore(tags["display-name"]?tags["display-name"]:tags["username"], channel));
+        say(channel, await rps.rpsScore(tags["display-name"]?tags["display-name"]:tags["username"], channel), bot);
         break;
 
       // Get the users with the most wins, most losses, and most ties in Rock Paper Scissors.
       case '!rpslb':
         if (!userIds[channel.substring(1)].rps) break;
-        say(channel, await rps.rpsLb(channel));
+        say(channel, await rps.rpsLb(channel), bot);
         break;
 
 
@@ -380,7 +432,7 @@ bot.on('chat', async (channel, tags, message) => {
         if (userIds[channel.substring(1)].bigvanish || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
         helper.dbQuery(`UPDATE allusers SET bigvanish = true WHERE user_id = '${channel.substring(1)}';`);
         userIds[channel.substring(1)].bigvanish = true;
-        say(channel, `Bigvanish enabled.`);
+        say(channel, `Bigvanish enabled.`, bot);
         break;
 
       // Disable Big Vanish.
@@ -388,29 +440,36 @@ bot.on('chat', async (channel, tags, message) => {
         if (!userIds[channel.substring(1)].bigvanish || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
         helper.dbQuery(`UPDATE allusers SET bigvanish = false WHERE user_id = '${channel.substring(1)}';`);
         userIds[channel.substring(1)].bigvanish = false;
-        say(channel, `Bigvanish disabled.`);
+        say(channel, `Bigvanish disabled.`, bot);
         break;
 
       // Play Big Vanish.
       case '!bigvanish':
         if (!userIds[channel.substring(1)].bigvanish) break;
+        if (!bot.isMod(channel.substring(1), 'zhekler')) {
+          say(channel, "Big Vanish is unavailable since the bot is not modded.", bot);
+          userIds[channel.substring(1)].bigvanish = false;
+          helper.dbQuery(`UPDATE allusers SET bigvanish = false::bool WHERE user_id = '${channel.substring(1)}';`);
+        }
         if (!bvcd[tags["username"] || ''] || bvcd[tags["username"] || ''] < Date.now()) {
-          say(channel, await bigvanish.bigVanish(tags["display-name"]?tags["display-name"]:tags["username"], channel));
+          rows = await bigvanish.bigVanish(tags["display-name"]?tags["display-name"]:tags["username"], channel);
+          bot.timeout(channel, `${rows.person.user_id}`, rows.time, `You were timed out for ${numberWithCommas(rows.time)}! Your record high is ${numberWithCommas(rows.person.high)} seconds and low is ${numberWithCommas(rows.person.lowest)} seconds.`);
+          say(channel.substring(1), `Big Vanish: ${rows.person.user_id} | ${numberWithCommas(rows.time)} seconds`, bot);
           rrcd[tags["username"] || ''] = Date.now() + 15000;
-          setTimeout(function() { say(channel, `/untimeout ${tags["username"]}`); }, 3000);
+          setTimeout(function() { bot.unban(channel.substring(1), splits[1]) }, 3000);
         }
         break;
 
       // Get the 3 users with the highest timeouts in Big Vanish.
       case '!bigvanishlb':
         if (!userIds[channel.substring(1)].bigvanish) break;
-        say(channel, await bigvanish.bigVanishLb(channel));
+        say(channel, await bigvanish.bigVanishLb(channel), bot);
         break;
 
       // Get the 3 users with the lowest timeouts in Big Vanish.
       case '!bigvanishlow':
         if (!userIds[channel.substring(1)].bigvanish) break;
-        say(channel, await bigvanish.bigVanishLow(channel));
+        say(channel, await bigvanish.bigVanishLow(channel), bot);
         break;
 
 
@@ -422,10 +481,10 @@ bot.on('chat', async (channel, tags, message) => {
       case '!customon':
         if (userIds[channel.substring(1)].customs || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
         if (channel.substring(1) === 'huskerrs') {
-          say(channel, '!enable !score false');
-          say(channel, '!enable !mc false');
+          say(channel, '!enable !score false', bot);
+          say(channel, '!enable !mc false', bot);
         } else {
-          say(channel, 'Custom tourney scoring enabled.');
+          say(channel, 'Custom tourney scoring enabled.', bot);
         }
         helper.dbQuery(`UPDATE allusers SET customs = true WHERE user_id = '${channel.substring(1)}';`);
         rows = await helper.dbQueryPromise(`SELECT * FROM customs WHERE user_id = '${channel.substring(1)}';`);
@@ -439,10 +498,10 @@ bot.on('chat', async (channel, tags, message) => {
       case '!customoff':
         if (!userIds[channel.substring(1)].customs || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;;
         if (channel.substring(1) === 'huskerrs') {
-          say(channel, '!enable !score true');
-          say(channel, '!enable !mc true');
+          say(channel, '!enable !score true', bot);
+          say(channel, '!enable !mc true', bot);
         } else {
-          say(channel, 'Custom tourney scoring disabled.');
+          say(channel, 'Custom tourney scoring disabled.', bot);
         }
         helper.dbQuery(`UPDATE allusers SET customs = false WHERE user_id = '${channel.substring(1)}';`);
         userIds[channel.substring(1)].customs = false;
@@ -452,11 +511,11 @@ bot.on('chat', async (channel, tags, message) => {
       case '!setmaps': 
         if (!userIds[channel.substring(1)].customs || (!tags["mod"] && tags['username'] !== channel.substring(1)) || splits.length == 1) break;
         if (!parseInt(splits[1])) {
-          say(channel, 'Map count must be an integer.');
+          say(channel, 'Map count must be an integer.', bot);
           break;
         }
         helper.dbQuery(`UPDATE customs SET map_count = ${parseInt(splits[1])} WHERE user_id = '${channel.substring(1)}';`);
-        say(channel, `Map count has been set to ${splits[1]}`);
+        say(channel, `Map count has been set to ${splits[1]}`, bot);
         break;
 
       // Set the placement string.
@@ -466,20 +525,20 @@ bot.on('chat', async (channel, tags, message) => {
         for (var i = 1; i < splits.length; i++) {
           if (!parseInt(splits[i])) {
             temp = true;
-            say(channel, `'Input must be integer pairs. An example for 1st: 2x, 2nd-8th: 1.5x, 9th+: 1x would be '!setplacement 1 2 2 1.5 9 1'`);
+            say(channel, `'Input must be integer pairs. An example for 1st: 2x, 2nd-8th: 1.5x, 9th+: 1x would be '!setplacement 1 2 2 1.5 9 1'`, bot);
             break;
           }
         }
         if (temp) break;
         helper.dbQuery(`UPDATE customs SET multipliers = '${message.substring(message.indexOf(' ') + 1)}' WHERE user_id = '${channel.substring(1)}';`);
-        say(channel, `Placement multipliers have been updated.`);
+        say(channel, `Placement multipliers have been updated.`, bot);
         break;
 
       // Add a map to the scores.
       case '!addmap':
         if (!userIds[channel.substring(1)].customs || (!tags["mod"] && tags['username'] !== channel.substring(1)) || splits.length != 3) break;
         if (!parseInt(splits[1]) || !parseInt(splits[2])) {
-          say(channel, 'Placement and kills must be integers.');
+          say(channel, 'Placement and kills must be integers.', bot);
           break;
         }
         res = await helper.dbQueryPromise(`SELECT * FROM customs WHERE user_id = '${channel.substring(1)}';`);
@@ -511,7 +570,7 @@ bot.on('chat', async (channel, tags, message) => {
           placement = `${placement}th`;
         }
         
-        say(channel, `Team ${userIds[channel.substring(1)].pref_name} got ${placement} place with ${kills} kills for ${score.toFixed(2)} points!`);
+        say(channel, `Team ${userIds[channel.substring(1)].pref_name} got ${placement} place with ${kills} kills for ${score.toFixed(2)} points!`, bot);
         break;
 
       // Remove the last map from the scores.
@@ -524,7 +583,7 @@ bot.on('chat', async (channel, tags, message) => {
         res[0].maps.kills.length = res[0].maps.kills.length?res[0].maps.kills.length-1:0;
         
         helper.dbQuery(`UPDATE customs SET maps = '{"placement":${res[0].maps.placement.length?'['+res[0].maps.placement.join(',')+']':'[]'},"kills":${res[0].maps.kills.length ?'['+res[0].maps.kills.join(',')+']':'[]'}}'::json WHERE user_id = '${channel.substring(1)}';`);
-        say(channel, `Last map has been removed.`);
+        say(channel, `Last map has been removed.`, bot);
         break;
 
       // Get the map count.
@@ -537,7 +596,7 @@ bot.on('chat', async (channel, tags, message) => {
         } else {
           str = `Map ${res[0].maps.placement.length + 1} of ${res[0].map_count}`;
         }
-        say(channel, str);
+        say(channel, str, bot);
         break;
 
       // Get the score for the maps thus far.
@@ -565,9 +624,9 @@ bot.on('chat', async (channel, tags, message) => {
           
           if (score.length < res[0].map_count) str += score.length?` | Map ${score.length + 1}: TBD`:`Map 1: TBD`;
           str += ` | Total: ${total.toFixed(2)} pts`;
-          say(channel, str);
+          say(channel, str, bot);
         } else if (userIds[channel.substring(1)]["two_v_two"]) {
-          await tvtscores(channel.substring(1))
+          await tvtscores(channel.substring(1), "")
           .catch(err => {
             helper.dumpError(err, `Twitch tvtscores: ${message}`);
           });
@@ -578,7 +637,7 @@ bot.on('chat', async (channel, tags, message) => {
       case '!resetmaps':
         if (!userIds[channel.substring(1)].customs || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
         helper.dbQuery(`UPDATE customs SET maps = '{"placement":[],"kills":[]}'::json WHERE user_id = '${channel.substring(1)}';`);
-        say(channel, `Maps have been reset.`);
+        say(channel, `Maps have been reset.`, bot);
         break;
 
 
@@ -590,12 +649,12 @@ bot.on('chat', async (channel, tags, message) => {
       case '!matcheson':
         if (userIds[channel.substring(1)].matches || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
         if (!userIds[channel.substring(1)].acti_id) {
-          say(channel, `You must first set your Activision ID in the dashboard.`);
+          say(channel, `You must first set your Activision ID in the dashboard.`, bot);
           break;
         }
         helper.dbQuery(`UPDATE allusers SET matches = true WHERE user_id = '${channel.substring(1)}';`);
         userIds[channel.substring(1)].matches = true;
-        say(channel, `Matches enabled.`);
+        say(channel, `Matches enabled.`, bot);
         break;
 
       // Disable match tracking.
@@ -603,78 +662,78 @@ bot.on('chat', async (channel, tags, message) => {
         if (!userIds[channel.substring(1)].matches || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
         helper.dbQuery(`UPDATE allusers SET matches = false WHERE user_id = '${channel.substring(1)}';`);
         userIds[channel.substring(1)].matches = false;
-        say(channel, `Matches disabled.`);
+        say(channel, `Matches disabled.`, bot);
         break;
 
       // Get the last game stats.
       case '!lastgame':
         if (!userIds[channel.substring(1)].matches) break;
-        say(channel, await lastGame(channel.substring(1)));
+        say(channel, await lastGame(channel.substring(1)), bot);
         break;
 
       // Get the weekly stats.
       case '!lastgames':
       case '!weekly':
         if (!userIds[channel.substring(1)].matches) break;
-        say(channel, await lastGames(channel.substring(1)));
+        say(channel, await lastGames(channel.substring(1)), bot);
         break;
 
       // Get the daily stats.
       case '!daily':
         if (!userIds[channel.substring(1)].matches) break;
-        say(channel, await daily(channel.substring(1)));
+        say(channel, await daily(channel.substring(1)), bot);
         break;
 
       // Get the daily bombs.
       case '!bombs':
         if (!userIds[channel.substring(1)].matches) break;
-        say(channel, await bombs(channel.substring(1)));
+        say(channel, await bombs(channel.substring(1)), bot);
         break;
 
       // Get the daily wins.
       case '!wins': 
       if (!userIds[channel.substring(1)].matches) break;
-        say(channel, await wins(channel.substring(1)));
+        say(channel, await wins(channel.substring(1)), bot);
         break;
 
       // Get the daily gulag record.
       case '!gulag':
         if (!userIds[channel.substring(1)].matches) break;
-        say(channel, await gulag(channel.substring(1)));
+        say(channel, await gulag(channel.substring(1)), bot);
         break;
 
       // Get lifetime stats.
       case '!stats':
       case '!kd':
         if (!userIds[channel.substring(1)].matches) break;
-        say(channel, await stats(userIds[channel.substring(1)].acti_id, userIds[channel.substring(1)].platform));
+        say(channel, await stats(userIds[channel.substring(1)].acti_id, userIds[channel.substring(1)].platform), bot);
         break;
 
       // Get number of semtex kills.
       case '!kobe':
       case '!semtex':
         if (channel.substring(1) !== 'huskerrs') break;
-        say(channel, await semtex());
+        say(channel, await semtex(), bot);
         break;
 
       // Get the 5 most frequent teammates this week.
       case '!teammates':
         if (!userIds[channel.substring(1)].matches) break;
-        say(channel, await teammates(userIds[channel.substring(1)].acti_id));
+        say(channel, await teammates(userIds[channel.substring(1)].acti_id), bot);
         break;
 
       // Get the 5 most frequent game modes this week.
       case '!modes':
       case '!gamemodes':
         if (!userIds[channel.substring(1)].matches) break;
-        say(channel, await gamemodes(userIds[channel.substring(1)].acti_id));
+        say(channel, await gamemodes(userIds[channel.substring(1)].acti_id), bot);
         break;
       
       // Get win streak.
       case '!streak':
       case '!winstreak':
         if (!userIds[channel.substring(1)].matches) break;
-        say(channel, await streak(channel.substring(1)));
+        say(channel, await streak(channel.substring(1)), bot);
         break;
 
         
@@ -686,9 +745,9 @@ bot.on('chat', async (channel, tags, message) => {
       case '!2v2on':
         if (userIds[channel.substring(1)]["two_v_two"] || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
         if (channel.substring(1) === 'huskerrs') {
-          say(channel, '!enable !score false');
+          say(channel, '!enable !score false', bot);
         } else {
-          say(channel, 'Score recording enabled.');
+          say(channel, 'Score recording enabled.', bot);
         }
         helper.dbQuery(`UPDATE allusers SET two_v_two = true WHERE user_id = '${channel.substring(1)}';`);
         helper.dbQuery(`INSERT INTO twovtwo(hkills, tkills, o1kills, o2kills, userid) VALUES (0, 0, 0, 0, '${channel.substring(1)}')
@@ -701,9 +760,9 @@ bot.on('chat', async (channel, tags, message) => {
       case '!2v2off':
         if (!userIds[channel.substring(1)]["two_v_two"] || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;;
         if (channel.substring(1) === 'huskerrs') {
-          say(channel, '!enable !score true');
+          say(channel, '!enable !score true', bot);
         } else {
-          say(channel, 'Score recording disabled.');
+          say(channel, 'Score recording disabled.', bot);
         }
         helper.dbQuery(`UPDATE allusers SET two_v_two = false WHERE user_id = '${channel.substring(1)}';`);
         userIds[channel.substring(1)]["two_v_two"] = false;
@@ -713,13 +772,13 @@ bot.on('chat', async (channel, tags, message) => {
       // Check the stats of a user.
       case '!check':
         if (!tags['mod'] && !vips.includes(tags['username'] || '') && channel.substring(1) !== tags["username"]) break;
-        say(channel, await stats(message.substring(message.indexOf(' ') + 1), 'uno'));
+        say(channel, await stats(message.substring(message.indexOf(' ') + 1), 'uno'), bot);
         break;
 
       // Check the stats of a user, Battlenet.
       case '!checkbattle': 
         if (!tags['mod'] && !vips.includes(tags['username'] || '') && channel.substring(1) !== tags["username"]) break;
-        say(channel, await stats(message.substring(message.indexOf(' ') + 1), 'battle'));
+        say(channel, await stats(message.substring(message.indexOf(' ') + 1), 'battle'), bot);
         break;
 
 
@@ -749,25 +808,25 @@ bot.on('chat', async (channel, tags, message) => {
       // Timeout command for VIPs mainly.
       case '!timeout':
         if (channel.substring(1) !== 'huskerrs' || (!tags["mod"] && !vips.includes(tags['username'] || ''))) break;
-        say(channel, `/timeout ${message.substring(message.indexOf(' ') + 1)} | ${tags['username']}`);
+        bot.timeout(channel, splits[1], parseInt(splits[2]), `${tags['username']} ${splits[3]?splits.splice(0, 2).join(' '):""}`);
         break;
 
       // Untimeout command for VIPs mainly.
       case '!untimeout':
         if (channel.substring(1) !== 'huskerrs' || (!tags["mod"] && !vips.includes(tags['username'] || ''))) break;
-        say(channel, `/untimeout ${splits[1]}`);
+        bot.unban(channel, splits[1]);
         break;
 
       // Ban command for VIPs mainly.
       case '!ban':
         if (channel.substring(1) !== 'huskerrs' || (!tags["mod"] && !vips.includes(tags['username'] || ''))) break;
-        say(channel, `/ban ${message.substring(message.indexOf(' ') + 1)} | ${tags['username']}`);
+        bot.ban(channel, splits[1], `${tags['username']} ${splits[2]?splits.splice(0, 1).join(' '):""}`);
         break;
 
       // Unban command for VIPs mainly.
       case '!unban':
         if (channel.substring(1) !== 'huskerrs' || (!tags["mod"] && !vips.includes(tags['username'] || ''))) break;
-        say(channel, `/unban ${splits[1]}`);
+        bot.unban(channel, splits[1]);
         break;
 
 
@@ -780,7 +839,7 @@ bot.on('chat', async (channel, tags, message) => {
         if (userIds[channel.substring(1)].duel || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
         helper.dbQuery(`UPDATE allusers SET duel = true WHERE user_id = '${channel.substring(1)}';`);
         userIds[channel.substring(1)].duel = true;
-        say(channel, 'Duels are now enabled.');
+        say(channel, 'Duels are now enabled.', bot);
         break;
 
       // Disable dueling.
@@ -788,7 +847,7 @@ bot.on('chat', async (channel, tags, message) => {
         if (!userIds[channel.substring(1)].duel || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
         helper.dbQuery(`UPDATE allusers SET duel = false WHERE user_id = '${channel.substring(1)}';`);
         userIds[channel.substring(1)].duel = false;
-        say(channel, 'Duels are now disabled.');
+        say(channel, 'Duels are now disabled.', bot);
         break;
       
       // Challenge another user to a duel.
@@ -796,35 +855,35 @@ bot.on('chat', async (channel, tags, message) => {
         if (!userIds[channel.substring(1)].duel || splits.length == 1) break;
         if (dcd[tags["username"] || ''] && dcd[tags["username"] || ''] > Date.now()) break;
         if (tags["username"]?.toLowerCase() === splits[1].toLowerCase()) {
-          say(channel.substring(1), `@${tags["username"]} : You cannot duel yourself.`);
+          say(channel.substring(1), `@${tags["username"]} : You cannot duel yourself.`, bot);
           break;
         }
         if (splits[1].charAt(0) === '@') splits[1] = splits[1].substring(1);
         str = await duel.duel(tags["username"], splits[1], channel.substring(1));
-        if (str) say(channel.substring(1), str);
+        if (str) say(channel.substring(1), str, bot);
         break;
 
       // Cancel a duel challenge.
       case '!cancel': 
         if (!userIds[channel.substring(1)].duel) break;
         str = await duel.cancel(tags["username"], channel.substring(1));
-        if (str) say(channel.substring(1), str);
+        if (str) say(channel.substring(1), str, bot);
         break;
 
       // Reject another user's challenge.
       case '!coward': 
         if (!userIds[channel.substring(1)].duel) break;
         str = await duel.coward(tags["username"], channel.substring(1));
-        if (str) say(channel.substring(1), str);
+        if (str) say(channel.substring(1), str, bot);
         break;
 
       // Accept another user's challenge.
       case '!accept': 
         if (!userIds[channel.substring(1)].duel) break;
-        str = await duel.accept(tags["username"], channel.substring(1));
-        if (str) {
-          say(channel.substring(1), str[0]);
-          say(channel.substring(1), str[1]);
+        rows = await duel.accept(tags["username"], channel.substring(1));
+        if (rows) {
+          say(channel.substring(1), `${rows.winner} has won the duel against ${rows.loser} and are now on a ${rows.streak} win streak!`, bot);
+          bot.timeout(channel.substring(1), rows.loser, userIds[channel.substring(1)].timeout, `You lost the duel to ${rows.winner}. Hold this L`);
         }
         break;
 
@@ -832,42 +891,42 @@ bot.on('chat', async (channel, tags, message) => {
       case '!duelscore':
         if (!userIds[channel.substring(1)].duel) break;
         str = await duel.duelScore(tags["username"], channel.substring(1));
-        if (str) say(channel.substring(1), str);
+        if (str) say(channel.substring(1), str, bot);
         break;
 
       // Get another user's duel score.
       case '!duelscoreother':
         if (!userIds[channel.substring(1)].duel || !splits[1]) break;
         str = await duel.duelScore(splits[1], channel.substring(1));
-        if (str) say(channel.substring(1), str);
+        if (str) say(channel.substring(1), str, bot);
         break;
 
       // Get the 3 users with the most dueling wins.
       case '!duellb':
         if (!userIds[channel.substring(1)].duel) break;
         str = await duel.duelLb(channel.substring(1));
-        if (str) say(channel.substring(1), str);
+        if (str) say(channel.substring(1), str, bot);
         break;
 
       // Get the 3 users with the best win / loss ratio in duels.
       case '!duellbratio':
         if (!userIds[channel.substring(1)].duel) break;
         str = await duel.duelLbRatio(channel.substring(1));
-        if (str) say(channel.substring(1), str);
+        if (str) say(channel.substring(1), str, bot);
         break;
 
       // Get the 3 users with the worst win / loss ratio in duels.
       case '!duellbratiolow':
         if (!userIds[channel.substring(1)].duel) break;
         str = await duel.duelLbRatioLow(channel.substring(1));
-        if (str) say(channel.substring(1), str);
+        if (str) say(channel.substring(1), str, bot);
         break;
 
       // Get the user with the current longest streak and overall longest streak.
       case '!duellbstreak': 
         if (!userIds[channel.substring(1)].duel) break;
         str = await duel.duelLbStreak(channel.substring(1));
-        if (str) say(channel.substring(1), str);
+        if (str) say(channel.substring(1), str, bot);
         break;
 
 
@@ -879,10 +938,10 @@ bot.on('chat', async (channel, tags, message) => {
       case '!tourneyend':
         if (channel.substring(1) !== 'huskerrs') break; 
         if (!tags["mod"] && tags["username"] !== channel.substring(1)) break;
-        say(channel.substring(1), `!editcom !time It’s currently $(time America/Phoenix "h:mm A") for HusKerrs.`);
+        say(channel.substring(1), `!editcom !time It’s currently $(time America/Phoenix "h:mm A") for HusKerrs.`, bot);
         for (var i = 0; i < tourneyComs.length; i++) {
           await new Promise(resolve => setTimeout(resolve, 2000));
-          say(channel.substring(1), `!edit ${tourneyComs[i]} Tourney's over! See !results for more`);
+          say(channel.substring(1), `!edit ${tourneyComs[i]} Tourney's over! See !results for more`, bot);
         }
         break;
 
@@ -906,7 +965,7 @@ bot.on('chat', async (channel, tags, message) => {
         if (tags["username"] !== channel.substring(1) && tags["username"] !== "zhekler") break;
         userIds[channel.substring(1)].twitch = false;
         helper.dbQuery(`UPDATE allusers SET twitch = false WHERE user_id = '${channel.substring(1)}';`);
-        say(channel, 'peepoLeave');
+        say(channel, 'peepoLeave', bot);
         bot.part(channel)
         .catch(err => {
           helper.dumpError(err, 'Leaving.');
@@ -923,15 +982,22 @@ bot.on('chat', async (channel, tags, message) => {
 // Two vs Two scores.
 /**
  * @param {string} channel
+ * @param {string} bearer
  */
-async function tvtscores(channel) {
+async function tvtscores(channel, bearer) {
   try {
     if (!tvtUpdate[channel] || tvtUpdate[channel] < Date.now()) {
       var res = await helper.dbQueryPromise(`SELECT * FROM twovtwo WHERE userid = '${channel}';`);
       var us = res[0].hkills + res[0].tkills;
       var opp = res[0].o1kills + res[0].o2kills;
-      say(channel, `${us} - ${opp}${(us==6 && opp==9)?` Nice`:``} | ${us + res[0].mapreset > opp?("Up "+ (us + res[0].mapreset - opp)):(us + res[0].mapreset < opp)?("Down " + (opp - us - res[0].mapreset)):"Tied"}
-        ${res[0].mapreset != 0?(res[0].mapreset > 0?' (Up ':' (Down ') + Math.abs(res[0].mapreset) + ' after reset)':''}`);
+      var str = `${us} - ${opp}${(us==6 && opp==9)?` Nice`:``} | ${us + res[0].mapreset > opp?("Up "+ (us + res[0].mapreset - opp)):(us + res[0].mapreset < opp)?("Down " + (opp - us - res[0].mapreset)):"Tied"}
+      ${res[0].mapreset != 0?(res[0].mapreset > 0?' (Up ':' (Down ') + Math.abs(res[0].mapreset) + ' after reset)':''}`;
+
+      if (bearer && scoreBots[bearer] && scoreBots[bearer].scoreBot.getChannels().includes(channel)) {
+        scoreBots[bearer].scoreBot.say(channel, str);
+      } else {
+        say(channel, str, bot);
+      }
       tvtUpdate[channel] = Date.now() + 2000;
     }
   } catch (err) {
@@ -949,14 +1015,14 @@ async function duelExpiration() {
 // Twitch bot subscription handler.
 bot.on('subscription', (channel, username, method, message, userstate) => {
   if (!userIds[channel.substring(1)].subs) return;
-  say(channel, `${username} Thank you for the sub, welcome to the Huskies huskHype huskLove`);
+  say(channel, `${username} Thank you for the sub, welcome to the Huskies huskHype huskLove`, bot);
 });
 
 
 // Twitch bot resubscription handler.
 bot.on('resub', (channel, username, months, message, userstate, methods) => {
   if (!userIds[channel.substring(1)].subs) return;
-  say(channel, `${username} Thank you for the ${userstate['msg-param-cumulative-months']} month resub huskHype huskLove`);
+  say(channel, `${username} Thank you for the ${userstate['msg-param-cumulative-months']} month resub huskHype huskLove`, bot);
 });
 
 
@@ -2474,6 +2540,29 @@ app.get('/twovtwo/:channel', async (request, response) => {
       page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
     }
 
+    if (scoreBots[bearer[1].bearer] && !scoreBots[bearer[1].bearer].channels.includes(request.params.channel)) {
+      scoreBots[bearer[1].bearer].scoreBot.join(request.params.channel);
+      page = page.replace(/#mescore#/g, `You are currently updating scores through your account. If you'd like to stop (and use zHekBot), click <a onclick="nomoscore()">here</a>`)
+    } else if (bearer[1].tw_token) {
+      scoreBots[bearer[1].bearer].scoreBot = {
+        scoreBot: new tmi.Client({
+          connection: {
+            reconnect: true,
+            secure: true
+          },
+          identity: {
+            username: bearer[1].user_id,
+            password: bearer[1].tw_token
+          },
+          channels: [ request.params.channel ]
+        }),
+        timeout: DateTime.now().plus({ minutes: 30 }).toMillis,
+      };
+      await scoreBots[cookies['auth']].scoreBot.connect();
+    } else {
+      page = page.replace(/#mescore#/g, 'If you would like the scores to be updated through your account, click <a onclick="mescore()">here</a>');
+    }
+
     response.send(page);
   } catch (err) {
     helper.dumpError(err, `2v2 overall.`);
@@ -2653,24 +2742,77 @@ app.get('/send/:channel/:hKills/:tKills/:o1Kills/:o2Kills', async (request, resp
 
     // Update scores in DB and put message to chat.
     await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.hKills}, tkills = ${request.params.tKills}, o1kills = ${request.params.o1Kills}, o2kills = ${request.params.o2Kills}, tname = '${request.get('tname')}', o1name = '${request.get('o1name')}', o2name = '${request.get('o2name')}', mapreset = ${parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.params.channel}';`);
-    await tvtscores(request.params.channel.toLowerCase());
+    await tvtscores(request.params.channel.toLowerCase(), cookies['auth']);
 
     if (request.get('tstatus') === 'true' && userIds[request.get('tname')] && userIds[request.get('tname')]["two_v_two"] && rows[1].perms.split(',').includes(request.get('tname'))) {
       await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.tKills}, tkills = ${request.params.hKills}, o1kills = ${request.params.o1Kills}, o2kills = ${request.params.o2Kills}, mapreset = ${parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.get('tname')}';`)
-      await tvtscores('' + request.get('tname'));
+      await tvtscores('' + request.get('tname'), cookies['auth']);
     }
     if (request.get('o1status') === 'true' && userIds[request.get('o1name')] && userIds[request.get('o1name')]["two_v_two"] && rows[1].perms.split(',').includes(request.get('o1name'))) {
       await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.o1Kills}, tkills = ${request.params.o2Kills}, o1kills = ${request.params.hKills}, o2kills = ${request.params.tKills}, mapreset = ${-1*parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.get('o1name')}';`)
-      await tvtscores('' + request.get('o1name'));
+      await tvtscores('' + request.get('o1name'), cookies['auth']);
     }
     if (request.get('o2status') === 'true' && userIds[request.get('o2name')] && userIds[request.get('o2name')]["two_v_two"] && rows[1].perms.split(',').includes(request.get('o2name'))) {
       await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.o2Kills}, tkills = ${request.params.o1Kills}, o1kills = ${request.params.hKills}, o2kills = ${request.params.tKills}, mapreset = ${-1*parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.get('o2name')}';`)
-      await tvtscores('' + request.get('o2name'));
+      await tvtscores('' + request.get('o2name'), cookies['auth']);
     }
 
     response.sendStatus(200);
   } catch (err) {
     helper.dumpError(err, `2v2 send scores.`);
+    response.sendStatus(500);
+  }
+});
+
+
+// Set up for user's score bot.
+app.get('/twovtwo/:channel/mescore', async (request, response) => {
+  try {
+    request.params.channel = request.params.channel.toLowerCase();
+
+    // Check whether this channel is in the local cache.
+    if (!userIds[request.params.channel] || !userIds[request.params.channel].twitch) {
+      response.status(404);
+      response.redirect('/not-found');
+      return;
+    }
+
+    // Check permissions. Editors may use this path to put scores out with their own username.
+    var cookies = request.cookies, rows;
+    if (cookies["auth"]) {
+      rows = await helper.checkBearer(cookies["auth"]);
+      if ((!rows[0] || !rows[1].perms || !rows[1].perms.split(',').includes(request.params.channel)) && rows[1].userid !== request.params.channel) {
+        response.status(401);
+        response.redirect('/');
+        return;
+      }
+    } else {
+      response.status(401);
+      response.redirect('/');
+      return;
+    }
+    
+    states[cookies['auth']] = request.get('state');
+
+    response.sendStatus(200);
+  } catch (err) {
+    helper.dumpError(err.message, "Me score.");
+    response.sendStatus(500);
+  }
+});
+
+
+// Stop scoring through editor's account.
+app.get('/twovtwo/nomoscore', async (request, response) => {
+  try {
+    let cookies = request.cookies;
+    if (scoreBots[cookies["auth"]]) {
+      await scoreBots[cookies["auth"]].scoreBot.disconnect();
+      helper.dbQuery(`UPDATE permissions SET tw_token = '' WHERE bearer = '${cookies["auth"]}';`);
+      response.sendStatus(200);
+    }
+  } catch(err) {
+    helper.dumpError(err, "Nomoscore.");
     response.sendStatus(500);
   }
 });
@@ -2873,7 +3015,7 @@ app.get ('/customs/update/:channel', async (request, response) => {
 
     }
     
-    say(request.params.channel, `Current Map | Kills: ${kills} | Score: ${(kills * placement).toFixed(2)}`);
+    say(request.params.channel, `Current Map | Kills: ${kills} | Score: ${(kills * placement).toFixed(2)}`, bot);
 
     response.sendStatus(200);
   } catch (err) {
@@ -3222,7 +3364,7 @@ function numberWithCommas(x) {
   while (pattern.test(x))
       x = x.replace(pattern, "$1,$2");
   return x;
-}
+};
 
 
 // Wordle!
@@ -3291,68 +3433,87 @@ app.get('/wordlelb', async (req, response) => {
 });
 
 
+// Remove unused bots.
+async function byeBots() {
+  try {
+    for (var i = 0; i < scoreBots.length; i++) {
+      if (scoreBots[i].timeout >= DateTime.now().toMillis()) {
+        await scoreBots[i].scoreBot.disconnect();
+        delete scoreBots[i];
+      }
+    }
+  } catch (err) {
+    helper.dumpError(err.message, "Removing bots.");
+  }
+};
+
+
 // Redirect to get access token for Twitch. Used for predictions currently, timeouts/bans may be added in the future.
 app.get('/twitch/redirect', async (req, response) => {
   try {
     var query = url.parse(req.url, true).query;
-    var code = query["code"];
+    var state = query["state"];
+    var cookies = req.cookies;
 
-    await axios.post(`https://id.twitch.tv/oauth2/token`,
-    `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&code=${code}&grant_type=authorization_code&redirect_uri=https://www.zhekbot.com/redirect`,
-    {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    }).then(async resp => {
-      var data = resp.data;
+    if (state && states[cookies['auth']] === state) {
+      var code = query["code"];
 
-      await axios.get('https://id.twitch.tv/oauth2/validate',
+      await axios.post(`https://id.twitch.tv/oauth2/token`,
+      `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&code=${code}&grant_type=authorization_code&redirect_uri=https://www.zhekbot.com/redirect`,
       {
         headers: {
-          'Authorization': 'OAuth ' + data.access_token
+          'Content-Type': 'application/x-www-form-urlencoded'
         }
-      }).then(async resp2 => {
-        var data2 = resp2.data;
+      }).then(async resp => {
+        var data = resp.data;
 
-        helper.dbQuery(`INSERT INTO access_tokens(userid, access_token, refresh_token, scope) 
-          VALUES ('${data2.login}', '${data.access_token}', '${data.refresh_token}', '${data2.scopes.join(', ')}')
-          ON CONFLICT (userid) DO UPDATE SET access_token = '${data.access_token}', refresh_token = '${data.refresh_token}', scope = '${data2.scopes.join(', ')}';`);
+        await axios.get('https://id.twitch.tv/oauth2/validate',
+        {
+          headers: {
+            'Authorization': 'OAuth ' + data.access_token
+          }
+        }).then(async resp2 => {
+          var data2 = resp2.data;
+
+          helper.dbQuery(`INSERT INTO access_tokens(userid, access_token, refresh_token, scope) 
+            VALUES ('${data2.login}', '${data.access_token}', '${data.refresh_token}', '${data2.scopes.join(', ')}')
+            ON CONFLICT (userid) DO UPDATE SET access_token = '${data.access_token}', refresh_token = '${data.refresh_token}', scope = '${data2.scopes.join(', ')}';`);
+          
+          if (data2.scopes.includes("chat:edit") || data2.scopes.includes("chat:read")) {
+            var user = await helper.dbQueryPromise(`UPDATE permissions SET tw_token = '${data.access_token}' WHERE bearer = '${cookies['auth']}' RETURNING *;`);
+            if (!user || !user[0]) throw new Error("Update did not return row.");
+
+            if (!scoreBots[cookies['auth']]) {
+              scoreBots[cookies['auth']] = {
+                scoreBot: new tmi.Client({
+                  connection: {
+                    reconnect: true,
+                    secure: true
+                  },
+                  identity: {
+                    username: user[0].user_id,
+                    password: data.access_token
+                  },
+                  channels: [  ]
+                }),
+                timeout: DateTime.now().plus({ minutes: 30 }).toMillis,
+              };
+              await scoreBots[cookies['auth']].scoreBot.connect();
+            }
+          }
+        }).catch(err => {
+          helper.dumpError(err, "Twitch redirect validate.");
+        });
       }).catch(err => {
-        helper.dumpError(err, "Twitch redirect validate.");
+        helper.dumpError(err, "Twitch redirect token.");
       });
-    }).catch(err => {
-      helper.dumpError(err, "Twitch redirect token.");
-    });
+    } else {
+      throw new Error("States do not match.");
+    }
 
     response.redirect('/');
   } catch (err) {
     helper.dumpError(err, "Twitch redirect overall.");
-    response.redirect('/');
-  }
-});
-
-
-// Temporary setup to allow scorekeepers to post scores through their own account.
-app.get('/twitch/bot', async (req, response) => {
-  try {
-    var query = url.parse(req.url, true).query;
-    var token = query["access_token"];
-    var name = "";
-
-    await axios.post(`https://id.twitch.tv/oauth2/validate`, 
-    {
-      headers: {
-        'Authorization': 'OAuth ' + token
-      }
-    }).then(async resp => {
-      name = resp.data.login;
-    }).catch(err => {
-      helper.dumpError(err, "Twitch bot auth: validate");
-    });
-
-    helper.dbQuery(`UPDATE permissions SET tw_token = '${token}' WHERE userid = '${name}';`);
-  } catch (err) {
-    helper.dumpError(err, "Twitch bot auth.");
     response.redirect('/');
   }
 });
@@ -3642,11 +3803,11 @@ app.post('/eventsub', (req, res) => {
             pred = notification.event.title;
             var time = ((new Date(notification.event.locks_at)).getTime() - (new Date(notification.event.started_at)).getTime())/1000;
             say(notification.event.broadcaster_user_login, `NEW PREDICTION peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time} SECONDS peepoGamble DinkDonk 
-              NEW PREDICTION peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time} SECONDS`);
+              NEW PREDICTION peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time} SECONDS`, bot);
             if (time >= 60) {
               intArray[notification.event.broadcaster_user_login] = setTimeout(function () { 
                 say(notification.event.broadcaster_user_login, `GET YOUR BETS IN peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time/2} SECONDS peepoGamble DinkDonk 
-                GET YOUR BETS IN peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time/2} SECONDS`); 
+                GET YOUR BETS IN peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time/2} SECONDS`, bot); 
                 delete intArray[notification.event.broadcaster_user_login];
               }, time*1000/2);
             }
@@ -3664,13 +3825,13 @@ app.post('/eventsub', (req, res) => {
             if (outcome) {
               var result = outcome.title;
               var topBetter = outcome.top_predictors[0];
-              say(notification.event.broadcaster_user_login, `Prediction over! The result was '${result}'! ${topBetter.user_name?topBetter.user_name:topBetter.user_login} won ${numberWithCommas(topBetter.channel_points_won)} points!`);
+              say(notification.event.broadcaster_user_login, `Prediction over! The result was '${result}'! ${topBetter.user_name?topBetter.user_name:topBetter.user_login} won ${numberWithCommas(topBetter.channel_points_won)} points!`, bot);
             } else {
               if (intArray[notification.event.broadcaster_user_login]) {
                 clearInterval(intArray[notification.event.broadcaster_user_login]);
                 delete intArray[notification.event.broadcaster_user_login];
               }
-              say(notification.event.broadcaster_user_login, 'Prediction canceled! Points have been refunded.');
+              say(notification.event.broadcaster_user_login, 'Prediction canceled! Points have been refunded.', bot);
             }
             break;
 
@@ -3685,7 +3846,7 @@ app.post('/eventsub', (req, res) => {
               clearInterval(intArray[notification.event.broadcaster_user_login]);
               delete intArray[notification.event.broadcaster_user_login];
             }
-            say(notification.event.broadcaster_user_login, `Prediction locked! There are ${numberWithCommas(points)} points on the line for '${pred}'`);
+            say(notification.event.broadcaster_user_login, `Prediction locked! There are ${numberWithCommas(points)} points on the line for '${pred}'`, bot);
             break;
 
           // Update local cache and DB that channel is online.
@@ -3904,8 +4065,8 @@ async function brookescribers() {
       console.log("Server is listening.");
     });
 
-    // // Log into the COD API.
-    await loginWithSSO(process.env.COD_SSO);
+    // // // Log into the COD API.
+    // await loginWithSSO(process.env.COD_SSO);
 
     // // Populate match cache and initialize userIds map.
     var temp = await helper.dbQueryPromise(`SELECT * FROM allusers;`);
@@ -3918,16 +4079,16 @@ async function brookescribers() {
       }
     };
 
-    // Set the 5 minute interval for each player being tracked and get their active elements.
-    intervals["matches"] = setInterval(async() => { 
-      try { 
-        await updateMatches();
-      } catch (err) {
-        console.log(`Match intervals: ${err}`);
-      }
-    }, 300000);
+    // // Set the 5 minute interval for each player being tracked and get their active elements.
+    // intervals["matches"] = setInterval(async() => { 
+    //   try { 
+    //     await updateMatches();
+    //   } catch (err) {
+    //     console.log(`Match intervals: ${err}`);
+    //   }
+    // }, 300000);
 
-    setInterval(function() { duelExpiration(); }, 5000);
+    // setInterval(function() { duelExpiration(); }, 5000);
     
     // Connect to Twitch channels.
     await bot.connect()
@@ -3935,27 +4096,27 @@ async function brookescribers() {
       helper.dumpError(err, "Twitch enable.");
     });
 
-    // Authenticate with Twitch API and set 2 minute interval for BrookeAB's followers.
-    await authenticate();
+    // // Authenticate with Twitch API and set 2 minute interval for BrookeAB's followers.
+    // await authenticate();
 
-    // Hourly call to verify access token.
-    intervals["access_token"] = setInterval(function() {
-      symAxios.get('https://id.twitch.tv/oauth2/validate', 
-      {
-        headers: {
-          "Client-Id": process.env.CLIENT_ID || '',
-          "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
-          "Content-Type": "application/x-www-form-urlencoded"
-        }
-      }).then(resp => {
-          console.log(JSON.stringify(resp.data));
-          if (resp.status && `${resp.status}`.includes('40')) {
-            regenerate();
-          }
-      }).catch(err => {
-          helper.dumpError(err, "Hourly Twitch validation error.");
-      });
-    }, 60*60*1000);
+    // // Hourly call to verify access token.
+    // intervals["access_token"] = setInterval(function() {
+    //   symAxios.get('https://id.twitch.tv/oauth2/validate', 
+    //   {
+    //     headers: {
+    //       "Client-Id": process.env.CLIENT_ID || '',
+    //       "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
+    //       "Content-Type": "application/x-www-form-urlencoded"
+    //     }
+    //   }).then(resp => {
+    //       console.log(JSON.stringify(resp.data));
+    //       if (resp.status && `${resp.status}`.includes('40')) {
+    //         regenerate();
+    //       }
+    //   }).catch(err => {
+    //       helper.dumpError(err, "Hourly Twitch validation error.");
+    //   });
+    // }, 60*60*1000);
 
   } catch (err) {
 

@@ -8,34 +8,37 @@ async function revolverroulette(id, channel) {
 
     // Get random number and determine whether the user won or lost.
     let rand = Math.floor(Math.random()*3);
-    let shoot = `${rand?'/me '+id+' survived RR!':'/timeout '+id+' 300 BOOM you died!'}`;
 
     // Pull user from the Revolver Roulette database.
-    let person = await helper.dbQueryPromise(`SELECT * FROM revolverroulette WHERE user_id = '${id}' AND stream = '${channel.substring(1)}';`);
+    var person = (await helper.dbQueryPromise(`SELECT * FROM revolverroulette WHERE user_id = '${id}' AND stream = '${channel.substring(1)}';`))[0];
+    console.log(person);
+    console.log(id);
+    console.log(channel);
+    var first;
 
-    if (!person.length) {
+    if (!person) {
 
       // User has not played before. Add them to the database.
-      person[0] = { user_id: id, survive: 0, die: 0 };
-      helper.dbQuery(`INSERT INTO revolverroulette(user_id, survive, die, stream)VALUES('${person[0].user_id}', ${person[0].survive}, ${person[0].die}, '${channel.substring(1)}');`);
-      shoot = `@${id}: Revolver Roulette is a game where you have 1/3 chance to be timed out for 5 min. You have been warned.`;
+      person = { user_id: id, survive: 0, die: 0 };
+      helper.dbQuery(`INSERT INTO revolverroulette(user_id, survive, die, stream)VALUES('${person.user_id}', ${person.survive}, ${person.die}, '${channel.substring(1)}');`);
+      first = true;
 
     } else {
 
       // Update players stats.
-      person[0].survive += rand?1:0;
-      person[0].die += rand?0:1;
-      helper.dbQuery(`UPDATE revolverroulette SET ${rand?'survive':'die'} = ${rand?person[0].survive:person[0].die} WHERE user_id = '${id}' AND stream = '${channel.substring(1)}';`)
-      shoot += ` ${id}'s record is ${person[0].survive} survival${person[0].survive == 1?'':'s'} and ${person[0].die} death${person[0].die == 1?'':'s'}!`;
+      person.survive += rand?1:0;
+      person.die += rand?0:1;
+      helper.dbQuery(`UPDATE revolverroulette SET ${rand?'survive':'die'} = ${rand?person.survive:person.die} WHERE user_id = '${id}' AND stream = '${channel.substring(1)}';`);
+      first = false;
 
     }
 
     // Return response.
-    return shoot;
+    return { first: first, win: rand == 1, user: person };
 
   } catch (err) {
     helper.dumpError(err, "Revolver Roulette.");
-    return '';
+    return { error: err, first: false, win: false, user: {} };
   }
 };
 

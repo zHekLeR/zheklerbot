@@ -16,7 +16,7 @@ async function rps(id, input, stream) {
         if (Object.keys(accepted).includes(input.toLowerCase())) {
             choice = accepted[input.toLowerCase()];
         } else {
-            return `@${id}: Valid input is like this -> !rps [rock / paper / scissors / r / p / s]`;
+            return { input: false, error: false, result: 0, user: {}, me: 0 };
         }
 
         // Determine bot choice.
@@ -27,10 +27,6 @@ async function rps(id, input, stream) {
         } else if (rand + 1 == choice || (rand == 2 && choice == 0)) {
             result = 1;
         }
-
-        // Determine result.
-        let timeout = await helper.dbQueryPromise(`SELECT timeout FROM allusers WHERE user_id = '${stream.substring(1)}';`);
-        let shoot = `${result>=0?(`/me I got ${spr[rand]}. ${id} ${(result==0?' tied.':' won!')}`):`/timeout ${id} ${timeout[0].timeout} I got ${spr[rand]}. You lost!`}`;
     
         // Pull user from the database.
         let person = (await helper.dbQueryPromise(`SELECT * FROM rockpaperscissors WHERE user_id = '${id}' AND stream = '${stream.substring(1)}';`))[0];
@@ -52,11 +48,10 @@ async function rps(id, input, stream) {
         }
     
         // Return response.
-        return shoot + ` ${id} has won Rock Paper Scissors ${person.win} time${person.win==1?'':'s'}, tied ${person.tie} time${person.tie==1?'':'s'}, and lost ${person.loss} time${person.loss==1?'':'s'}!`;
+        return { input: true, result: result, user: person, me: spr[rand] };
 
     } catch (err) {
-        helper.dumpError(err, "Rock Paper Scissors.");
-        return '';
+        return { error: err, input: false, result: 0, me: 0, user: {} };
     }
 }
 

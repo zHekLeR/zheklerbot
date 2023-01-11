@@ -64,32 +64,40 @@ async function accept(pOne, stream) {
         let res = await helper.dbQueryPromise(`SELECT * FROM duelduel WHERE oppid = '${pOne}' AND stream = '${stream}';`);
 
         if (res.length) {
+
           let rand = Math.round(Math.random());
           let timeout = await helper.dbQueryPromise(`SELECT timeout FROM allusers WHERE user_id = '${stream}';`);
+
           if (rand) {
+
             helper.dbQuery(`UPDATE duelduel SET oppid = ' ', expiration = 2147483647, wins = wins + 1, streak = streak + 1 
               ${res[0].streak + 1 > res[0].longest?', longest = ' + (res[0].streak + 1):''} WHERE userid = '${res[0].userid}' AND stream = '${stream}';`);
             helper.dbQuery(`INSERT INTO duelduel(userid, losses, stream) VALUES ('${pOne}', 1, '${stream}')
               ON CONFLICT (userid, stream) DO UPDATE SET losses = duelduel.losses + 1, streak = 0;`);
             
-            return [ `/timeout ${pOne} ${timeout[0].timeout} You lost the duel to ${res[0].userid}. Hold this L`, 
-                `${res[0].userid} has won the duel against ${pOne}! They are on a ${res[0].streak + 1} win streak!` ];
+            return { winner: res[0].userid, loser: pOne, streak: res[0].streak + 1 };
+
           } else {
+
             let res2 = await helper.dbQueryPromise(`SELECT * FROM duelduel WHERE userid = '${pOne}' AND stream = '${stream}';`);
             if (res2.length) {
+
               helper.dbQuery(`UPDATE duelduel SET wins = wins + 1, streak = streak + 1${res2[0].streak + 1 > res2[0].longest?', longest = ' + (res2[0].streak + 1):''} 
                 WHERE userid = '${pOne}' AND stream = '${stream}';`);
+
             } else {
+
               helper.dbQuery(`INSERT INTO duelduel(userid, wins, stream, streak, longest) VALUES ('${pOne}', 1, '${stream}', 1, 1);`);
             }
+
             helper.dbQuery(`UPDATE duelduel SET oppid = ' ', expiration = 2147483647, losses = losses + 1, streak = 0 WHERE userid = '${res[0].userid}' AND stream = '${stream}';`);
-            return [ `/timeout ${res[0].userid} ${timeout[0].timeout} You lost the duel to ${pOne}. Hold this L`,
-                `${pOne} has won the duel against ${res[0].userid}! They are on a ${(res2.length?res2[0].streak:0) + 1} win streak!` ];
+
+            return { winner: pOne, loser: res[0].userid, streak: (res2.length?res2[0].streak:0) + 1}
           }
         }
     } catch (err) {
         helper.dumpError(err, "Duel accept.");
-        return;
+        return {};
     }
 }
 
