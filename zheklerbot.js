@@ -2561,7 +2561,7 @@ app.get('/twovtwo/:channel', async (request, response) => {
       await scoreBots[cookies['auth']].scoreBot.connect();
       page = page.replace(/#mescore#/g, `You are currently updating scores through your account. If you'd like to stop (and use zHekBot), click <a onclick="nomoscore()">here</a>`)
     } else {
-      page = page.replace(/#CLIENT_ID/g, process.env.CLIENT_ID + '');
+      page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
       page = page.replace(/#mescore#/g, 'If you would like the scores to be updated through your account, click <a onclick="mescore()">here</a>');
     }
 

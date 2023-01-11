@@ -2072,7 +2072,6 @@
 
          function mescore() {
             var state = makeid();
-            var str = "https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=#CLIENT_ID#&redirect_uri=https://www.zhekbot.com/twitch/redirect&scope=chat%3Aread+chat%3Aedit&state=" + state;
 
             document.getElementById("mescore").disabled = true;
             setTimeout(function() {
@@ -2085,7 +2084,7 @@
                }
             })
             .then(res => {
-               window.location.href = str;               
+               window.location.href = `https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=#CLIENT_ID#&redirect_uri=https://www.zhekbot.com/twitch/redirect&scope=chat%3Aread+chat%3Aedit&state=${state}`;               
             })
             .catch(err => {
                console.log(err);
