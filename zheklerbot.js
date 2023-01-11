@@ -453,7 +453,9 @@ bot.on('chat', async (channel, tags, message) => {
         }
         if (!bvcd[tags["username"] || ''] || bvcd[tags["username"] || ''] < Date.now()) {
           rows = await bigvanish.bigVanish(tags["display-name"]?tags["display-name"]:tags["username"], channel);
-          bot.timeout(channel, `${rows.person.user_id}`, rows.time, `You were timed out for ${numberWithCommas(rows.time)}! Your record high is ${numberWithCommas(rows.person.high)} seconds and low is ${numberWithCommas(rows.person.lowest)} seconds.`);
+          if (!bot.isMod(channel.substring(1), rows.person.user_id)) {
+            bot.timeout(channel, `${rows.person.user_id}`, rows.time, `You were timed out for ${numberWithCommas(rows.time)}! Your record high is ${numberWithCommas(rows.person.high)} seconds and low is ${numberWithCommas(rows.person.lowest)} seconds.`);
+          }
           say(channel.substring(1), `Big Vanish: ${rows.person.user_id} | ${numberWithCommas(rows.time)} seconds`, bot);
           rrcd[tags["username"] || ''] = Date.now() + 15000;
           setTimeout(function() { bot.unban(channel.substring(1), splits[1]) }, 3000);
@@ -808,7 +810,9 @@ bot.on('chat', async (channel, tags, message) => {
       // Timeout command for VIPs mainly.
       case '!timeout':
         if (channel.substring(1) !== 'huskerrs' || (!tags["mod"] && !vips.includes(tags['username'] || ''))) break;
-        bot.timeout(channel, splits[1], parseInt(splits[2]), `${tags['username']} ${splits[3]?splits.splice(0, 2).join(' '):""}`);
+        if (!bot.isMod(channel.substring(1), splits[1])) {
+          bot.timeout(channel, splits[1], parseInt(splits[2]), `${tags['username']} ${splits[3]?splits.splice(0, 2).join(' '):""}`);
+        }
         break;
 
       // Untimeout command for VIPs mainly.
@@ -820,7 +824,9 @@ bot.on('chat', async (channel, tags, message) => {
       // Ban command for VIPs mainly.
       case '!ban':
         if (channel.substring(1) !== 'huskerrs' || (!tags["mod"] && !vips.includes(tags['username'] || ''))) break;
-        bot.ban(channel, splits[1], `${tags['username']} ${splits[2]?splits.splice(0, 1).join(' '):""}`);
+        if (!bot.isMod(channel.substring(1), splits[1])) {
+          bot.ban(channel, splits[1], `${tags['username']} ${splits[2]?splits.splice(0, 1).join(' '):""}`);
+        }
         break;
 
       // Unban command for VIPs mainly.
@@ -883,7 +889,9 @@ bot.on('chat', async (channel, tags, message) => {
         rows = await duel.accept(tags["username"], channel.substring(1));
         if (rows) {
           say(channel.substring(1), `${rows.winner} has won the duel against ${rows.loser} and are now on a ${rows.streak} win streak!`, bot);
-          bot.timeout(channel.substring(1), rows.loser, userIds[channel.substring(1)].timeout, `You lost the duel to ${rows.winner}. Hold this L`);
+          if (!bot.isMod(channel.substring(1), rows.loser)) {
+            bot.timeout(channel.substring(1), rows.loser, userIds[channel.substring(1)].timeout, `You lost the duel to ${rows.winner}. Hold this L`);
+          }
         }
         break;
 
@@ -995,6 +1003,7 @@ async function tvtscores(channel, bearer) {
 
       if (bearer.length && scoreBots[bearer[1].userid] && scoreBots[bearer[1].userid].scoreBot.getChannels().includes(`#${channel}`)) {
         scoreBots[bearer[1].userid].scoreBot.say(channel, str);
+        scoreBots[bearer[1].userid].timeout = DateTime.now().plus({ minutes: 30 }).toMillis();
       } else {
         say(channel, str, bot);
       }
@@ -2671,6 +2680,10 @@ app.get('/post/:channel/reset', async (request, response) => {
 });
 
 
+// Automatic twovtwo turn off.
+var duelOff = {};
+
+
 // Enable/disable 2v2.
 app.get('/post/:channel/enable', jsonParser, async (request, response) => {
   try {
@@ -2705,6 +2718,14 @@ app.get('/post/:channel/enable', jsonParser, async (request, response) => {
       helper.dbQuery(`UPDATE allusers SET two_v_two = ${!userIds[request.params.channel].two_v_two}::bool WHERE user_id = '${request.params.channel}';`);
 
       userIds[request.params.channel].two_v_two = !userIds[request.params.channel].two_v_two;
+
+      if (duelOff[request.params.channel]) {
+        clearTimeout(duelOff[request.params.channel]);
+      }
+      duelOff[request.params.channel] = setTimeout(function() { 
+        userIds[request.params.channel].two_v_two = false;
+        helper.dbQuery(`UPDATE allusers SET two_v_two = false::bool WHERE user_id = '${request.params.channel}';`);
+      }, 60*15*1000);
 
       response.sendStatus(200);
     }
@@ -2757,6 +2778,14 @@ app.get('/send/:channel/:hKills/:tKills/:o1Kills/:o2Kills', async (request, resp
     if (request.get('o2status') === 'true' && userIds[request.get('o2name')] && userIds[request.get('o2name')]["two_v_two"] && rows[1].perms.split(',').includes(request.get('o2name'))) {
       await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.o2Kills}, tkills = ${request.params.o1Kills}, o1kills = ${request.params.hKills}, o2kills = ${request.params.tKills}, mapreset = ${-1*parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.get('o2name')}';`)
       await tvtscores('' + request.get('o2name'), rows);
+    }
+
+    if (duelOff[request.params.channel]) {
+      clearTimeout(duelOff[request.params.channel]);
+      duelOff[request.params.channel] = setTimeout(function() { 
+        userIds[request.params.channel].two_v_two = false;
+        helper.dbQuery(`UPDATE allusers SET two_v_two = false::bool WHERE user_id = '${request.params.channel}';`);
+      }, 60*15*1000);
     }
 
     response.sendStatus(200);
