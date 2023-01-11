@@ -1954,6 +1954,7 @@
       </svg>
       <script>
          var resetvalue = 0;
+         var state = makeid();
          var url = `https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=#CLIENT_ID#&redirect_uri=https://www.zhekbot.com/twitch/redirect&scope=chat%3Aread+chat%3Aedit&state=${state}`;    
          
          (function first() {
@@ -2072,7 +2073,6 @@
          }
 
          function mescore() {
-            var state = makeid();
 
             document.getElementById("mescore").disabled = true;
             setTimeout(function() {
