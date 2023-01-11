@@ -626,7 +626,7 @@ bot.on('chat', async (channel, tags, message) => {
           str += ` | Total: ${total.toFixed(2)} pts`;
           say(channel, str, bot);
         } else if (userIds[channel.substring(1)]["two_v_two"]) {
-          await tvtscores(channel.substring(1), "")
+          await tvtscores(channel.substring(1), [])
           .catch(err => {
             helper.dumpError(err, `Twitch tvtscores: ${message}`);
           });
@@ -982,7 +982,7 @@ bot.on('chat', async (channel, tags, message) => {
 // Two vs Two scores.
 /**
  * @param {string} channel
- * @param {string} bearer
+ * @param {any[]} bearer
  */
 async function tvtscores(channel, bearer) {
   try {
@@ -993,8 +993,8 @@ async function tvtscores(channel, bearer) {
       var str = `${us} - ${opp}${(us==6 && opp==9)?` Nice`:``} | ${us + res[0].mapreset > opp?("Up "+ (us + res[0].mapreset - opp)):(us + res[0].mapreset < opp)?("Down " + (opp - us - res[0].mapreset)):"Tied"}
       ${res[0].mapreset != 0?(res[0].mapreset > 0?' (Up ':' (Down ') + Math.abs(res[0].mapreset) + ' after reset)':''}`;
 
-      if (bearer && scoreBots[bearer] && scoreBots[bearer].scoreBot.getChannels().includes(channel)) {
-        scoreBots[bearer].scoreBot.say(channel, str);
+      if (bearer && scoreBots[bearer[1].userid] && scoreBots[bearer[1].userid].scoreBot.getChannels().includes(channel)) {
+        scoreBots[bearer[1].userid].scoreBot.say(channel, str);
       } else {
         say(channel, str, bot);
       }
@@ -2540,11 +2540,11 @@ app.get('/twovtwo/:channel', async (request, response) => {
       page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
     }
 
-    if (scoreBots[bearer[1].bearer] && !scoreBots[bearer[1].bearer].channels.includes(request.params.channel)) {
-      scoreBots[bearer[1].bearer].scoreBot.join(request.params.channel);
+    if (scoreBots[bearer[1].user_id] && !scoreBots[bearer[1].user_id].channels.includes(request.params.channel)) {
+      scoreBots[bearer[1].user_id].scoreBot.join(request.params.channel);
       page = page.replace(/#mescore#/g, `You are currently updating scores through your account. If you'd like to stop (and use zHekBot), click <a onclick="nomoscore()">here</a>`)
     } else if (bearer[1].tw_token) {
-      scoreBots[bearer[1].bearer] = {
+      scoreBots[bearer[1].user_id] = {
         scoreBot: new tmi.Client({
           connection: {
             reconnect: true,
@@ -2558,7 +2558,7 @@ app.get('/twovtwo/:channel', async (request, response) => {
         }),
         timeout: DateTime.now().plus({ minutes: 30 }).toMillis,
       };
-      await scoreBots[cookies['auth']].scoreBot.connect();
+      await scoreBots[bearer[1].user_id].scoreBot.connect();
       page = page.replace(/#mescore#/g, `You are currently updating scores through your account. If you'd like to stop (and use zHekBot), click <a onclick="nomoscore()">here</a>`)
     } else {
       page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
@@ -2744,19 +2744,19 @@ app.get('/send/:channel/:hKills/:tKills/:o1Kills/:o2Kills', async (request, resp
 
     // Update scores in DB and put message to chat.
     await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.hKills}, tkills = ${request.params.tKills}, o1kills = ${request.params.o1Kills}, o2kills = ${request.params.o2Kills}, tname = '${request.get('tname')}', o1name = '${request.get('o1name')}', o2name = '${request.get('o2name')}', mapreset = ${parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.params.channel}';`);
-    await tvtscores(request.params.channel.toLowerCase(), cookies['auth']);
+    await tvtscores(request.params.channel.toLowerCase(), rows);
 
     if (request.get('tstatus') === 'true' && userIds[request.get('tname')] && userIds[request.get('tname')]["two_v_two"] && rows[1].perms.split(',').includes(request.get('tname'))) {
       await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.tKills}, tkills = ${request.params.hKills}, o1kills = ${request.params.o1Kills}, o2kills = ${request.params.o2Kills}, mapreset = ${parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.get('tname')}';`)
-      await tvtscores('' + request.get('tname'), cookies['auth']);
+      await tvtscores('' + request.get('tname'), rows);
     }
     if (request.get('o1status') === 'true' && userIds[request.get('o1name')] && userIds[request.get('o1name')]["two_v_two"] && rows[1].perms.split(',').includes(request.get('o1name'))) {
       await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.o1Kills}, tkills = ${request.params.o2Kills}, o1kills = ${request.params.hKills}, o2kills = ${request.params.tKills}, mapreset = ${-1*parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.get('o1name')}';`)
-      await tvtscores('' + request.get('o1name'), cookies['auth']);
+      await tvtscores('' + request.get('o1name'), rows);
     }
     if (request.get('o2status') === 'true' && userIds[request.get('o2name')] && userIds[request.get('o2name')]["two_v_two"] && rows[1].perms.split(',').includes(request.get('o2name'))) {
       await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.o2Kills}, tkills = ${request.params.o1Kills}, o1kills = ${request.params.hKills}, o2kills = ${request.params.tKills}, mapreset = ${-1*parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.get('o2name')}';`)
-      await tvtscores('' + request.get('o2name'), cookies['auth']);
+      await tvtscores('' + request.get('o2name'), rows);
     }
 
     response.sendStatus(200);
@@ -2807,10 +2807,24 @@ app.get('/twovtwo/:channel/mescore', async (request, response) => {
 // Stop scoring through editor's account.
 app.get('/twovtwo/nomoscore', async (request, response) => {
   try {
-    let cookies = request.cookies;
-    if (scoreBots[cookies["auth"]]) {
-      await scoreBots[cookies["auth"]].scoreBot.disconnect();
-      helper.dbQuery(`UPDATE permissions SET tw_token = '' WHERE bearer = '${cookies["auth"]}';`);
+    // Check permissions. Editors may use this path to put scores out with their own username.
+    var cookies = request.cookies, rows;
+    if (cookies["auth"]) {
+      rows = await helper.checkBearer(cookies["auth"]);
+      if (!rows[0]) {
+        response.status(401);
+        response.redirect('/');
+        return;
+      }
+    } else {
+      response.status(401);
+      response.redirect('/');
+      return;
+    }
+
+    if (scoreBots[rows[1].user_id]) {
+      await scoreBots[rows[1].user_id].scoreBot.disconnect();
+      helper.dbQuery(`UPDATE permissions SET tw_token = '' WHERE userid = '${rows[1].user_id}';`);
       response.sendStatus(200);
     }
   } catch(err) {
@@ -3483,12 +3497,11 @@ app.get('/twitch/redirect', async (req, response) => {
           
           if (data2.scopes.includes("chat:edit") || data2.scopes.includes("chat:read")) {
             var user = await helper.dbQueryPromise(`UPDATE permissions SET tw_token = '${data.access_token}' WHERE userid = '${data2.login}' RETURNING *;`);
-            console.log(data.access_token, cookies["auth"]);
-            console.log(user);
+            
             if (!user || !user[0]) throw new Error("Update did not return row.");
 
-            if (!scoreBots[cookies['auth']]) {
-              scoreBots[cookies['auth']] = {
+            if (!scoreBots[user[0].user_id]) {
+              scoreBots[user[0].user_id] = {
                 scoreBot: new tmi.Client({
                   connection: {
                     reconnect: true,
@@ -3502,7 +3515,7 @@ app.get('/twitch/redirect', async (req, response) => {
                 }),
                 timeout: DateTime.now().plus({ minutes: 30 }).toMillis,
               };
-              await scoreBots[cookies['auth']].scoreBot.connect();
+              await scoreBots[user[0].user_id].scoreBot.connect();
             }
           }
         }).catch(err => {
@@ -4109,6 +4122,8 @@ async function brookescribers() {
           helper.dumpError(err, "Hourly Twitch validation error.");
       });
     }, 60*60*1000);
+
+    intervals["scoreBots"] = setInterval(byeBots, 60*15*1000);
 
     // Log into the COD API.
     await loginWithSSO(process.env.COD_SSO);
