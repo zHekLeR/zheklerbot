@@ -2544,7 +2544,7 @@ app.get('/twovtwo/:channel', async (request, response) => {
       scoreBots[bearer[1].bearer].scoreBot.join(request.params.channel);
       page = page.replace(/#mescore#/g, `You are currently updating scores through your account. If you'd like to stop (and use zHekBot), click <a onclick="nomoscore()">here</a>`)
     } else if (bearer[1].tw_token) {
-      scoreBots[bearer[1].bearer].scoreBot = {
+      scoreBots[bearer[1].bearer] = {
         scoreBot: new tmi.Client({
           connection: {
             reconnect: true,
