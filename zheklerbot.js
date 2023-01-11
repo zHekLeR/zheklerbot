@@ -3482,7 +3482,7 @@ app.get('/twitch/redirect', async (req, response) => {
             ON CONFLICT (userid) DO UPDATE SET access_token = '${data.access_token}', refresh_token = '${data.refresh_token}', scope = '${data2.scopes.join(', ')}';`);
           
           if (data2.scopes.includes("chat:edit") || data2.scopes.includes("chat:read")) {
-            var user = await helper.dbQueryPromise(`UPDATE permissions SET tw_token = '${data.access_token}' WHERE bearer = '${cookies['auth']}' RETURNING *;`);
+            var user = await helper.dbQueryPromise(`UPDATE permissions SET tw_token = '${data.access_token}' WHERE userid = '${data2.login}' RETURNING *;`);
             console.log(data.access_token, cookies["auth"]);
             console.log(user);
             if (!user || !user[0]) throw new Error("Update did not return row.");
