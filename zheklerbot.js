@@ -2542,25 +2542,25 @@ app.get('/twovtwo/:channel', async (request, response) => {
       page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
     }
 
-    if (scoreBots[bearer[1].user_id] && !scoreBots[bearer[1].user_id].channels.includes(request.params.channel)) {
-      scoreBots[bearer[1].user_id].scoreBot.join(request.params.channel);
+    if (scoreBots[bearer[1].userid] && !scoreBots[bearer[1].userid].channels.includes(request.params.channel)) {
+      scoreBots[bearer[1].userid].scoreBot.join(request.params.channel);
       page = page.replace(/#mescore#/g, `You are currently updating scores through your account. If you'd like to stop (and use zHekBot), click <a onclick="nomoscore()">here</a>`)
     } else if (bearer[1].tw_token) {
-      scoreBots[bearer[1].user_id] = {
+      scoreBots[bearer[1].userid] = {
         scoreBot: new tmi.Client({
           connection: {
             reconnect: true,
             secure: true
           },
           identity: {
-            username: bearer[1].user_id,
+            username: bearer[1].userid,
             password: bearer[1].tw_token
           },
           channels: [ request.params.channel ]
         }),
         timeout: DateTime.now().plus({ minutes: 30 }).toMillis,
       };
-      await scoreBots[bearer[1].user_id].scoreBot.connect();
+      await scoreBots[bearer[1].userid].scoreBot.connect();
       page = page.replace(/#mescore#/g, `You are currently updating scores through your account. If you'd like to stop (and use zHekBot), click <a onclick="nomoscore()">here</a>`)
     } else {
       page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
@@ -2824,9 +2824,9 @@ app.get('/twovtwo/nomoscore', async (request, response) => {
       return;
     }
 
-    if (scoreBots[rows[1].user_id]) {
-      await scoreBots[rows[1].user_id].scoreBot.disconnect();
-      helper.dbQuery(`UPDATE permissions SET tw_token = '' WHERE userid = '${rows[1].user_id}';`);
+    if (scoreBots[rows[1].userid]) {
+      await scoreBots[rows[1].userid].scoreBot.disconnect();
+      helper.dbQuery(`UPDATE permissions SET tw_token = '' WHERE userid = '${rows[1].userid}';`);
       response.sendStatus(200);
     }
   } catch(err) {
@@ -3502,22 +3502,22 @@ app.get('/twitch/redirect', async (req, response) => {
             
             if (!user || !user[0]) throw new Error("Update did not return row.");
 
-            if (!scoreBots[user[0].user_id]) {
-              scoreBots[user[0].user_id] = {
+            if (!scoreBots[user[0].userid]) {
+              scoreBots[user[0].userid] = {
                 scoreBot: new tmi.Client({
                   connection: {
                     reconnect: true,
                     secure: true
                   },
                   identity: {
-                    username: user[0].user_id,
+                    username: user[0].userid,
                     password: data.access_token
                   },
                   channels: [  ]
                 }),
                 timeout: DateTime.now().plus({ minutes: 30 }).toMillis,
               };
-              await scoreBots[user[0].user_id].scoreBot.connect();
+              await scoreBots[user[0].userid].scoreBot.connect();
             }
           }
         }).catch(err => {
