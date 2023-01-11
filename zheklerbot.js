@@ -3483,6 +3483,7 @@ app.get('/twitch/redirect', async (req, response) => {
           
           if (data2.scopes.includes("chat:edit") || data2.scopes.includes("chat:read")) {
             var user = await helper.dbQueryPromise(`UPDATE permissions SET tw_token = '${data.access_token}' WHERE bearer = '${cookies['auth']}' RETURNING *;`);
+            console.log(user);
             if (!user || !user[0]) throw new Error("Update did not return row.");
 
             if (!scoreBots[cookies['auth']]) {
