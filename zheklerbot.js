@@ -995,7 +995,7 @@ async function tvtscores(channel, bearer) {
 
       console.log(bearer);
       console.log(scoreBots[bearer[1].userid]);
-      console.log(scoreBots[bearer[1].userid].getChannels())
+      console.log(scoreBots[bearer[1].userid].scoreBot.getChannels())
       if (bearer && scoreBots[bearer[1].userid] && scoreBots[bearer[1].userid].scoreBot.channels.includes(channel)) {
         scoreBots[bearer[1].userid].scoreBot.say(channel, str);
       } else {
