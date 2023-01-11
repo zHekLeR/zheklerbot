@@ -4078,18 +4078,6 @@ async function brookescribers() {
       }
     };
 
-    // Log into the COD API.
-    await loginWithSSO(process.env.COD_SSO);
-
-    // Set the 5 minute interval for each player being tracked and get their active elements.
-    intervals["matches"] = setInterval(async() => { 
-      try { 
-        await updateMatches();
-      } catch (err) {
-        console.log(`Match intervals: ${err}`);
-      }
-    }, 300000);
-
     setInterval(function() { duelExpiration(); }, 5000);
     
     // Connect to Twitch channels.
@@ -4119,6 +4107,18 @@ async function brookescribers() {
           helper.dumpError(err, "Hourly Twitch validation error.");
       });
     }, 60*60*1000);
+
+    // Log into the COD API.
+    await loginWithSSO(process.env.COD_SSO);
+
+    // Set the 5 minute interval for each player being tracked and get their active elements.
+    intervals["matches"] = setInterval(async() => { 
+      try { 
+        await updateMatches();
+      } catch (err) {
+        console.log(`Match intervals: ${err}`);
+      }
+    }, 300000);
 
   } catch (err) {
 
