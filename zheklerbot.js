@@ -4065,9 +4065,6 @@ async function brookescribers() {
       console.log("Server is listening.");
     });
 
-    // Log into the COD API.
-    await loginWithSSO(process.env.COD_SSO);
-
     // Populate match cache and initialize userIds map.
     var temp = await helper.dbQueryPromise(`SELECT * FROM allusers;`);
     for (var i = 0; i < temp.length; i++) {
@@ -4078,6 +4075,9 @@ async function brookescribers() {
         gcd[temp[i].user_id] = { };
       }
     };
+
+    // Log into the COD API.
+    await loginWithSSO(process.env.COD_SSO);
 
     // Set the 5 minute interval for each player being tracked and get their active elements.
     intervals["matches"] = setInterval(async() => { 
