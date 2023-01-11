@@ -993,7 +993,7 @@ async function tvtscores(channel, bearer) {
       var str = `${us} - ${opp}${(us==6 && opp==9)?` Nice`:``} | ${us + res[0].mapreset > opp?("Up "+ (us + res[0].mapreset - opp)):(us + res[0].mapreset < opp)?("Down " + (opp - us - res[0].mapreset)):"Tied"}
       ${res[0].mapreset != 0?(res[0].mapreset > 0?' (Up ':' (Down ') + Math.abs(res[0].mapreset) + ' after reset)':''}`;
 
-      if (bearer && scoreBots[bearer[1].userid] && scoreBots[bearer[1].userid].scoreBot.getChannels.includes(`#${channel}`)) {
+      if (bearer && scoreBots[bearer[1].userid] && scoreBots[bearer[1].userid].scoreBot.getChannels().includes(`#${channel}`)) {
         scoreBots[bearer[1].userid].scoreBot.say(channel, str);
       } else {
         say(channel, str, bot);
