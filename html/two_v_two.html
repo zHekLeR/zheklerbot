@@ -2100,7 +2100,7 @@
                document.getElementById("mescore").disabled = false;
             }, 5000);
 
-            fetch('/twovtwo/#channel#/nomoscore')
+            fetch('/nomoscore')
             .then(res => {
                if (res.status != 200) {
                   throw new Error("Unexpected status code: " + res.status);

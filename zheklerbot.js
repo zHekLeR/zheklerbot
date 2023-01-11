@@ -2805,14 +2805,14 @@ app.get('/twovtwo/:channel/mescore', async (request, response) => {
 
 
 // Stop scoring through editor's account.
-app.get('/twovtwo/:channel/nomoscore', async (request, response) => {
+app.get('/nomoscore', async (request, response) => {
   try {
-    request.params.channel = request.params.channel.toLowerCase();
 
     // Check permissions. Editors may use this path to put scores out with their own username.
     var cookies = request.cookies, rows;
     if (cookies["auth"]) {
       rows = await helper.checkBearer(cookies["auth"]);
+      console.log(rows);
       if (!rows[0]) {
         response.status(401);
         response.redirect('/');
@@ -2823,9 +2823,9 @@ app.get('/twovtwo/:channel/nomoscore', async (request, response) => {
       response.redirect('/');
       return;
     }
+    console.log(scoreBots[rows[1].userid]);
 
     if (scoreBots[rows[1].userid]) {
-      if (scoreBots[rows[1].userid].scoreBot.getChannels().includes(request.params.channel)) await scoreBots[rows[1].userid].scoreBot.part(request.params.channel); 
       await scoreBots[rows[1].userid].scoreBot.disconnect();
       helper.dbQuery(`UPDATE permissions SET tw_token = '' WHERE userid = '${rows[1].userid}';`);
     }
