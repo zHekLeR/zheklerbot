@@ -1954,6 +1954,7 @@
       </svg>
       <script>
          var resetvalue = 0;
+         var url = `https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=#CLIENT_ID#&redirect_uri=https://www.zhekbot.com/twitch/redirect&scope=chat%3Aread+chat%3Aedit&state=${state}`;    
          
          (function first() {
              var channel = document.getElementById('hName').value;
@@ -2084,7 +2085,7 @@
                }
             })
             .then(res => {
-               window.location.href = `https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=#CLIENT_ID#&redirect_uri=https://www.zhekbot.com/twitch/redirect&scope=chat%3Aread+chat%3Aedit&state=${state}`;               
+               window.location.href = url;          
             })
             .catch(err => {
                console.log(err);
