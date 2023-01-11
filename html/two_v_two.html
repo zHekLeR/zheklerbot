@@ -1970,9 +1970,9 @@
                      document.getElementById('tKills').innerHTML = parseInt(scores[1]);
                      document.getElementById('o1Kills').innerHTML = parseInt(scores[2]);
                      document.getElementById('o2Kills').innerHTML = parseInt(scores[3]);
-                     document.getElementById('tName').value = scores[4] || '';
-                     document.getElementById('o1Name').value = scores[5] || '';
-                     document.getElementById('o2Name').value = scores[6] || '';
+                     if (scores[4]) document.getElementById('tName').value = scores[4];
+                     if (scores[5]) document.getElementById('o1Name').value = scores[5];
+                     if (scores[6]) document.getElementById('o2Name').value = scores[6];
                      document.getElementById('hStatus').checked = scores[7] === 'true';
                      document.getElementById('tStatus').checked = scores[8] === 'true';
                      document.getElementById('o1Status').checked = scores[9] === 'true';
