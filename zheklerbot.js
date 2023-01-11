@@ -4065,10 +4065,10 @@ async function brookescribers() {
       console.log("Server is listening.");
     });
 
-    // // // Log into the COD API.
-    // await loginWithSSO(process.env.COD_SSO);
+    // Log into the COD API.
+    await loginWithSSO(process.env.COD_SSO);
 
-    // // Populate match cache and initialize userIds map.
+    // Populate match cache and initialize userIds map.
     var temp = await helper.dbQueryPromise(`SELECT * FROM allusers;`);
     for (var i = 0; i < temp.length; i++) {
       userIds[temp[i].user_id] = temp[i];
