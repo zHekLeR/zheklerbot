@@ -2540,7 +2540,7 @@ app.get('/twovtwo/:channel', async (request, response) => {
       page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
     }
 
-    if (scoreBots[bearer[1].userid] && !scoreBots[bearer[1].userid].channels.includes(request.params.channel)) {
+    if (scoreBots[bearer[1].userid] && scoreBots[bearer[1].userid].channels && !scoreBots[bearer[1].userid].channels.includes(request.params.channel)) {
       scoreBots[bearer[1].userid].scoreBot.join(request.params.channel);
       page = page.replace(/#mescore#/g, `You are currently updating scores through your account. If you'd like to stop (and use zHekBot), click <a onclick="nomoscore()">here</a>`)
     } else if (bearer[1].tw_token) {
@@ -2825,8 +2825,9 @@ app.get('/twovtwo/nomoscore', async (request, response) => {
     if (scoreBots[rows[1].userid]) {
       await scoreBots[rows[1].userid].scoreBot.disconnect();
       helper.dbQuery(`UPDATE permissions SET tw_token = '' WHERE userid = '${rows[1].userid}';`);
-      response.sendStatus(200);
     }
+    
+    response.sendStatus(200);
   } catch(err) {
     helper.dumpError(err, "Nomoscore.");
     response.sendStatus(500);
