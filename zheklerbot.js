@@ -994,8 +994,9 @@ async function tvtscores(channel, bearer) {
       ${res[0].mapreset != 0?(res[0].mapreset > 0?' (Up ':' (Down ') + Math.abs(res[0].mapreset) + ' after reset)':''}`;
 
       console.log(bearer);
-      console.log(scoreBots);
-      if (bearer && scoreBots[bearer[1].userid] && scoreBots[bearer[1].userid].scoreBot.getChannels().includes(channel)) {
+      console.log(scoreBots[bearer[1].userid]);
+      console.log(scoreBots[bearer[1].userid].getChannels())
+      if (bearer && scoreBots[bearer[1].userid] && scoreBots[bearer[1].userid].scoreBot.channels.includes(channel)) {
         scoreBots[bearer[1].userid].scoreBot.say(channel, str);
       } else {
         say(channel, str, bot);
