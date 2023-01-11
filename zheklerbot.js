@@ -4079,16 +4079,16 @@ async function brookescribers() {
       }
     };
 
-    // // Set the 5 minute interval for each player being tracked and get their active elements.
-    // intervals["matches"] = setInterval(async() => { 
-    //   try { 
-    //     await updateMatches();
-    //   } catch (err) {
-    //     console.log(`Match intervals: ${err}`);
-    //   }
-    // }, 300000);
+    // Set the 5 minute interval for each player being tracked and get their active elements.
+    intervals["matches"] = setInterval(async() => { 
+      try { 
+        await updateMatches();
+      } catch (err) {
+        console.log(`Match intervals: ${err}`);
+      }
+    }, 300000);
 
-    // setInterval(function() { duelExpiration(); }, 5000);
+    setInterval(function() { duelExpiration(); }, 5000);
     
     // Connect to Twitch channels.
     await bot.connect()
@@ -4096,27 +4096,27 @@ async function brookescribers() {
       helper.dumpError(err, "Twitch enable.");
     });
 
-    // // Authenticate with Twitch API and set 2 minute interval for BrookeAB's followers.
-    // await authenticate();
+    // Authenticate with Twitch API and set 2 minute interval for BrookeAB's followers.
+    await authenticate();
 
-    // // Hourly call to verify access token.
-    // intervals["access_token"] = setInterval(function() {
-    //   symAxios.get('https://id.twitch.tv/oauth2/validate', 
-    //   {
-    //     headers: {
-    //       "Client-Id": process.env.CLIENT_ID || '',
-    //       "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
-    //       "Content-Type": "application/x-www-form-urlencoded"
-    //     }
-    //   }).then(resp => {
-    //       console.log(JSON.stringify(resp.data));
-    //       if (resp.status && `${resp.status}`.includes('40')) {
-    //         regenerate();
-    //       }
-    //   }).catch(err => {
-    //       helper.dumpError(err, "Hourly Twitch validation error.");
-    //   });
-    // }, 60*60*1000);
+    // Hourly call to verify access token.
+    intervals["access_token"] = setInterval(function() {
+      symAxios.get('https://id.twitch.tv/oauth2/validate', 
+      {
+        headers: {
+          "Client-Id": process.env.CLIENT_ID || '',
+          "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      }).then(resp => {
+          console.log(JSON.stringify(resp.data));
+          if (resp.status && `${resp.status}`.includes('40')) {
+            regenerate();
+          }
+      }).catch(err => {
+          helper.dumpError(err, "Hourly Twitch validation error.");
+      });
+    }, 60*60*1000);
 
   } catch (err) {
 
