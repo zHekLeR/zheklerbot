@@ -11,9 +11,6 @@ async function revolverroulette(id, channel) {
 
     // Pull user from the Revolver Roulette database.
     var person = (await helper.dbQueryPromise(`SELECT * FROM revolverroulette WHERE user_id = '${id}' AND stream = '${channel.substring(1)}';`))[0];
-    console.log(person);
-    console.log(id);
-    console.log(channel);
     var first;
 
     if (!person) {
