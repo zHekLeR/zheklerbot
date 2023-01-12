@@ -159,7 +159,7 @@ function dumpError(err, where) {
           console.log(bearers);
           if (bearers.indexOf(bearer) < 0) continue;
           bearers.splice(bearers.indexOf(bearer), 1);
-          dbQuery(`UPDATE permissions SET bearer = '${bearers.join(',')}' WHERE userid = '${userid}';`);
+          dbQuery(`UPDATE permissions SET bearer = '${bearers.join(',')}' WHERE userid = '${rows[i].userid}';`);
           return found;
         }
       }
