@@ -258,7 +258,7 @@ bot.on('chat', async (channel, tags, message) => {
               .catch(err => {
                 console.log(err.message);
               });
-              say(channel.substring(1), `tags["username"] lost Revolver Roulette!`, bot);
+              say(channel.substring(1), `${tags["username"]} lost Revolver Roulette!`, bot);
             } else {
               say(channel, `${rows.user.user_id} lost RR! L mod immunity. Their record is ${rows.user["survive"]}W / ${rows.user["die"]}L`, bot);
             }
