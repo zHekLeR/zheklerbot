@@ -2291,7 +2291,7 @@ app.get('/updateacti/:channel', async (request, response) => {
     var data = await last20(acti, 'uno');
     var uno = data.matches[0].player.uno;
 
-    helper.dbQuery(`UPDATE allusers SET acti_id = '${acti}', uno = '${uno}', wz_type = ${wzType==='Warzone 1'?1:2} WHERE user_id = '${request.params.channel}';`);
+    helper.dbQuery(`UPDATE allusers SET acti_id = '${acti}', uno_id = '${uno}', wz_type = ${wzType==='Warzone 1'?1:2} WHERE user_id = '${request.params.channel}';`);
 
     response.sendStatus(200);
   } catch (err) {
