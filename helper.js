@@ -151,16 +151,15 @@ function dumpError(err, where) {
   async function removeBearer(bearer) {
     try {
       var rows = await dbQueryPromise(`SELECT * FROM permissions WHERE bearer LIKE '%${bearer}%';`);
-      console.log(rows);
 
       for (var i = 0; i < rows.length; i++) {
         if (rows[i] && rows[i].bearer) {
           var bearers = rows[0].bearer.split(',');
-          console.log(bearers);
+          
           if (bearers.indexOf(bearer) < 0) continue;
           bearers.splice(bearers.indexOf(bearer), 1);
           dbQuery(`UPDATE permissions SET bearer = '${bearers.join(',')}' WHERE userid = '${rows[i].userid}';`);
-          return found;
+          return true;
         }
       }
       return false;
