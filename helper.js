@@ -157,15 +157,9 @@ function dumpError(err, where) {
           dbQuery(`UPDATE permissions SET bearer = '' WHERE userid = '${userid}';`);
           return true;
         } else if (bearers.length > 1) {
-          var found = false;
-          for (var i = 0; i < bearers.length; i++) {
-            if (bearers[i] === bearer) {
-              found = true;
-              bearers = bearers.splice(i, 1);
-              dbQuery(`UPDATE permissions SET bearer = '${bearers.join(',')}' WHERE userid = '${userid}';`);
-              break;
-            }
-          }
+          if (bearers.indexOf(bearer) < 0) return false;
+          bearers.splice(bearers.indexOf(bearer), 1);
+          dbQuery(`UPDATE permissions SET bearer = '${bearers.join(',')}' WHERE userid = '${userid}';`);
           return found;
         }
       }
