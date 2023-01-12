@@ -258,6 +258,7 @@ bot.on('chat', async (channel, tags, message) => {
               .catch(err => {
                 console.log(err.message);
               });
+              say(channel.substring(1), `tags["username"] lost Revolver Roulette!`, bot);
             } else {
               say(channel, `${rows.user.user_id} lost RR! L mod immunity. Their record is ${rows.user["survive"]}W / ${rows.user["die"]}L`, bot);
             }
@@ -348,6 +349,7 @@ bot.on('chat', async (channel, tags, message) => {
                 .catch(err => {
                   console.log(err.message);
                 });
+                say(channel.substring(1), `${rows.user.user_id} lost Coinflip!`, bot);
               } else {
                 say(channel, `You guessed wrong! Your record is ${rows.user.correct} correct and ${rows.user.wrong} wrong.`, bot);
               }
@@ -409,6 +411,7 @@ bot.on('chat', async (channel, tags, message) => {
                 .catch(err => {
                   console.log(err.message);
                 });
+                say(channel.substring(1), `${tags["display-name"] || tags["username"]} lost Rock Paper Scissors!`, bot);
               } else {
                 say(channel, `zHekBot got ${rows.me}. ${tags["display-name"] || tags["username"]} lost!`, bot);
               }

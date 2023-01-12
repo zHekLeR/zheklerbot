@@ -5386,6 +5386,8 @@
                             if (res.status !== 200) {
                                 throw new Error(`Error updating: status ${res.status}`);
                             }
+                            oActi = acti;
+                            oType = wzType;
                         })
                         .catch((err) => {
                             alert(err.message);
