@@ -148,18 +148,16 @@ function dumpError(err, where) {
 
 
   // Remove auth cookie.
-  async function removeBearer(bearer, userid) {
+  async function removeBearer(bearer) {
     try {
-      var rows = await dbQueryPromise(`SELECT * FROM permissions WHERE userid = '${userid}';`);
+      var rows = await dbQueryPromise(`SELECT * FROM permissions WHERE bearer LIKE '%${bearer}%';`);
       console.log(rows);
-      if (rows[0] && rows[0].bearer) {
-        var bearers = rows[0].bearer.split(',');
-        console.log(bearers);
-        if (bearers.length === 1 && bearers[0] === bearer) {
-          dbQuery(`UPDATE permissions SET bearer = '' WHERE userid = '${userid}';`);
-          return true;
-        } else if (bearers.length > 1) {
-          if (bearers.indexOf(bearer) < 0) return false;
+
+      for (var i = 0; i < rows.length; i++) {
+        if (rows[i] && rows[i].bearer) {
+          var bearers = rows[0].bearer.split(',');
+          console.log(bearers);
+          if (bearers.indexOf(bearer) < 0) continue;
           bearers.splice(bearers.indexOf(bearer), 1);
           dbQuery(`UPDATE permissions SET bearer = '${bearers.join(',')}' WHERE userid = '${userid}';`);
           return found;

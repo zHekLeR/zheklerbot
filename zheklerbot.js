@@ -1372,7 +1372,7 @@ app.get('/', async (request, response) => {
         } else {
 
           // Unexpected status; clear cookie and refresh;
-          helper.removeBearer(cookies["auth"], rows[1].userid);
+          helper.removeBearer(cookies["auth"]);
           response.clearCookie('auth', {
             'domain': '.zhekbot.com',
             secure: true,
@@ -1384,7 +1384,7 @@ app.get('/', async (request, response) => {
 
         // Unauthorized status; clear cookie and refresh.
         if (err.toString().includes('401')) {
-          helper.removeBearer(cookies["auth"], rows[1].userid);
+          helper.removeBearer(cookies["auth"]);
           response.clearCookie('auth', {
             'domain': '.zhekbot.com',
             secure: true,
