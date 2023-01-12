@@ -151,8 +151,10 @@ function dumpError(err, where) {
   async function removeBearer(bearer, userid) {
     try {
       var rows = await dbQueryPromise(`SELECT * FROM permissions WHERE userid = '${userid}';`);
+      console.log(rows);
       if (rows[0] && rows[0].bearer) {
         var bearers = rows[0].bearer.split(',');
+        console.log(bearers);
         if (bearers.length === 1 && bearers[0] === bearer) {
           dbQuery(`UPDATE permissions SET bearer = '' WHERE userid = '${userid}';`);
           return true;
