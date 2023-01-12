@@ -254,7 +254,10 @@ bot.on('chat', async (channel, tags, message) => {
             say(channel, `${tags["display-name"] || tags["username"]} has survived RR! Their record is ${rows.user["survive"]}W / ${rows.user["die"]}L`, bot);
           } else {
             if (!bot.isMod(channel, tags["username"] || '')) {
-              bot.timeout(channel, tags["username"] || '', userIds[channel.substring(1)].timeout, `You lost RR! Your record is ${rows.user["survive"]} survivals and ${rows.user["die"]} deaths.`);
+              bot.timeout(channel, tags["username"] || '', userIds[channel.substring(1)].timeout, `You lost RR! Your record is ${rows.user["survive"]} survivals and ${rows.user["die"]} deaths.`)
+              .catch(err => {
+                console.log(err.message);
+              });
             } else {
               say(channel, `${rows.user.user_id} lost RR! L mod immunity. Their record is ${rows.user["survive"]}W / ${rows.user["die"]}L`, bot);
             }
@@ -341,7 +344,10 @@ bot.on('chat', async (channel, tags, message) => {
               say(channel.substring(1), `${rows.user.user_id} guessed correctly! Their record is ${rows.user.correct} correct and ${rows.user.wrong} wrong.`, bot);
             } else {
               if (bot.isMod(channel, 'zhekler') && !bot.isMod(channel, tags["username"] || '')) {
-                bot.timeout(channel.substring(1), `${tags["username"]}`, userIds[channel.substring(1)].timeout, `You guessed wrong! Your record is ${rows.user.correct} correct and ${rows.user.wrong} wrong.`);
+                bot.timeout(channel.substring(1), `${tags["username"]}`, userIds[channel.substring(1)].timeout, `You guessed wrong! Your record is ${rows.user.correct} correct and ${rows.user.wrong} wrong.`)
+                .catch(err => {
+                  console.log(err.message);
+                });
               } else {
                 say(channel, `You guessed wrong! Your record is ${rows.user.correct} correct and ${rows.user.wrong} wrong.`, bot);
               }
@@ -399,7 +405,10 @@ bot.on('chat', async (channel, tags, message) => {
               say(channel.substring(1), `zHekBot got ${rows.me}. ${tags["display-name"] || tags["username"]} ${rows.result?"won":"tied"}!`, bot);
             } else {
               if (bot.isMod(channel, 'zhekler') && !bot.isMod(channel, tags["username"] ||'')) {
-                bot.timeout(channel.substring(1), tags["display-name"] || tags["username"] || '', userIds[channel.substring(1)].timeout, `zHekBot got ${rows.me}. You lost!`);
+                bot.timeout(channel.substring(1), tags["display-name"] || tags["username"] || '', userIds[channel.substring(1)].timeout, `zHekBot got ${rows.me}. You lost!`)
+                .catch(err => {
+                  console.log(err.message);
+                });
               } else {
                 say(channel, `zHekBot got ${rows.me}. ${tags["display-name"] || tags["username"]} lost!`, bot);
               }
@@ -453,9 +462,10 @@ bot.on('chat', async (channel, tags, message) => {
         }
         if (!bvcd[tags["username"] || ''] || bvcd[tags["username"] || ''] < Date.now()) {
           rows = await bigvanish.bigVanish(tags["display-name"]?tags["display-name"]:tags["username"], channel);
-          if (!bot.isMod(channel.substring(1), rows.person.user_id)) {
-            bot.timeout(channel, `${rows.person.user_id}`, rows.time, `You were timed out for ${numberWithCommas(rows.time)}! Your record high is ${numberWithCommas(rows.person.high)} seconds and low is ${numberWithCommas(rows.person.lowest)} seconds.`);
-          }
+          bot.timeout(channel, `${rows.person.user_id}`, rows.time, `You were timed out for ${numberWithCommas(rows.time)}! Your record high is ${numberWithCommas(rows.person.high)} seconds and low is ${numberWithCommas(rows.person.lowest)} seconds.`)
+          .catch(err => {
+            console.log(err.message);
+          });
           say(channel.substring(1), `Big Vanish: ${rows.person.user_id} | ${numberWithCommas(rows.time)} seconds`, bot);
           rrcd[tags["username"] || ''] = Date.now() + 15000;
           setTimeout(function() { bot.unban(channel.substring(1), splits[1]) }, 3000);
@@ -811,7 +821,10 @@ bot.on('chat', async (channel, tags, message) => {
       case '!timeout':
         if (channel.substring(1) !== 'huskerrs' || (!tags["mod"] && !vips.includes(tags['username'] || ''))) break;
         if (!bot.isMod(channel.substring(1), splits[1])) {
-          bot.timeout(channel, splits[1], parseInt(splits[2]), `${tags['username']} ${splits[3]?splits.splice(0, 2).join(' '):""}`);
+          bot.timeout(channel, splits[1], parseInt(splits[2]), `${tags['username']} ${splits[3]?splits.splice(0, 2).join(' '):""}`)
+          .catch(err => {
+            console.log(err.message);
+          });
         }
         break;
 
@@ -825,7 +838,10 @@ bot.on('chat', async (channel, tags, message) => {
       case '!ban':
         if (channel.substring(1) !== 'huskerrs' || (!tags["mod"] && !vips.includes(tags['username'] || ''))) break;
         if (!bot.isMod(channel.substring(1), splits[1])) {
-          bot.ban(channel, splits[1], `${tags['username']} ${splits[2]?splits.splice(0, 1).join(' '):""}`);
+          bot.ban(channel, splits[1], `${tags['username']} ${splits[2]?splits.splice(0, 1).join(' '):""}`)
+          .catch(err => {
+            console.log(err.message);
+          });
         }
         break;
 
@@ -888,9 +904,12 @@ bot.on('chat', async (channel, tags, message) => {
         if (!userIds[channel.substring(1)].duel) break;
         rows = await duel.accept(tags["username"], channel.substring(1));
         if (rows) {
-          say(channel.substring(1), `${rows.winner} has won the duel against ${rows.loser} and are now on a ${rows.streak} win streak!`, bot);
+          say(channel.substring(1), `${rows.winner} has won the duel against ${rows.loser} and is now on a ${rows.streak} win streak!`, bot);
           if (!bot.isMod(channel.substring(1), rows.loser)) {
-            bot.timeout(channel.substring(1), rows.loser, userIds[channel.substring(1)].timeout, `You lost the duel to ${rows.winner}. Hold this L`);
+            bot.timeout(channel.substring(1), rows.loser, userIds[channel.substring(1)].timeout, `You lost the duel to ${rows.winner}. Hold this L`)
+            .catch(err => {
+              console.log(err.message);
+            });
           }
         }
         break;
