@@ -462,7 +462,7 @@ bot.on('chat', async (channel, tags, message) => {
         }
         if (!bvcd[tags["username"] || ''] || bvcd[tags["username"] || ''] < Date.now()) {
           rows = await bigvanish.bigVanish(tags["display-name"]?tags["display-name"]:tags["username"], channel);
-          bot.timeout(channel, `${rows.person.user_id}`, rows.time, `You were timed out for ${numberWithCommas(rows.time)}! Your record high is ${numberWithCommas(rows.person.high)} seconds and low is ${numberWithCommas(rows.person.lowest)} seconds.`)
+          bot.timeout(channel, `${rows.person.user_id}`, rows.time, `You were timed out for ${numberWithCommas(rows.time)}! Your record high is ${numberWithCommas(rows.person.vanish)} seconds and low is ${numberWithCommas(rows.person.lowest)} seconds.`)
           .catch(err => {
             console.log(err.message);
           });
