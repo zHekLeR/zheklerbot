@@ -468,7 +468,12 @@ bot.on('chat', async (channel, tags, message) => {
           });
           say(channel.substring(1), `Big Vanish: ${rows.person.user_id} | ${numberWithCommas(rows.time)} seconds`, bot);
           rrcd[tags["username"] || ''] = Date.now() + 15000;
-          setTimeout(function() { bot.unban(channel.substring(1), splits[1]) }, 3000);
+          setTimeout(function() { 
+            bot.unban(channel.substring(1), splits[1])
+            .catch(err => {
+              console.log(`Untimeout: ${splits[1]}`);
+            }) 
+          }, 3000);
         }
         break;
 
@@ -831,7 +836,10 @@ bot.on('chat', async (channel, tags, message) => {
       // Untimeout command for VIPs mainly.
       case '!untimeout':
         if (channel.substring(1) !== 'huskerrs' || (!tags["mod"] && !vips.includes(tags['username'] || ''))) break;
-        bot.unban(channel, splits[1]);
+        bot.unban(channel, splits[1])
+        .catch(err => {
+          console.log(`Untimeout: ${splits[1]}`);
+        })
         break;
 
       // Ban command for VIPs mainly.
@@ -848,7 +856,10 @@ bot.on('chat', async (channel, tags, message) => {
       // Unban command for VIPs mainly.
       case '!unban':
         if (channel.substring(1) !== 'huskerrs' || (!tags["mod"] && !vips.includes(tags['username'] || ''))) break;
-        bot.unban(channel, splits[1]);
+        bot.unban(channel, splits[1])
+        .catch(err => {
+          console.log(`Unban: ${splits[1]}`);
+        })
         break;
 
 
