@@ -254,7 +254,7 @@ bot.on('chat', async (channel, tags, message) => {
             say(channel, `${tags["display-name"] || tags["username"]} has survived RR! Their record is ${rows.user["survive"]}W / ${rows.user["die"]}L`, bot);
           } else {
             if (!tags["badges"]?.moderator) {
-              bot.timeout(channel, tags["username"] || '', userIds[channel.substring(1)].timeout, `You lost RR! Your record is ${rows.user["survive"]} survivals and ${rows.user["die"]} deaths.`)
+              bot.timeout(channel, tags["username"] || '', 300, `You lost RR! Your record is ${rows.user["survive"]} survivals and ${rows.user["die"]} deaths.`)
               .catch(err => {
                 console.log(err.message);
               });
