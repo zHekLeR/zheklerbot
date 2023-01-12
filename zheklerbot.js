@@ -251,7 +251,7 @@ bot.on('chat', async (channel, tags, message) => {
           } else  if (rows.first) {
             say(channel.substring(1), `${tags["display-name"] || tags["username"]}: Revolver Roulette is a game where you have 1/3 chance to be timed out for 5 min. You have been warned.`, bot);
           } else if (rows.win) {
-            say(channel, `${tags["display-name"] || tags["username"]} has survived RR! Their record is ${rows.user["survive"]}W / ${rows.user["die"]}L`, bot);
+            say(channel, `${tags["display-name"] || tags["username"]} has survived RR! Their record is ${rows.user["survive"]} survivals and ${rows.user["die"]} deaths`, bot);
           } else {
             if (!tags["badges"]?.moderator) {
               bot.timeout(channel, tags["username"] || '', 300, `You lost RR! Your record is ${rows.user["survive"]} survivals and ${rows.user["die"]} deaths.`)
