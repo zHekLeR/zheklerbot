@@ -1069,6 +1069,55 @@ bot.on('resub', (channel, username, months, message, userstate, methods) => {
 });
 
 
+// Twitch sub gift.
+bot.on('subgift', (channel, username, months, recipient, userstate, methods) => {
+  if (!userIds[channel.substring(1)].subs) return;
+  say(channel, `@${username} Thank you for the ${userstate["msg-param-sender-count"] > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs!':'gifted sub to ' + recipient}! huskHype huskLove`, bot);
+});
+
+
+// Twitch anon sub gift.
+bot.on('anonsubgift', (channel, months, recipient, userstate, methods) => {
+  if (!userIds[channel.substring(1)].subs) return;
+  say(channel, `Anonymous, thank you for the ${userstate["msg-param-sender-count"] > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs':'gifted sub to ' + recipient}! huskHype huskLove`, bot);
+});
+
+
+// Twitch sub mystery gift.
+bot.on('submysterygift', (channel, username, numOfSubs, userstate, methods) => {
+  if (!userIds[channel.substring(1)].subs) return;
+  say(channel, `${username} Thank you for the ${numOfSubs > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs':'gifted sub'}! huskHype huskLove`, bot);
+});
+
+
+// Twitch sub mystery gift.
+bot.on('anonsubmysterygift', (channel, numOfSubs, userstate, methods) => {
+  if (!userIds[channel.substring(1)].subs) return;
+  say(channel, `Anonymous, thank you for the ${numOfSubs > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs':'gifted sub'}! huskHype huskLove`, bot);
+});
+
+
+// Prime paid upgrade.
+bot.on('primepaidupgrade', (channel, username, methods, tags) => {
+  if (!userIds[channel.substring(1)].subs) return;
+  say(channel, `${username} Thank you for upgrading from a Twitch Prime subscription! huskHype huskLove`, bot);
+});
+
+
+// Gifted paid upgrade.
+bot.on('giftpaidupgrade', (channel, username, sender, userstate) => {
+  if (!userIds[channel.substring(1)].subs) return;
+  say(channel, `${username} Thank you for continuing your gifted sub from ${sender}! huskHype huskLove`, bot);
+});
+
+
+// Anon gift paid upgrade.
+bot.on('anongiftpaidupgrade', (channel, username, userstate) => {
+  if (!userIds[channel.substring(1)].subs) return;
+  say(channel, `${username} Thank you for continuing your gifted sub from Anonymous! huskHype huskLove`, bot);
+});
+
+
 // Make the COD API game_mode more readable.
 var game_modes = {
   'br_brquads': 'Battle Royale Quads',
