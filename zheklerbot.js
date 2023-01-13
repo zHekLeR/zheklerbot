@@ -17,7 +17,9 @@ helper.discord.on("messageCreate", (message) => {
       }
       } else if (message.channel.id === "860699279017639936") {
       if (message.content.indexOf('/ban ') >= 0) {
-        bot.ban('huskerrs', message.content.substring(message.content.indexOf('/ban ') + 5) + ' | Global ban');
+        var temp = message.content.substring(message.content.indexOf('/ban ') + 5).split(' ');
+        console.log(temp);
+        bot.ban('huskerrs', temp[0], temp.splice(1, 1).join(' ') + ' | Global ban');
       } 
     }
 });
