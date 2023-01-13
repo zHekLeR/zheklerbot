@@ -7,6 +7,7 @@ import * as helper from "./helper.js";
 // Loadout command for Discord.
 const prefix = "!loadout";
 helper.discord.on("messageCreate", (message) => {
+  console.log(message);
     if (message.channel.id === "775090169417826326") {
       if (message.content.startsWith(prefix)) {
         message.author.send("HusKerrs' Loadouts (favorite guns at the top): https://www.kittr.gg/channel/HusKerrs/warzone\n"+
