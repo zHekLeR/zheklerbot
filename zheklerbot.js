@@ -832,8 +832,9 @@ bot.on('chat', async (channel, tags, message) => {
       // Timeout command for VIPs mainly.
       case '!timeout':
         if (channel.substring(1) !== 'huskerrs' || (!tags["mod"] && !vips.includes(tags['username'] || ''))) break;
+        if (splits.length < 3 || Number.isNaN(parseInt(splits[2]))) break;
         if (!bot.isMod(channel.substring(1), splits[1])) {
-          bot.timeout(channel, splits[1], parseInt(splits[2]), `${tags['username']} ${splits[3]?splits.splice(0, 2).join(' '):""}`)
+          bot.timeout(channel, splits[1], parseInt(splits[2]), `${tags['username']} ${splits[3]?splits.slice(2).join(' '):""}`)
           .catch(err => {
             console.log(err.message);
           });
@@ -853,7 +854,7 @@ bot.on('chat', async (channel, tags, message) => {
       case '!ban':
         if (channel.substring(1) !== 'huskerrs' || (!tags["mod"] && !vips.includes(tags['username'] || ''))) break;
         if (!bot.isMod(channel.substring(1), splits[1])) {
-          bot.ban(channel, splits[1], `${tags['username']} ${splits[2]?splits.splice(0, 1).join(' '):""}`)
+          bot.ban(channel, splits[1], `${tags['username']} ${splits[2]?' | ' + splits.slice(2).join(' '):""}`)
           .catch(err => {
             console.log(err.message);
           });
@@ -1075,6 +1076,7 @@ bot.on('resub', (channel, username, months, message, userstate, methods) => {
 // Twitch sub gift.
 bot.on('subgift', (channel, username, months, recipient, userstate, methods) => {
   if (!userIds[channel.substring(1)].subs) return;
+  console.log('subgift ' + username);
   say(channel, `@${username} Thank you for the ${userstate["msg-param-sender-count"] > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs!':'gifted sub to ' + recipient}! huskHype huskLove`, bot);
 });
 
@@ -1082,21 +1084,24 @@ bot.on('subgift', (channel, username, months, recipient, userstate, methods) => 
 // Twitch anon sub gift.
 bot.on('anonsubgift', (channel, months, recipient, userstate, methods) => {
   if (!userIds[channel.substring(1)].subs) return;
+  console.log('anonsubgift');
   say(channel, `Anonymous, thank you for the ${userstate["msg-param-sender-count"] > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs':'gifted sub to ' + recipient}! huskHype huskLove`, bot);
 });
 
 
 // Twitch sub mystery gift.
-bot.on('submysterygift', (channel, username, numOfSubs, userstate, methods) => {
+bot.on('submysterygift', (channel, username, numbOfSubs, userstate, methods) => {
   if (!userIds[channel.substring(1)].subs) return;
-  say(channel, `${username} Thank you for the ${numOfSubs > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs':'gifted sub'}! huskHype huskLove`, bot);
+  console.log('submysterygift ' + username + ' ' + numbOfSubs);
+  say(channel, `${username} Thank you for the ${numbOfSubs > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs':'gifted sub'}! huskHype huskLove`, bot);
 });
 
 
 // Twitch sub mystery gift.
-bot.on('anonsubmysterygift', (channel, numOfSubs, userstate, methods) => {
+bot.on('anonsubmysterygift', (channel, numbOfSubs, userstate, methods) => {
   if (!userIds[channel.substring(1)].subs) return;
-  say(channel, `Anonymous, thank you for the ${numOfSubs > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs':'gifted sub'}! huskHype huskLove`, bot);
+  console.log('submysterygift ' + numbOfSubs);
+  say(channel, `Anonymous, thank you for the ${numbOfSubs > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs':'gifted sub'}! huskHype huskLove`, bot);
 });
 
 
