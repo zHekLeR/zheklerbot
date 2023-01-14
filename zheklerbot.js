@@ -255,13 +255,13 @@ bot.on('chat', async (channel, tags, message) => {
             say(channel, `${tags["display-name"] || tags["username"]} has survived RR! Their record is ${rows.user["survive"]} survivals and ${rows.user["die"]} deaths`, bot);
           } else {
             if (!tags["badges"]?.moderator) {
-              bot.timeout(channel, tags["username"] || '', 300, `You lost RR! Your record is ${rows.user["survive"]} survivals and ${rows.user["die"]} deaths.`)
+              bot.timeout(channel, tags["username"] || '', 300, `You lost RR! Your record is ${rows.user["survive"]} survivals and ${rows.user["die"]} deaths`)
               .catch(err => {
                 console.log(err.message);
               });
               say(channel.substring(1), `${tags["username"]} lost Revolver Roulette!`, bot);
             } else {
-              say(channel, `${rows.user.user_id} lost RR! L mod immunity. Their record is ${rows.user["survive"]}W / ${rows.user["die"]}L`, bot);
+              say(channel, `${rows.user.user_id} lost RR! L mod immunity. Their record is ${rows.user["survive"]} survivals and ${rows.user["die"]} deaths`, bot);
             }
           }
           rrcd[tags["username"] || ''] = Date.now() + 30000;

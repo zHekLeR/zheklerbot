@@ -31,7 +31,7 @@ async function revolverroulette(id, channel) {
     }
 
     // Return response.
-    return { first: first, win: rand == 1, user: person };
+    return { first: first, win: rand, user: person };
 
   } catch (err) {
     helper.dumpError(err, "Revolver Roulette.");
