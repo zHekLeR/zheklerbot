@@ -18,7 +18,10 @@ helper.discord.on("messageCreate", (message) => {
       } else if (message.channel.id === "860699279017639936") {
       if (message.content.indexOf('/ban ') >= 0) {
         var temp = message.content.substring(message.content.indexOf('/ban ') + 5).split(' '); 
-        bot.ban('huskerrs', temp.splice(0, 1).toString(), temp.join(' ') + ' | Global ban');
+        bot.ban('huskerrs', temp.splice(0, 1).toString(), temp.join(' ') + ' | Global ban')
+        .catch(err => {
+          helper.dumpError(err, "Global bans.");
+        });
       } 
     }
 });
@@ -2636,6 +2639,48 @@ app.get('/twovtwo/:channel', async (request, response) => {
       scoreBots[bearer[1].userid].scoreBot.join(request.params.channel);
       page = page.replace(/#mescore#/g, `You are currently updating scores through your account. If you'd like to stop (and use zHekBot), click <a onclick="nomoscore()">here</a>`)
     } else if (bearer[1].tw_token) {
+      var valid = true, newToken;
+
+      axios.get('https://id.twitch.tv/oauth2/validate', {
+        headers: {
+          "Authorization": `OAuth ${bearer[1].tw_token}`
+        }
+      }).catch(async err => {
+        if (err.status === 401) {
+          var tokens = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = '${bearer[1].userid}';`)[0];
+          if (!tokens) throw new Error("No tokens returned - 2v2 refresh.");
+
+          axios.post('https://id.twitch.tv/oauth2/token', 
+            `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&grant_type=refresh_token&refresh_token=${tokens.refresh_token}`,
+            {
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              }
+            }
+          )
+          .then(res => {
+            var data = res.data;
+
+            helper.dbQuery(`UPDATE permissions SET tw_token = '${data.access_token}' WHERE userid = '${bearer[1].userid}';`);
+            helper.dbQuery(`UPDATE access_tokens SET access_token = '${data.access_token}', refresh_token = '${data.refresh_token}' WHERE userid = '${bearer[1].userid}';`);
+
+            newToken = data.access_token;
+            valid = false;
+          })
+          .catch(err => {
+            helper.dbQuery(`UPDATE permissions SET tw_token = '' WHERE userid = '${bearer[1].userid}';`);
+
+            helper.dumpError(err, "2v2 refresh token.");
+            response.redirect('/');
+          })
+        } else {
+          helper.dbQuery(`UPDATE permissions SET tw_token = '' WHERE userid = '${bearer[1].userid}';`);
+
+          helper.dumpError(err, "Validating 2v2.");
+          response.redirect('/');
+        }
+      });
+
       scoreBots[bearer[1].userid] = {
         scoreBot: new tmi.Client({
           connection: {
@@ -2644,7 +2689,7 @@ app.get('/twovtwo/:channel', async (request, response) => {
           },
           identity: {
             username: bearer[1].userid,
-            password: bearer[1].tw_token
+            password: valid?bearer[1].tw_token:newToken
           },
           channels: [ request.params.channel ]
         }),
@@ -4091,6 +4136,7 @@ function regenerate() {
     for (var k in resp.data) {
       account_config[k] = resp.data[k];
     }
+
     symAxios.defaults.headers.common["Authorization"] = "Bearer " + account_config.access_token;
     console.log(symAxios.defaults);
 
