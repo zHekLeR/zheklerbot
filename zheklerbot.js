@@ -3977,6 +3977,8 @@ app.post('/eventsub', (req, res) => {
 
         var pred;
 
+        console.log(`Event type: ${notification.subscription.type} for channel ${notification.event.broadcaster_user_login}.`);
+
         switch (notification.subscription.type) {
 
           // Post in chat for prediction beginning.
@@ -4047,8 +4049,6 @@ app.post('/eventsub', (req, res) => {
             console.log(`Unknown event: ${notification.subscription.type}`);
             break;
         }
-
-        console.log(`Event type: ${notification.subscription.type} for channel ${notification.event.broadcaster_user_login}.`);
         res.setHeader('Content-Type', 'text/html').sendStatus(204);
 
       } else if (MESSAGE_TYPE_VERIFICATION === req.headers[MESSAGE_TYPE]) {
