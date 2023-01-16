@@ -1073,25 +1073,40 @@ bot.on('resub', (channel, username, months, message, userstate, methods) => {
 });
 
 
+var subs = {};
+
+
 // Twitch sub gift.
 bot.on('subgift', (channel, username, months, recipient, userstate, methods) => {
   if (!userIds[channel.substring(1)].subs) return;
+  if (subs[username]) {
+    subs[username] -= 1;
+  } else {
+    say(channel, `@${username} Thank you for the ${userstate["msg-param-sender-count"] > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs!':'gifted sub to ' + recipient}! huskHype huskLove`, bot);
+  }
+
   console.log('subgift ' + username);
-  say(channel, `@${username} Thank you for the ${userstate["msg-param-sender-count"] > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs!':'gifted sub to ' + recipient}! huskHype huskLove`, bot);
 });
 
 
 // Twitch anon sub gift.
 bot.on('anonsubgift', (channel, months, recipient, userstate, methods) => {
   if (!userIds[channel.substring(1)].subs) return;
+  if (subs["anon"]) {
+    subs["anon"] -= 1;
+  } else {
+    say(channel, `Anonymous, thank you for the ${userstate["msg-param-sender-count"] > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs':'gifted sub to ' + recipient}! huskHype huskLove`, bot);
+  }
+
   console.log('anonsubgift');
-  say(channel, `Anonymous, thank you for the ${userstate["msg-param-sender-count"] > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs':'gifted sub to ' + recipient}! huskHype huskLove`, bot);
 });
 
 
 // Twitch sub mystery gift.
 bot.on('submysterygift', (channel, username, numbOfSubs, userstate, methods) => {
   if (!userIds[channel.substring(1)].subs) return;
+  subs[username] = numbOfSubs;
+
   console.log('submysterygift ' + username + ' ' + numbOfSubs);
   say(channel, `${username} Thank you for the ${numbOfSubs > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs':'gifted sub'}! huskHype huskLove`, bot);
 });
@@ -1100,6 +1115,8 @@ bot.on('submysterygift', (channel, username, numbOfSubs, userstate, methods) => 
 // Twitch sub mystery gift.
 bot.on('anonsubmysterygift', (channel, numbOfSubs, userstate, methods) => {
   if (!userIds[channel.substring(1)].subs) return;
+  subs["anon"] = numbOfSubs;
+
   console.log('submysterygift ' + numbOfSubs);
   say(channel, `Anonymous, thank you for the ${numbOfSubs > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs':'gifted sub'}! huskHype huskLove`, bot);
 });
