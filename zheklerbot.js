@@ -1108,7 +1108,7 @@ bot.on('submysterygift', (channel, username, numbOfSubs, userstate, methods) => 
   subs[username] = numbOfSubs;
 
   console.log('submysterygift ' + username + ' ' + numbOfSubs);
-  say(channel, `${username} Thank you for the ${numbOfSubs > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs':'gifted sub'}! huskHype huskLove`, bot);
+  say(channel, `${username} Thank you for the ${numbOfSubs > 1?''+ numbOfSubs + 'gifted subs':'gifted sub'}! huskHype huskLove`, bot);
 });
 
 
@@ -1118,7 +1118,7 @@ bot.on('anonsubmysterygift', (channel, numbOfSubs, userstate, methods) => {
   subs["anon"] = numbOfSubs;
 
   console.log('submysterygift ' + numbOfSubs);
-  say(channel, `Anonymous, thank you for the ${numbOfSubs > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs':'gifted sub'}! huskHype huskLove`, bot);
+  say(channel, `Anonymous, thank you for the ${numbOfSubs > 1?''+ numbOfSubs + 'gifted subs':'gifted sub'}! huskHype huskLove`, bot);
 });
 
 
@@ -3966,132 +3966,163 @@ const HMAC_PREFIX = 'sha256=';
 var idArray = [], intArray = {};
 
 
-app.post('/eventsub', (req, res) => {
-  var secret = getSecret();
-  var message = getHmacMessage(req);
-  var hmac = HMAC_PREFIX + getHmac(secret, message);  // Signature to compare
+app.post('/eventsub', async (req, res) => {
+  try {
+    var secret = getSecret();
+    var message = getHmacMessage(req);
+    var hmac = HMAC_PREFIX + getHmac(secret, message);  // Signature to compare
 
-  if (true === verifyMessage(hmac, req.headers[TWITCH_MESSAGE_SIGNATURE])) {
+    if (true === verifyMessage(hmac, req.headers[TWITCH_MESSAGE_SIGNATURE])) {
 
-    // Get JSON object from body, so you can process the message.
-    var notification = req.body;
-    
-    if (idArray.includes(req.get(TWITCH_MESSAGE_ID))) {
+      // Get JSON object from body, so you can process the message.
+      var notification = req.body;
+      
+      if (idArray.includes(req.get(TWITCH_MESSAGE_ID))) {
 
-      console.log("Duplicate event message.");
-      res.send(201);
+        console.log("Duplicate event message.");
+        res.send(201);
 
-    } else if (new Date(TWITCH_MESSAGE_TIMESTAMP).getTime() + 10*60*1000 < Date.now()) {
+      } else if (new Date(TWITCH_MESSAGE_TIMESTAMP).getTime() + 10*60*1000 < Date.now()) {
 
-      console.log("Expired event message.");
-      res.send(202);
+        console.log("Expired event message.");
+        res.send(202);
 
-    } else {
+      } else {
 
-      idArray.push(req.get(TWITCH_MESSAGE_ID));
+        idArray.push(req.get(TWITCH_MESSAGE_ID));
 
-      if (MESSAGE_TYPE_NOTIFICATION === req.headers[MESSAGE_TYPE]) {
+        if (MESSAGE_TYPE_NOTIFICATION === req.headers[MESSAGE_TYPE]) {
 
-        var pred;
+          var pred;
 
-        console.log(`Event type: ${notification.subscription.type} for channel ${notification.event.broadcaster_user_login}.`);
+          console.log(`Event type: ${notification.subscription.type} for channel ${notification.event.broadcaster_user_login}.`);
 
-        switch (notification.subscription.type) {
+          switch (notification.subscription.type) {
 
-          // Post in chat for prediction beginning.
-          case "channel.prediction.begin":
-            pred = notification.event.title;
-            var time = ((new Date(notification.event.locks_at)).getTime() - (new Date(notification.event.started_at)).getTime())/1000;
-            say(notification.event.broadcaster_user_login, `NEW PREDICTION peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time} SECONDS peepoGamble DinkDonk 
-              NEW PREDICTION peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time} SECONDS`, bot);
-            if (time >= 60) {
-              intArray[notification.event.broadcaster_user_login] = setTimeout(function () { 
-                say(notification.event.broadcaster_user_login, `GET YOUR BETS IN peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time/2} SECONDS peepoGamble DinkDonk 
-                GET YOUR BETS IN peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time/2} SECONDS`, bot); 
-                delete intArray[notification.event.broadcaster_user_login];
-              }, time*1000/2);
-            }
-            break;
-
-          // Post in chat for prediction end.
-          case "channel.prediction.end": 
-            var outcome;
-            for (var i = 0; i < notification.event.outcomes.length; i++) {
-              if (notification.event.winning_outcome_id === notification.event.outcomes[i].id) {
-                outcome = notification.event.outcomes[i];
-                break;
+            // Post in chat for prediction beginning.
+            case "channel.prediction.begin":
+              pred = notification.event.title;
+              var time = ((new Date(notification.event.locks_at)).getTime() - (new Date(notification.event.started_at)).getTime())/1000;
+              say(notification.event.broadcaster_user_login, `NEW PREDICTION peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time} SECONDS peepoGamble DinkDonk 
+                NEW PREDICTION peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time} SECONDS`, bot);
+              if (time >= 60) {
+                intArray[notification.event.broadcaster_user_login] = setTimeout(function () { 
+                  say(notification.event.broadcaster_user_login, `GET YOUR BETS IN peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time/2} SECONDS peepoGamble DinkDonk 
+                  GET YOUR BETS IN peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time/2} SECONDS`, bot); 
+                  delete intArray[notification.event.broadcaster_user_login];
+                }, time*1000/2);
               }
-            }
-            if (outcome) {
-              var result = outcome.title;
-              var topBetter = outcome.top_predictors[0];
-              say(notification.event.broadcaster_user_login, `Prediction over! The result was '${result}'! ${topBetter.user_name?topBetter.user_name:topBetter.user_login} won ${numberWithCommas(topBetter.channel_points_won)} points!`, bot);
-            } else {
+              break;
+
+            // Post in chat for prediction end.
+            case "channel.prediction.end": 
+              var outcome;
+              for (var i = 0; i < notification.event.outcomes.length; i++) {
+                if (notification.event.winning_outcome_id === notification.event.outcomes[i].id) {
+                  outcome = notification.event.outcomes[i];
+                  break;
+                }
+              }
+              if (outcome) {
+                var result = outcome.title;
+                var topBetter = outcome.top_predictors[0];
+                say(notification.event.broadcaster_user_login, `Prediction over! The result was '${result}'! ${topBetter.user_name?topBetter.user_name:topBetter.user_login} won ${numberWithCommas(topBetter.channel_points_won)} points!`, bot);
+              } else {
+                if (intArray[notification.event.broadcaster_user_login]) {
+                  clearInterval(intArray[notification.event.broadcaster_user_login]);
+                  delete intArray[notification.event.broadcaster_user_login];
+                }
+                say(notification.event.broadcaster_user_login, 'Prediction canceled! Points have been refunded.', bot);
+              }
+              break;
+
+            // Post in chat for prediction lock.
+            case "channel.prediction.lock":
+              pred = notification.event.title;
+              var points = 0;
+              for (var i = 0; i < notification.event.outcomes.length; i++) {
+                points += notification.event.outcomes[i].channel_points?notification.event.outcomes[i].channel_points:0;
+              }
               if (intArray[notification.event.broadcaster_user_login]) {
                 clearInterval(intArray[notification.event.broadcaster_user_login]);
                 delete intArray[notification.event.broadcaster_user_login];
               }
-              say(notification.event.broadcaster_user_login, 'Prediction canceled! Points have been refunded.', bot);
-            }
-            break;
+              say(notification.event.broadcaster_user_login, `Prediction locked! There are ${numberWithCommas(points)} points on the line for '${pred}'`, bot);
+              break;
 
-          // Post in chat for prediction lock.
-          case "channel.prediction.lock":
-            pred = notification.event.title;
-            var points = 0;
-            for (var i = 0; i < notification.event.outcomes.length; i++) {
-              points += notification.event.outcomes[i].channel_points?notification.event.outcomes[i].channel_points:0;
-            }
-            if (intArray[notification.event.broadcaster_user_login]) {
-              clearInterval(intArray[notification.event.broadcaster_user_login]);
-              delete intArray[notification.event.broadcaster_user_login];
-            }
-            say(notification.event.broadcaster_user_login, `Prediction locked! There are ${numberWithCommas(points)} points on the line for '${pred}'`, bot);
-            break;
+            // Update local cache and DB that channel is online.
+            case "stream.online":
+              userIds[notification.event.broadcaster_user_login].online = true;
+              helper.dbQuery(`UPDATE allusers SET online = true::bool WHERE user_id = '${notification.event.broadcaster_user_login}';`);
+              if (online[notification.event.broadcaster_user_login]) delete online[notification.event.broadcaster_user_login];
+              if (notification.event.broadcaster_user_login === 'huskerrs') {
+                axios.get('https://api.twitch.tv/helix/channels?broadcasterlogin=huskerrs', {
+                  headers: {
+                    "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
+                    "Client-Id": process.env.CLIENT_ID + ''
+                  }
+                })
+                .then(res => {
+                  let data = res.data.data;
 
-          // Update local cache and DB that channel is online.
-          case "stream.online":
-            userIds[notification.event.broadcaster_user_login].online = true;
-            helper.dbQuery(`UPDATE allusers SET online = true::bool WHERE user_id = '${notification.event.broadcaster_user_login}';`);
-            if (online[notification.event.broadcaster_user_login]) delete online[notification.event.broadcaster_user_login];
-            break;
+                  // @ts-ignore
+                  helper.discord.channels.cache.get('1016735961138335804').send(":twitch: Hey @everyone the main man is LIVE!!! click on the link and don't miss out on those amazing moments. :HuskLogo:");
+                  // @ts-ignore
+                  helper.discord.channels.cache.get('1016735961138335804').send({ embeds: [{
+                    color: 3447003,
+                    thumbnail: {
+                      url: "https://www.zhekbot.com/images/HusKerrs-logo.png"
+                    },
+                    image: {
+                      url: "https://www.zhekbot.com/images/HusKerrs-logo.png"
+                    },
+                    title: data[0].title,
+                    url: "https://twitch.tv/huskerrs",
+                    timestamp: new Date(),
+                  }]});
+                })
+              }
+              break;
 
-          // Update local cache and DB that channel is offline.
-          case "stream.offline":
-            userIds[notification.event.broadcaster_user_login].online = false;
-            helper.dbQuery(`UPDATE allusers SET online = false::bool WHERE user_id = '${notification.event.broadcaster_user_login}';`);
-            break;
+            // Update local cache and DB that channel is offline.
+            case "stream.offline":
+              userIds[notification.event.broadcaster_user_login].online = false;
+              helper.dbQuery(`UPDATE allusers SET online = false::bool WHERE user_id = '${notification.event.broadcaster_user_login}';`);
+              break;
 
-          default: 
-            console.log(`Unknown event: ${notification.subscription.type}`);
-            break;
+            default: 
+              console.log(`Unknown event: ${notification.subscription.type}`);
+              break;
+          }
+          res.setHeader('Content-Type', 'text/html').sendStatus(204);
+
+        } else if (MESSAGE_TYPE_VERIFICATION === req.headers[MESSAGE_TYPE]) {
+
+          res.setHeader('Content-Type', 'text/html').status(200).send(notification.challenge);
+
+        } else if (MESSAGE_TYPE_REVOCATION === req.headers[MESSAGE_TYPE]) {
+
+          res.setHeader('Content-Type', 'text/html').sendStatus(204);
+
+          console.log(`${notification.subscription.type} notifications revoked!`);
+          console.log(`reason: ${notification.subscription.status}`);
+          console.log(`condition: ${JSON.stringify(notification.subscription.condition, null, 4)}`);
+
+        } else {
+
+          res.setHeader('Content-Type', 'text/html').sendStatus(204);
+          console.log(`Unknown message type: ${req.headers[MESSAGE_TYPE]}`);
+          
         }
-        res.setHeader('Content-Type', 'text/html').sendStatus(204);
-
-      } else if (MESSAGE_TYPE_VERIFICATION === req.headers[MESSAGE_TYPE]) {
-
-        res.setHeader('Content-Type', 'text/html').status(200).send(notification.challenge);
-
-      } else if (MESSAGE_TYPE_REVOCATION === req.headers[MESSAGE_TYPE]) {
-
-        res.setHeader('Content-Type', 'text/html').sendStatus(204);
-
-        console.log(`${notification.subscription.type} notifications revoked!`);
-        console.log(`reason: ${notification.subscription.status}`);
-        console.log(`condition: ${JSON.stringify(notification.subscription.condition, null, 4)}`);
-
-      } else {
-
-        res.setHeader('Content-Type', 'text/html').sendStatus(204);
-        console.log(`Unknown message type: ${req.headers[MESSAGE_TYPE]}`);
-        
       }
     }
-  }
-  else {
-    console.log('403');    // Signatures didn't match.
-    console.log(message, hmac, req.headers[TWITCH_MESSAGE_SIGNATURE]);
-    res.setHeader('Content-Type', 'text/html').sendStatus(403);
+    else {
+      console.log('403');    // Signatures didn't match.
+      console.log(message, hmac, req.headers[TWITCH_MESSAGE_SIGNATURE]);
+      res.setHeader('Content-Type', 'text/html').sendStatus(403);
+    }
+  } catch (err) {
+    helper.dumpError(err, "Event subscriptions.");
   }
 })
 
