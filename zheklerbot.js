@@ -4056,7 +4056,7 @@ app.post('/eventsub', async (req, res) => {
               helper.dbQuery(`UPDATE allusers SET online = true::bool WHERE user_id = '${notification.event.broadcaster_user_login}';`);
               if (online[notification.event.broadcaster_user_login]) delete online[notification.event.broadcaster_user_login];
               if (notification.event.broadcaster_user_login === 'huskerrs') {
-                axios.get('https://api.twitch.tv/helix/channels?broadcasterlogin=huskerrs', {
+                axios.get('https://api.twitch.tv/helix/channels?broadcaster_id=30079255', {
                   headers: {
                     "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
                     "Client-Id": process.env.CLIENT_ID + ''
@@ -4080,6 +4080,9 @@ app.post('/eventsub', async (req, res) => {
                     url: "https://twitch.tv/huskerrs",
                     timestamp: new Date(),
                   }]});
+                })
+                .catch(err => {
+                  helper.dumpError(err, "HusK notis.");
                 })
               }
               break;
