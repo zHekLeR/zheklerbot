@@ -1108,7 +1108,7 @@ bot.on('submysterygift', (channel, username, numbOfSubs, userstate, methods) => 
   subs[username] = numbOfSubs;
 
   console.log('submysterygift ' + username + ' ' + numbOfSubs);
-  say(channel, `${username} Thank you for the ${numbOfSubs > 1?''+ numbOfSubs + 'gifted subs':'gifted sub'}! huskHype huskLove`, bot);
+  say(channel, `${username} Thank you for the ${numbOfSubs > 1?''+ numbOfSubs + ' gifted subs':'gifted sub'}! huskHype huskLove`, bot);
 });
 
 
@@ -1118,7 +1118,7 @@ bot.on('anonsubmysterygift', (channel, numbOfSubs, userstate, methods) => {
   subs["anon"] = numbOfSubs;
 
   console.log('submysterygift ' + numbOfSubs);
-  say(channel, `Anonymous, thank you for the ${numbOfSubs > 1?''+ numbOfSubs + 'gifted subs':'gifted sub'}! huskHype huskLove`, bot);
+  say(channel, `Anonymous, thank you for the ${numbOfSubs > 1?''+ numbOfSubs + ' gifted subs':'gifted sub'}! huskHype huskLove`, bot);
 });
 
 
