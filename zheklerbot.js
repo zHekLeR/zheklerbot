@@ -2668,7 +2668,7 @@ app.get('/twovtwo/:channel', async (request, response) => {
           "Authorization": `OAuth ${bearer[1].tw_token}`
         }
       }).catch(async err => {
-        if (err.toString().includes('401')) {
+        if (err.data.status === 401) {
           var tokens = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = '${bearer[1].userid}';`);
           if (!tokens) {
             console.log("No tokens returned - 2v2 refresh.");
@@ -2728,6 +2728,9 @@ app.get('/twovtwo/:channel', async (request, response) => {
         timeout: DateTime.now().plus({ minutes: 30 }).toMillis,
       };
       await scoreBots[bearer[1].userid].scoreBot.connect()
+      .then(res => {
+        page = page.replace(/#mescore#/g, `You are currently updating scores through your account. If you'd like to stop (and use zHekBot), click <a onclick="nomoscore()">here</a>`);        
+      })
       .catch(err => {
         helper.dumpError(err, "Bot connect.");
         console.log(bearer);
@@ -2735,10 +2738,7 @@ app.get('/twovtwo/:channel', async (request, response) => {
         console.log(newToken);
         page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
         page = page.replace(/#mescore#/g, 'If you would like the scores to be updated through your account, click <a onclick="mescore()">here</a>');
-        response.send(page);
-        return;
       });
-      page = page.replace(/#mescore#/g, `You are currently updating scores through your account. If you'd like to stop (and use zHekBot), click <a onclick="nomoscore()">here</a>`)
     } else {
       page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
       page = page.replace(/#mescore#/g, 'If you would like the scores to be updated through your account, click <a onclick="mescore()">here</a>');
