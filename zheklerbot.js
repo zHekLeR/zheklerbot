@@ -2669,7 +2669,7 @@ app.get('/twovtwo/:channel', async (request, response) => {
         }
       })
       .then(res => {
-        console.log(res);
+        console.log(res.data);
       })
       .catch(async err => {
         if (err.response.data.status === 401) {
