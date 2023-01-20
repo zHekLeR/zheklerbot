@@ -2668,7 +2668,7 @@ app.get('/twovtwo/:channel', async (request, response) => {
           "Authorization": `OAuth ${bearer[1].tw_token}`
         }
       }).catch(async err => {
-        if (err.data.status === 401) {
+        if (err.response.data.status === 401) {
           var tokens = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = '${bearer[1].userid}';`);
           if (!tokens) {
             console.log("No tokens returned - 2v2 refresh.");
