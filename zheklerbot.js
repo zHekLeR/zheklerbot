@@ -2669,17 +2669,18 @@ app.get('/twovtwo/:channel', async (request, response) => {
         }
       }).catch(async err => {
         if (err.toString().includes('401')) {
-          var tokens = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = '${bearer[1].userid}';`)[0];
+          var tokens = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = '${bearer[1].userid}';`);
           if (!tokens) {
             console.log("No tokens returned - 2v2 refresh.");
             console.log(bearer[1]);
+            console.log(tokens);
             page = page.replace(/#mescore#/g, 'If you would like the scores to be updated through your account, click <a onclick="mescore()">here</a>');
             response.send(page);
             return;
           } else {
 
             axios.post('https://id.twitch.tv/oauth2/token', 
-              `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&grant_type=refresh_token&refresh_token=${tokens.refresh_token}`,
+              `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&grant_type=refresh_token&refresh_token=${tokens[0].refresh_token}`,
               {
                 headers: {
                   "Content-Type": "application/x-www-form-urlencoded"
