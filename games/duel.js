@@ -50,7 +50,7 @@ async function coward(pOne, stream) {
         let res = await helper.dbQueryPromise(`SELECT * FROM duelduel WHERE oppid = '${pOne}' AND stream = '${stream}';`);
         if (res.length) {
           helper.dbQuery(`UPDATE duelduel SET oppid = ' ', expiration = 2147483647 WHERE oppid = '${pOne}' AND stream = '${stream}';`);
-          return `/announce ${pOne} has rejected the duel KEKWiggle`;
+          return `${pOne} has rejected the duel. L`;
         } 
     } catch (err) {
         helper.dumpError(err, "Duel coward.");

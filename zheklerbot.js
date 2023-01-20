@@ -2670,31 +2670,36 @@ app.get('/twovtwo/:channel', async (request, response) => {
       }).catch(async err => {
         if (err.toString().includes('401')) {
           var tokens = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = '${bearer[1].userid}';`)[0];
-          if (!tokens) throw new Error("No tokens returned - 2v2 refresh.");
+          if (!tokens) {
+            console.log("No tokens returned - 2v2 refresh.");
+            page = page.replace(/#mescore#/g, 'If you would like the scores to be updated through your account, click <a onclick="mescore()">here</a>');
+          } else {
 
-          axios.post('https://id.twitch.tv/oauth2/token', 
-            `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&grant_type=refresh_token&refresh_token=${tokens.refresh_token}`,
-            {
-              headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
+            axios.post('https://id.twitch.tv/oauth2/token', 
+              `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&grant_type=refresh_token&refresh_token=${tokens.refresh_token}`,
+              {
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded"
+                }
               }
-            }
-          )
-          .then(res => {
-            var data = res.data;
+            )
+            .then(res => {
+              var data = res.data;
 
-            helper.dbQuery(`UPDATE permissions SET tw_token = '${data.access_token}' WHERE userid = '${bearer[1].userid}';`);
-            helper.dbQuery(`UPDATE access_tokens SET access_token = '${data.access_token}', refresh_token = '${data.refresh_token}' WHERE userid = '${bearer[1].userid}';`);
+              helper.dbQuery(`UPDATE permissions SET tw_token = '${data.access_token}' WHERE userid = '${bearer[1].userid}';`);
+              helper.dbQuery(`UPDATE access_tokens SET access_token = '${data.access_token}', refresh_token = '${data.refresh_token}' WHERE userid = '${bearer[1].userid}';`);
 
-            newToken = data.access_token;
-            valid = false;
-          })
-          .catch(err => {
-            helper.dbQuery(`UPDATE permissions SET tw_token = '' WHERE userid = '${bearer[1].userid}';`);
+              newToken = data.access_token;
+              valid = false;
+            })
+            .catch(err => {
+              helper.dbQuery(`UPDATE permissions SET tw_token = '' WHERE userid = '${bearer[1].userid}';`);
 
-            helper.dumpError(err, "2v2 refresh token.");
-            response.redirect('/');
-          })
+              helper.dumpError(err, "2v2 refresh token.");
+              response.redirect('/');
+            });
+
+          }
         } else {
           helper.dbQuery(`UPDATE permissions SET tw_token = '' WHERE userid = '${bearer[1].userid}';`);
 
