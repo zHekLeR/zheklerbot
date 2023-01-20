@@ -2672,7 +2672,10 @@ app.get('/twovtwo/:channel', async (request, response) => {
           var tokens = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = '${bearer[1].userid}';`)[0];
           if (!tokens) {
             console.log("No tokens returned - 2v2 refresh.");
+            console.log(bearer[1]);
             page = page.replace(/#mescore#/g, 'If you would like the scores to be updated through your account, click <a onclick="mescore()">here</a>');
+            response.send(page);
+            return;
           } else {
 
             axios.post('https://id.twitch.tv/oauth2/token', 
