@@ -2674,6 +2674,7 @@ app.get('/twovtwo/:channel', async (request, response) => {
             console.log("No tokens returned - 2v2 refresh.");
             console.log(bearer[1]);
             console.log(tokens);
+            page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
             page = page.replace(/#mescore#/g, 'If you would like the scores to be updated through your account, click <a onclick="mescore()">here</a>');
             response.send(page);
             return;
@@ -2726,7 +2727,17 @@ app.get('/twovtwo/:channel', async (request, response) => {
         }),
         timeout: DateTime.now().plus({ minutes: 30 }).toMillis,
       };
-      await scoreBots[bearer[1].userid].scoreBot.connect();
+      await scoreBots[bearer[1].userid].scoreBot.connect()
+      .catch(err => {
+        helper.dumpError(err, "Bot connect.");
+        console.log(bearer);
+        console.log(valid);
+        console.log(newToken);
+        page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
+        page = page.replace(/#mescore#/g, 'If you would like the scores to be updated through your account, click <a onclick="mescore()">here</a>');
+        response.send(page);
+        return;
+      });
       page = page.replace(/#mescore#/g, `You are currently updating scores through your account. If you'd like to stop (and use zHekBot), click <a onclick="nomoscore()">here</a>`)
     } else {
       page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
@@ -2736,7 +2747,7 @@ app.get('/twovtwo/:channel', async (request, response) => {
     response.send(page);
   } catch (err) {
     helper.dumpError(err, `2v2 overall.`);
-    response.send(err.message);
+    response.send(err);
   }
 });
 
