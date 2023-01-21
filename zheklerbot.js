@@ -1692,8 +1692,9 @@ app.get('/leaderboards/:channel', async (request, response) => {
       page = fs.readFileSync("./html/leaderboards.html").toString('utf-8');
       page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
 
-      // Check what permissions this user. Set up page.
+      // Check what permissions this user has. Set up page.
       var cookies = await request.cookies;
+      console.log(cookies);
       if (cookies["auth"]) {
         var bearer = await helper.checkBearer(cookies["auth"]);
 
@@ -4305,6 +4306,7 @@ async function brookescribers() {
         }
       })
       .catch(err => {
+        if (err.toString().includes('401')) regenerate();
         helper.dumpError(err, `Brookescribers get user.`);
       });
   } catch (err) {
