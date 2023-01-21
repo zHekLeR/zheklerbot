@@ -1716,7 +1716,7 @@ app.get('/leaderboards/:channel', async (request, response) => {
         page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
         page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
         page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
-        page = page.replace(/#channel#/g, 'zhekler');
+        page = page.replace(/#channel#/g, request.params.channel);
         page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
       }
   
