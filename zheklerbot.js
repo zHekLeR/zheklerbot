@@ -4218,12 +4218,13 @@ function regenerate() {
       account_config[k] = resp.data[k];
     }
 
-    symAxios.defaults.headers.common["Authorization"] = "Bearer " + resp.data.access_token;
+
+    symAxios.defaults.headers["Authorization"] = "Bearer " + resp.data.access_token;
     console.log(symAxios.defaults);
 
     if (intervals["access_token"]) clearInterval(intervals["access_token"]);
-    intervals["access_token"] = setInterval(function() {
-      symAxios.get('https://id.twitch.tv/oauth2/validate', 
+    intervals["access_token"] = setInterval(async function() {
+      await symAxios.get('https://id.twitch.tv/oauth2/validate', 
       {
         headers: {
           "Client-Id": process.env.CLIENT_ID || '',
@@ -4231,7 +4232,6 @@ function regenerate() {
           "Content-Type": "application/x-www-form-urlencoded"
         }
       }).then(resp => {
-          console.log(JSON.stringify(resp.data));
           if (resp.status && `${resp.status}`.includes('40')) {
             regenerate();
           }
