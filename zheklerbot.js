@@ -4218,7 +4218,7 @@ function regenerate() {
       account_config[k] = resp.data[k];
     }
 
-    symAxios.defaults.headers.common["Authorization"] = "Bearer " + account_config.access_token;
+    symAxios.defaults.headers.common["Authorization"] = "Bearer " + resp.data.access_token;
     console.log(symAxios.defaults);
 
     if (intervals["access_token"]) clearInterval(intervals["access_token"]);
@@ -4227,7 +4227,7 @@ function regenerate() {
       {
         headers: {
           "Client-Id": process.env.CLIENT_ID || '',
-          "Authorization": "Bearer " + account_config.access_token,
+          "Authorization": "Bearer " + resp.data.access_token,
           "Content-Type": "application/x-www-form-urlencoded"
         }
       }).then(resp => {
