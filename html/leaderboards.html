@@ -392,7 +392,7 @@
                               target="_blank"
                               >
                            <img src="/images/Twitch.png" style="padding: 0vh 0.2vw; display: inline-block; max-width: 12%; height: auto; vertical-align: middle;">
-                           Logout of Twitch
+                           Login to Twitch
                            </a>
                         </div>
                      </div>
@@ -529,7 +529,7 @@
                               >
                            <img src="/images/Twitch.png" style="padding: 0vh 0.2vw; display: inline-block; max-width: 12%; height: auto; vertical-align: middle;">
                            >
-                           Logout of Twitch
+                           Login to Twitch
                            </a>
                         </div>
                      </div>
@@ -2221,18 +2221,26 @@
          getStuff('duels');
          
          async function twitch() {
-         await fetch(`/logout`)
-         .then(res => {
-           if (res.status === 201) {
-             window.location.href = "/";
-           } else {
-             throw new Error("Unknown status code on /login: " + res.status);
-           }
-         })
-         .catch(err => {
-           console.log(err);
-           alert(err);
-         });
+           await fetch(`/login`, {
+             headers: {
+               "state": state
+             }
+           })
+           .then(res => {
+             if (res.status === 200) {
+               window.location.href = url;
+             } else if (res.status === 201) {
+               window.location.href = "/";
+             } else {
+               throw new Error("Unknown status code on /login: " + res.status);
+             }
+           })
+           .catch(err => {
+             console.log(err);
+             alert(err);
+           });
+         
+         };
          
          };
       </script>
