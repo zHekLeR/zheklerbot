@@ -1646,9 +1646,17 @@ app.get('/commands/:channel', async (request, response) => {
         var bearer = await helper.checkBearer(cookies["auth"]);
 
         page = page.replace('Login to Twitch', 'Logout of Twitch');
-        page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
-        page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
-        page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
+
+        if (bearer[0] && bearer[1].perms.split(',').includes(request.params.channel)) {
+          page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
+          page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
+          page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
+        } else {
+          page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
+          page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
+          page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
+        }
+
         page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
 
         if (bearer[0] && bearer[1].userid === request.params.channel) {
@@ -1699,9 +1707,17 @@ app.get('/leaderboards/:channel', async (request, response) => {
         var bearer = await helper.checkBearer(cookies["auth"]);
 
         page = page.replace('Login to Twitch', 'Logout of Twitch');
-        page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
-        page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
-        page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
+
+        if (bearer[0] && bearer[1].perms.split(',').includes(request.params.channel)) {
+          page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
+          page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
+          page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
+        } else {
+          page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
+          page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
+          page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
+        }
+        
         page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
 
         if (bearer[0] && bearer[1].userid === request.params.channel) {
