@@ -2701,7 +2701,7 @@ app.get('/twovtwo/:channel', async (request, response) => {
             return;
           } else {
 
-            axios.post('https://id.twitch.tv/oauth2/token', 
+            await axios.post('https://id.twitch.tv/oauth2/token', 
               `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&grant_type=refresh_token&refresh_token=${tokens[0].refresh_token}`,
               {
                 headers: {
@@ -2711,6 +2711,7 @@ app.get('/twovtwo/:channel', async (request, response) => {
             )
             .then(res => {
               var data = res.data;
+              console.log(data);
 
               helper.dbQuery(`UPDATE permissions SET tw_token = '${data.access_token}' WHERE userid = '${bearer[1].userid}';`);
               helper.dbQuery(`UPDATE access_tokens SET access_token = '${data.access_token}', refresh_token = '${data.refresh_token}' WHERE userid = '${bearer[1].userid}';`);
@@ -3724,7 +3725,7 @@ app.get('/twitch/redirect', async (req, response) => {
 
             if (!scoreBots[user[0].userid]) {
               scoreBots[user[0].userid] = {
-                scoreBot: new tmi.Client({
+                scoreBot: new tmi.client({
                   connection: {
                     reconnect: true,
                     secure: true
