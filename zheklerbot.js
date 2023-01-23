@@ -2680,7 +2680,7 @@ app.get('/twovtwo/:channel', async (request, response) => {
     } else if (bearer[1].tw_token) {
       var valid = true, newToken;
 
-      axios.get('https://id.twitch.tv/oauth2/validate', {
+      await axios.get('https://id.twitch.tv/oauth2/validate', {
         headers: {
           "Authorization": `OAuth ${bearer[1].tw_token}`
         }
