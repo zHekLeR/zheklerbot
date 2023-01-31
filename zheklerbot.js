@@ -131,6 +131,14 @@ var tourneyComs = ["!mc", "!prize", "!status", "!bracket", "!banned", "!format"]
 bot.on('chat', async (channel, tags, message) => {
   try {
 
+    // Spam filter.
+    if (channel.substring(1) === 'huskerrs' && message.match(/[\u2800-\u28FF]/g)) {
+      bot.timeout(channel, tags["user-id"] || tags["username"] || '', 1, 'Spam?')
+      .catch(err => {
+        helper.dumpError('Spam filter.');
+      })
+    }
+
     // Return if not a command.
     if (message.charAt(0) !== '!') return;
     if (pause[channel.substring(1)] && tags["username"] !== 'zhekler') return;
