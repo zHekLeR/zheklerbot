@@ -5289,7 +5289,8 @@
                             if (res.status == 200) {
                                 button.innerHTML = "Enable";
                                 tabsEnabled[evtName] = false;
-                                document.getElementById(module).style = `backgroundColor: ${tabsEnabled[evtName] ? "green" : "darkred"};`;
+                                document.getElementById(module).innerHTML = tabsEnabled[evtName] ? "Enable" : "Disabled";
+                                document.getElementById(module).style.backgroundColor = `${tabsEnabled[evtName] ? "green" : "darkred"};`;
                             } else {
                                 throw new Error(`${res.status == 401 ? "Account is private." : res.status == 404 ? "Account not found." : res.status == 405 ? "Bot is not enabled." : "Unknown error."}`);
                             }
@@ -5312,7 +5313,8 @@
                                 if (res.status == 200) {
                                     button.innerHTML = "Disable";
                                     tabsEnabled[evtName] = true;
-                                    document.getElementById(evtName).style = `backgroundColor: ${tabsEnabled[evtName] ? "green" : "darkred"};`;
+                                document.getElementById(module).innerHTML = tabsEnabled[evtName] ? "Enable" : "Disabled";
+                                    document.getElementById(module).style.backgroundColor = `${tabsEnabled[evtName] ? "green" : "darkred"};`;
                                 } else {
                                     throw new Error(`${res.status == 401 ? "Account is private." : res.status == 404 ? "Account not found." : res.status == 405 ? "Bot is not enabled." : "Unknown error."}`);
                                 }
@@ -5328,8 +5330,8 @@
                             if (res.status == 200) {
                                 button.innerHTML = "Disable";
                                 tabsEnabled[evtName] = true;
-                                document.getElementById(evtName).innerHTML = tabsEnabled[evtName] ? "enabled" : "disabled";
-                                document.getElementById(module).style = `backgroundColor: ${tabsEnabled[evtName] ? "green" : "darkred"};`;
+                                document.getElementById(module).innerHTML = tabsEnabled[evtName] ? "Enable" : "Disabled";
+                                document.getElementById(module).style.backgroundColor = `${tabsEnabled[evtName] ? "green" : "darkred"};`;
                             } else {
                                 throw new Error(`${res.status == 401 ? "Account is private." : res.status == 404 ? "Account not found." : res.status == 405 ? "Bot is not enabled." : "Unknown error."}`);
                             }

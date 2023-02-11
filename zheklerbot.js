@@ -484,9 +484,9 @@ bot.on('chat', async (channel, tags, message) => {
           say(channel.substring(1), `Big Vanish: ${rows.person.user_id} | ${numberWithCommas(rows.time)} seconds`, bot);
           rrcd[tags["username"] || ''] = Date.now() + 15000;
           setTimeout(function() { 
-            bot.unban(channel.substring(1), splits[1])
+            bot.unban(channel.substring(1), rows.person.user_id)
             .catch(err => {
-              console.log(`Untimeout: ${splits[1]}`);
+              console.log(`Untimeout: ${rows.person.user_id}`);
             }) 
           }, 3000);
         }
