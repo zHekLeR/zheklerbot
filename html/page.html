@@ -965,14 +965,7 @@
                               }
                               }
                            </style>
-                           <div>
-                              <h3 id="timeouts" style="text-align: center; padding: 5px;">
-                                 <div>Twitch will disable timeouts/bans through the Twitch IRC as of February 28, 2023.</div>
-                                 <div>You can read more about this <a href="https://discuss.dev.twitch.tv/t/deprecation-of-chat-commands-through-irc/40486" style="text-decoration: underline;">here</a>.</div>
-                                 <div>As such, if you would like to have the chat games such as Revolver Roulette and Duels successfully time users out, you'll need to authorize zHekBot to do these things. If you have any questions, please reach out.</div>
-                                 <div>To enable that, please click <a href="https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=${client_id}&force_verify=true&redirect_uri=https://www.zhekbot.com/redirect&scope=moderator%3Amanage%3Abanned%5Fusers&state=${state}">here</a></div>
-                                 </h3>
-                           </div>
+                           #timeouts#
                            <div class="fluid-engine fe-63b3a2ec9c9da1295f225b29">
                               <div class="fe-block fe-block-yui_3_17_2_1_1672761820259_171094">
                                  <div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-yui_3_17_2_1_1672761820259_171094">
@@ -1750,7 +1743,14 @@
             <path d="M0,0v64h64V0H0z M37.1,47.2c-0.8,0.2-1.1-0.3-1.1-0.8c0-0.5,0-2.3,0-4.4c0-1.5-0.5-2.5-1.1-3 c3.6-0.4,7.3-1.7,7.3-7.9c0-1.7-0.6-3.2-1.6-4.3c0.2-0.4,0.7-2-0.2-4.2c0,0-1.3-0.4-4.4,1.6c-1.3-0.4-2.6-0.5-4-0.5 c-1.4,0-2.7,0.2-4,0.5c-3.1-2.1-4.4-1.6-4.4-1.6c-0.9,2.2-0.3,3.8-0.2,4.2c-1,1.1-1.6,2.5-1.6,4.3c0,6.1,3.7,7.5,7.3,7.9 c-0.5,0.4-0.9,1.1-1,2.1c-0.9,0.4-3.2,1.1-4.7-1.3c0,0-0.8-1.5-2.5-1.6c0,0-1.6,0-0.1,1c0,0,1,0.5,1.8,2.3c0,0,0.9,3.1,5.4,2.1 c0,1.3,0,2.3,0,2.7c0,0.4-0.3,0.9-1.1,0.8C20.6,45.1,16,39.1,16,32c0-8.8,7.2-16,16-16c8.8,0,16,7.2,16,16 C48,39.1,43.4,45.1,37.1,47.2z"/>
          </symbol>
       </svg>
+      <input id="client_id" value="#CLIENT_ID#" type="hidden" />
       <script>
+
+         var hidden = document.getElementById("client_id");
+         var client_id = hidden.value;
+         var state = makeid(20);
+         var url = `https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=${client_id}&force_verify=true&redirect_uri=https://www.zhekbot.com/redirect&scope=moderator%3Amanage%3Abanned%5Fusers&state=${state}`;
+
          var enabled = false, btn = document.getElementById("enable-btn"), btnText = document.getElementById("enable-btn-txt"), zhekEn = document.getElementById("zhek-enabled");
          if (enabled) {
            zhekEn.style.color = "green";
@@ -1789,6 +1789,21 @@
              alert(err.message);
            });
          }
+
+         async function timeout_perms() {
+            await fetch(`/enable/timeouts`)
+            .then(res => {
+               if (res.status === 201) {
+                  window.location.href = url;
+               } else {
+                  throw new Error("Unknown status code on /enable/timeouts.");
+               }
+            })
+            .catch(err => {
+               console.log(err);
+               alert(err);
+            });
+         }
          
          async function twitch() {
            await fetch(`/logout`)
@@ -1805,6 +1820,18 @@
            });
          
          };
+         
+         
+         // Random string.
+         function makeid(length) {
+           var result = '';
+           var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+           var charactersLength = characters.length;
+           for ( var i = 0; i < length; i++ ) {
+             result += characters.charAt(Math.floor(Math.random() * charactersLength));
+           }
+           return result;
+         }
       </script>
    </body>
 </html>

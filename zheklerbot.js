@@ -1417,6 +1417,10 @@ app.use(favicon(path.join(__dirname, 'images/favicon.ico')));
 app.use(express.raw({ type: 'application/json' }));
 
 
+// States.
+var states = [];
+
+
 // Home page.
 app.get('/', async (request, response) => {
   try {
@@ -1448,8 +1452,21 @@ app.get('/', async (request, response) => {
           page = page.replace(/#pref_name#/g, userIds[rows[1].userid].pref_name);
           page = page.replace(/#channel#/g, rows[1].userid);
           page = page.replace(/#checked#/g, userIds[rows[1].userid].twitch?'checked':'');
+          page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
           page = page.replace('Login to Twitch', 'Logout of Twitch');
           if (userIds[rows[1].userid].twitch) page = page.replace('var enabled = false', 'var enabled = true');
+          if (userIds[rows].time_perms) {
+            page = page.replace('#timeouts#', `<div>
+            <h3 id="timeouts" style="text-align: center; padding: 5px;">
+               <div>Twitch will disable timeouts/bans through the Twitch IRC as of February 28, 2023.</div>
+               <div>You can read more about this <a href="https://discuss.dev.twitch.tv/t/deprecation-of-chat-commands-through-irc/40486" style="text-decoration: underline;">here</a>.</div>
+               <div>As such, if you would like to have the chat games such as Revolver Roulette and Duels successfully time users out, you'll need to authorize zHekBot to do these things. If you have any questions, please reach out.</div>
+               <div>To enable that, please click <a onclick="timeout_perms()" style="text-decoration: underline;">here</a></div>
+               </h3>
+         </div>`);
+          } else {
+            page = page.replace('#timeouts#', '');
+          }
 
           response.send(page); 
         } else {
@@ -1501,6 +1518,32 @@ app.get('/', async (request, response) => {
     });
     response.status(500);
     response.redirect('/');
+  }
+});
+
+
+// Endpoint to enable timeout perms.
+app.get('/enable/timeouts', async (request, response) => {
+  try {
+    // Get state that was passed and put a 30 second timer on it.
+    var state = request.get("state") || '';
+    if (!state || state.length != 20) {
+      console.log("Invalid state: " + state);
+      response.sendStatus(500)
+      return;
+    }
+    
+    states[state] = '#timeout#';
+    response.sendStatus(200);
+
+    setTimeout(function() {
+      if (states.indexOf(state) > -1) delete states[state];
+    }, 30000);
+
+    
+  } catch (err) {
+    helper.dumpError(err, 'Enabling timeouts.');
+    response.sendStatus(500);
   }
 });
 
@@ -1655,7 +1698,7 @@ app.get('/commands/:channel', async (request, response) => {
 
         page = page.replace('Login to Twitch', 'Logout of Twitch');
 
-        if (bearer[0] && bearer[1].perms.split(',').includes(request.params.channel)) {
+        if (bearer[0] && bearer[1].perms & bearer[1].perms.split(',').includes(request.params.channel)) {
           page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
           page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
           page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
@@ -2111,10 +2154,6 @@ app.get('/permissions/:channel', async (request, response) => {
     response.sendStatus(500);
   }
 });
-
-
-// States.
-var states = [];
 
 
 // Modules.
