@@ -1455,7 +1455,7 @@ app.get('/', async (request, response) => {
           page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
           page = page.replace('Login to Twitch', 'Logout of Twitch');
           if (userIds[rows[1].userid].twitch) page = page.replace('var enabled = false', 'var enabled = true');
-          if (userIds[rows[1].userid].time_perms) {
+          if (!userIds[rows[1].userid].time_perms) {
             page = page.replace('#timeouts#', `<div>
             <h3 id="timeouts" style="text-align: center; padding: 5px;">
                <div>Twitch will disable timeouts/bans through the Twitch IRC as of February 28, 2023.</div>
@@ -1698,7 +1698,7 @@ app.get('/commands/:channel', async (request, response) => {
 
         page = page.replace('Login to Twitch', 'Logout of Twitch');
 
-        if (bearer[0] && bearer[1].perms & bearer[1].perms.split(',').includes(request.params.channel)) {
+        if (bearer[0] && ((bearer[1].userid === request.params.channel.toLowerCase()) || (bearer[1].perms & bearer[1].perms.split(',').includes(request.params.channel)))) {
           page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
           page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
           page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
@@ -1759,7 +1759,7 @@ app.get('/leaderboards/:channel', async (request, response) => {
 
         page = page.replace('Login to Twitch', 'Logout of Twitch');
 
-        if (bearer[0] && bearer[1].perms.split(',').includes(request.params.channel)) {
+        if (bearer[0] && ((bearer[1].userid === request.params.channel.toLowerCase()) || (bearer[1].perms & bearer[1].perms.split(',').includes(request.params.channel)))) {
           page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
           page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
           page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
