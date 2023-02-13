@@ -1455,7 +1455,7 @@ app.get('/', async (request, response) => {
           page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
           page = page.replace('Login to Twitch', 'Logout of Twitch');
           if (userIds[rows[1].userid].twitch) page = page.replace('var enabled = false', 'var enabled = true');
-          if (userIds[rows].time_perms) {
+          if (userIds[rows[1].userid].time_perms) {
             page = page.replace('#timeouts#', `<div>
             <h3 id="timeouts" style="text-align: center; padding: 5px;">
                <div>Twitch will disable timeouts/bans through the Twitch IRC as of February 28, 2023.</div>
