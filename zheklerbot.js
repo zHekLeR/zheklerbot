@@ -3751,7 +3751,7 @@ async function byeBots() {
 // Redirect to get access token for Twitch. Used for predictions currently, timeouts/bans may be added in the future.
 app.get('/twitch/redirect', async (req, response) => {
   try {
-    var hash = new URL(req.url).hash;
+    var hash = new URL(req.url, req.baseUrl).hash;
     var query = hash.substring(hash.indexOf('?')).split('&');
     var state = query["state"];
     var cookies = req.cookies;
