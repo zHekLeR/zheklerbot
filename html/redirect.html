@@ -1113,7 +1113,7 @@
       <input id="client_id" value="#CLIENT_ID#" type="hidden" />
       <script>
          var pieces = document.location.hash.substring(1).split('&');
-         console.log(pieces);
+         
          fetch('/verify', {
              method: "GET",
              headers: {
@@ -1122,7 +1122,6 @@
              }
          }).then(resp => resp.text())
          .then(res => {
-             console.log(res);
              document.getElementById("data").innerHTML = 'Redirecting in 3 seconds... If it does not redirect automatically click <a href="https://www.zhekbot.com/">here</a>';
              setTimeout(function() { window.location.href = "/"; });
          }).catch(err => {
