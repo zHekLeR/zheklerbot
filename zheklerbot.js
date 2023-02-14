@@ -1461,7 +1461,7 @@ app.get('/', async (request, response) => {
                <div>Twitch will disable timeouts/bans through the Twitch IRC as of February 28, 2023.</div>
                <div>You can read more about this <a href="https://discuss.dev.twitch.tv/t/deprecation-of-chat-commands-through-irc/40486" style="text-decoration: underline;">here</a>.</div>
                <div>As such, if you would like to have the chat games such as Revolver Roulette and Duels successfully time users out, you'll need to authorize zHekBot to do these things. If you have any questions, please reach out.</div>
-               <div>To enable that, please click <a onclick="timeout_perms()" style="text-decoration: underline;">here</a></div>
+               <div>To enable that, please click <a onclick="time_perms()" style="text-decoration: underline;">here</a></div>
                </h3>
          </div>`);
           } else {
@@ -3802,8 +3802,8 @@ app.get('/twitch/redirect', async (req, response) => {
               await scoreBots[user[0].userid].scoreBot.connect();
             }
           } else if (data2.scopes.includes("moderator:manage:banned_users")) { 
-            helper.dbQuery(`UPDATE allusers SET timeout_perms = true::bool WHERE user_id = '${data2.login}';`);
-            userIds[data2.login].timeout_perms = true;
+            helper.dbQuery(`UPDATE allusers SET time_perms = true::bool WHERE user_id = '${data2.login}';`);
+            userIds[data2.login].time_perms = true;
           }
         }).catch(err => {
           helper.dumpError(err, "Twitch redirect validate.");
