@@ -1525,6 +1525,20 @@ app.get('/', async (request, response) => {
 // Endpoint to enable timeout perms.
 app.get('/enable/timeouts', async (request, response) => {
   try {
+    var cookies = request.cookies;
+    if (cookies["auth"]) {
+      let bearer = await helper.checkBearer(cookies["auth"]);
+      if ((!bearer[0])) {
+        response.sendStatus(401);
+        response.redirect('/');
+        return;
+      }
+    } else {
+      response.sendStatus(401);
+      response.redirect('/');
+      return;
+    }
+
     // Get state that was passed and put a 30 second timer on it.
     var state = request.get("state") || '';
     if (!state || state.length != 20) {
@@ -1533,7 +1547,7 @@ app.get('/enable/timeouts', async (request, response) => {
       return;
     }
     
-    states[state] = '#timeout#';
+    states[state] = cookies['auth'];
     response.sendStatus(201);
 
     setTimeout(function() {
