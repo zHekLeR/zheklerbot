@@ -4084,7 +4084,7 @@ app.post('/eventsub', async (req, res) => {
 
           var pred;
 
-          console.log(`Event type: ${notification.subscription.type} for channel ${notification.event.broadcaster_user_login}.`);
+          console.log(`Event type: ${notification.subscription.type} for channel ${notification.event.broadcaster_user_login.toLowerCase()}.`);
 
           switch (notification.subscription.type) {
 
@@ -4092,13 +4092,13 @@ app.post('/eventsub', async (req, res) => {
             case "channel.prediction.begin":
               pred = notification.event.title;
               var time = ((new Date(notification.event.locks_at)).getTime() - (new Date(notification.event.started_at)).getTime())/1000;
-              say(notification.event.broadcaster_user_login, `NEW PREDICTION peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time} SECONDS peepoGamble DinkDonk 
+              say(notification.event.broadcaster_user_login.toLowerCase(), `NEW PREDICTION peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time} SECONDS peepoGamble DinkDonk 
                 NEW PREDICTION peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time} SECONDS`, bot);
               if (time >= 60) {
-                intArray[notification.event.broadcaster_user_login] = setTimeout(function () { 
-                  say(notification.event.broadcaster_user_login, `GET YOUR BETS IN peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time/2} SECONDS peepoGamble DinkDonk 
+                intArray[notification.event.broadcaster_user_login.toLowerCase()] = setTimeout(function () { 
+                  say(notification.event.broadcaster_user_login.toLowerCase(), `GET YOUR BETS IN peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time/2} SECONDS peepoGamble DinkDonk 
                   GET YOUR BETS IN peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time/2} SECONDS`, bot); 
-                  delete intArray[notification.event.broadcaster_user_login];
+                  delete intArray[notification.event.broadcaster_user_login.toLowerCase()];
                 }, time*1000/2);
               }
               break;
@@ -4115,13 +4115,13 @@ app.post('/eventsub', async (req, res) => {
               if (outcome) {
                 var result = outcome.title;
                 var topBetter = outcome.top_predictors[0];
-                say(notification.event.broadcaster_user_login, `Prediction over! The result was '${result}'! ${topBetter.user_name?topBetter.user_name:topBetter.user_login} won ${numberWithCommas(topBetter.channel_points_won)} points!`, bot);
+                say(notification.event.broadcaster_user_login.toLowerCase(), `Prediction over! The result was '${result}'! ${topBetter.user_name?topBetter.user_name:topBetter.user_login} won ${numberWithCommas(topBetter.channel_points_won)} points!`, bot);
               } else {
-                if (intArray[notification.event.broadcaster_user_login]) {
-                  clearInterval(intArray[notification.event.broadcaster_user_login]);
-                  delete intArray[notification.event.broadcaster_user_login];
+                if (intArray[notification.event.broadcaster_user_login.toLowerCase()]) {
+                  clearInterval(intArray[notification.event.broadcaster_user_login.toLowerCase()]);
+                  delete intArray[notification.event.broadcaster_user_login.toLowerCase()];
                 }
-                say(notification.event.broadcaster_user_login, 'Prediction canceled! Points have been refunded.', bot);
+                say(notification.event.broadcaster_user_login.toLowerCase(), 'Prediction canceled! Points have been refunded.', bot);
               }
               break;
 
@@ -4132,19 +4132,19 @@ app.post('/eventsub', async (req, res) => {
               for (var i = 0; i < notification.event.outcomes.length; i++) {
                 points += notification.event.outcomes[i].channel_points?notification.event.outcomes[i].channel_points:0;
               }
-              if (intArray[notification.event.broadcaster_user_login]) {
-                clearInterval(intArray[notification.event.broadcaster_user_login]);
-                delete intArray[notification.event.broadcaster_user_login];
+              if (intArray[notification.event.broadcaster_user_login.toLowerCase()]) {
+                clearInterval(intArray[notification.event.broadcaster_user_login.toLowerCase()]);
+                delete intArray[notification.event.broadcaster_user_login.toLowerCase()];
               }
-              say(notification.event.broadcaster_user_login, `Prediction locked! There are ${numberWithCommas(points)} points on the line for '${pred}'`, bot);
+              say(notification.event.broadcaster_user_login.toLowerCase(), `Prediction locked! There are ${numberWithCommas(points)} points on the line for '${pred}'`, bot);
               break;
 
             // Update local cache and DB that channel is online.
             case "stream.online":
-              userIds[notification.event.broadcaster_user_login].online = true;
-              helper.dbQuery(`UPDATE allusers SET online = true::bool WHERE user_id = '${notification.event.broadcaster_user_login}';`);
-              if (online[notification.event.broadcaster_user_login]) delete online[notification.event.broadcaster_user_login];
-              if (notification.event.broadcaster_user_login === 'huskerrs') {
+              userIds[notification.event.broadcaster_user_login.toLowerCase()].online = true;
+              helper.dbQuery(`UPDATE allusers SET online = true::bool WHERE user_id = '${notification.event.broadcaster_user_login.toLowerCase()}';`);
+              if (online[notification.event.broadcaster_user_login.toLowerCase()]) delete online[notification.event.broadcaster_user_login.toLowerCase()];
+              if (notification.event.broadcaster_user_login.toLowerCase() === 'huskerrs') {
                 axios.get('https://api.twitch.tv/helix/channels?broadcaster_id=30079255', {
                   headers: {
                     "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
@@ -4178,8 +4178,8 @@ app.post('/eventsub', async (req, res) => {
 
             // Update local cache and DB that channel is offline.
             case "stream.offline":
-              userIds[notification.event.broadcaster_user_login].online = false;
-              helper.dbQuery(`UPDATE allusers SET online = false::bool WHERE user_id = '${notification.event.broadcaster_user_login}';`);
+              userIds[notification.event.broadcaster_user_login.toLowerCase()].online = false;
+              helper.dbQuery(`UPDATE allusers SET online = false::bool WHERE user_id = '${notification.event.broadcaster_user_login.toLowerCase()}';`);
               break;
 
             default: 
