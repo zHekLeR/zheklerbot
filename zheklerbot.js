@@ -3777,7 +3777,7 @@ app.get('/twitch/redirect', async (req, response) => {
 
           helper.dbQuery(`INSERT INTO access_tokens(userid, access_token, refresh_token, scope) 
             VALUES ('${data2.login}', '${data.access_token}', '${data.refresh_token}', '${data2.scopes.join(', ')}')
-            ON CONFLICT (userid) DO UPDATE SET access_token = '${data.access_token}', refresh_token = '${data.refresh_token}', scope = '${data2.scopes.join(', ')}';`);
+            ON CONFLICT (userid, scope) DO UPDATE SET access_token = '${data.access_token}', refresh_token = '${data.refresh_token}', scope = '${data2.scopes.join(', ')}';`);
           
           if (data2.scopes.includes("chat:edit") || data2.scopes.includes("chat:read")) {
             var user = await helper.dbQueryPromise(`UPDATE permissions SET tw_token = '${data.access_token}' WHERE userid = '${data2.login}' RETURNING *;`);
