@@ -1790,7 +1790,11 @@
            });
          }
 
-         async function timeout_perms() {
+         function updates() {
+            window.open('https://discuss.dev.twitch.tv/t/deprecation-of-chat-commands-through-irc/40486');
+         }
+
+         async function time_perms() {
             await fetch(`/enable/timeouts`, {
                headers: {
                   'state': state

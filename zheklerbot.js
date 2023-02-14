@@ -1459,7 +1459,7 @@ app.get('/', async (request, response) => {
             page = page.replace('#timeouts#', `<div>
             <h3 id="timeouts" style="text-align: center; padding: 5px;">
                <div>Twitch will disable timeouts/bans through the Twitch IRC as of February 28, 2023.</div>
-               <div>You can read more about this <a href="https://discuss.dev.twitch.tv/t/deprecation-of-chat-commands-through-irc/40486" style="text-decoration: underline;">here</a>.</div>
+               <div>You can read more about this <a onclick="updates()" style="text-decoration: underline;">here</a>.</div>
                <div>As such, if you would like to have the chat games such as Revolver Roulette and Duels successfully time users out, you'll need to authorize zHekBot to do these things. If you have any questions, please reach out.</div>
                <div>To enable that, please click <a onclick="time_perms()" style="text-decoration: underline;">here</a></div>
                </h3>
