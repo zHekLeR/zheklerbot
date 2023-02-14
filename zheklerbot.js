@@ -3754,11 +3754,8 @@ app.get('/twitch/redirect', async (req, response) => {
     var query = url.parse(req.url, true).query;
     var state = query["state"];
     var cookies = req.cookies;
-    console.log(query);
-    console.log(state);
-    console.log(cookies);
 
-    if (state && states[cookies['auth']] === state) {
+    if (state && states[state.toString()] === cookies['auth']) {
       var code = query["code"];
 
       await axios.post(`https://id.twitch.tv/oauth2/token`,

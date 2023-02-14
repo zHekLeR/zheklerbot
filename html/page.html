@@ -1749,7 +1749,7 @@
          var hidden = document.getElementById("client_id");
          var client_id = hidden.value;
          var state = makeid(20);
-         var url = `https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=${client_id}&redirect_uri=https://www.zhekbot.com/twitch/redirect&scope=moderator%3Amanage%3Abanned%5Fusers&state=${state}`;
+         var url = `https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=${client_id}&force_verify=true&redirect_uri=https://www.zhekbot.com/twitch/redirect&scope=moderator%3Amanage%3Abanned%5Fusers&state=${state}`;
 
          var enabled = false, btn = document.getElementById("enable-btn"), btnText = document.getElementById("enable-btn-txt"), zhekEn = document.getElementById("zhek-enabled");
          if (enabled) {
