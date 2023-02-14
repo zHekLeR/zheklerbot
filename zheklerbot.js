@@ -3754,7 +3754,7 @@ app.get('/twitch/redirect', async (req, response) => {
     var query = url.parse(req.url, true).query;
     var state = query["state"];
     var cookies = req.cookies;
-    console.log(req.url);
+    console.log(req.query);
     console.log(query);
     console.log(state);
     console.log(cookies);
