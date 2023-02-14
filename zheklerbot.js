@@ -3803,6 +3803,7 @@ app.get('/twitch/redirect', async (req, response) => {
             }
           } else if (data2.scopes.includes("moderator:manage:banned_users")) { 
             helper.dbQuery(`UPDATE allusers SET timeout_perms = true::bool WHERE user_id = '${data2.login}';`);
+            userIds[data2.login].timeout_perms = true;
           }
         }).catch(err => {
           helper.dumpError(err, "Twitch redirect validate.");
