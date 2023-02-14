@@ -4197,6 +4197,9 @@ app.post('/eventsub', async (req, res) => {
             case "stream.offline":
               userIds[notification.event.broadcaster_user_login.toLowerCase()].online = false;
               helper.dbQuery(`UPDATE allusers SET online = false::bool WHERE user_id = '${notification.event.broadcaster_user_login.toLowerCase()}';`);
+              if (notification.event.broadcaster_user_login === 'huskerrs') {
+                for (let i = 0; i < 3; i++) say('huskerrs', '@HusKerrs do an intro for YT vid', bot);
+              }
               break;
 
             default: 
