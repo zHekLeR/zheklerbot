@@ -1534,7 +1534,7 @@ app.get('/enable/timeouts', async (request, response) => {
     }
     
     states[state] = '#timeout#';
-    response.sendStatus(200);
+    response.sendStatus(201);
 
     setTimeout(function() {
       if (states.indexOf(state) > -1) delete states[state];

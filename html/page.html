@@ -1791,7 +1791,11 @@
          }
 
          async function timeout_perms() {
-            await fetch(`/enable/timeouts`)
+            await fetch(`/enable/timeouts`, {
+               headers: {
+                  'state': state
+               }
+            })
             .then(res => {
                if (res.status === 201) {
                   window.location.href = url;
