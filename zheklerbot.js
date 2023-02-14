@@ -3787,6 +3787,8 @@ app.get('/twitch/redirect', async (req, response) => {
               };
               await scoreBots[user[0].userid].scoreBot.connect();
             }
+          } else if (data2.scopes.includes("channel:manage:banned_users")) { 
+            helper.dbQuery(`UPDATE allusers SET timeout_perms = true::bool WHERE user_id = '${data2.login}';`);
           }
         }).catch(err => {
           helper.dumpError(err, "Twitch redirect validate.");
