@@ -113,6 +113,54 @@ function say(channel, message, chatBot) {
   });
 };
 
+
+/**
+ * @param {string} channel
+ * @param {string} user
+ * @param {number} duration
+ * @param {string} reason
+ */
+async function timeout(channel, user, duration, reason) {
+  if (userIds[channel] || !user) return;
+
+  let user_id = await getUser(user);
+  if (!user_id) return;
+
+  axios.post(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140`, 
+  `{"data": {"user_id":"${user}"${duration?',"duration":'+duration:''}${reason?',"reason":"' + reason + '"':''}}}}`, 
+  {
+    headers: {
+      "Client-Id": process.env.CLIENT_ID + '',
+      "Content-Type": "application/json"
+    }
+  }).then(res => {
+    if (res.status !== 200) throw new Error("Unknown status code: " + res.status);
+  }).catch(err => {
+    helper.dumpError(err, `Twitch timeout: ${channel} ${user} ${duration} ${reason}`);
+  });
+}
+
+
+/**
+ * @param {string} username
+ */
+async function getUser(username) {
+  let user_id;
+  await axios.post(`https://api.twitch.tv/helix/users?login=${username}`,
+    {
+      "Authorization": `Bearer ${process.env.ACCESS_TOKEN}`,
+      "Client-Id": process.env.CLIENT_ID + ''
+    }
+  ).then(res => {
+    user_id = res.data.data.id;
+  }).catch(err => {
+    helper.dumpError(err, "Get User." + username);
+  });
+  
+  return user_id;
+}
+
+
 // Two vs Two arrays.
 var tvtUpdate = {};
 
@@ -878,6 +926,11 @@ bot.on('chat', async (channel, tags, message) => {
         })
         break;
 
+      case '!test':
+        if (channel.substring(1) !== 'huskerrs' || tags["username"] !== 'zhekler') return;
+        timeout(channel, 'skitz_f', 1, 'fuck it why not');
+        break;
+
 
       /*####################################################################################################################
         Commands for Duels.
@@ -1470,13 +1523,13 @@ app.get('/', async (request, response) => {
               userIds[rows[1].userid].time_perms = false;
               helper.dbQuery(`UPDATE access_tokens SET time_perms = false::bool WHERE userid = '${rows[1].userid};`);
               page = page.replace('#timeouts#', `<div>
-            <h3 id="timeouts" style="text-align: center; padding: 5px;">
+              <h3 id="timeouts" style="text-align: center; padding: 5px;">
                <div>Twitch will disable timeouts/bans through the Twitch IRC as of February 28, 2023.</div>
                <div>You can read more about this <a onclick="updates()" style="text-decoration: underline;">here</a>.</div>
                <div>As such, if you would like to have the chat games such as Revolver Roulette and Duels successfully time users out, you'll need to authorize zHekBot to do these things. If you have any questions, please reach out.</div>
                <div>To enable that, please click <a onclick="time_perms()" style="text-decoration: underline;">here</a></div>
-               </h3>
-         </div>`);
+              </h3>
+            </div>`);
             } else {
               await axios.get('https://id.twitch.tv/oauth2/validate', {
                 headers: {
@@ -1485,7 +1538,9 @@ app.get('/', async (request, response) => {
               }).then(res => {
                 page = page.replace('#timeouts#', `<div>
                   <h3 id="timeouts" style="text-align: center; padding: 5px;">
-                    
+                    <div>zHekBot is currently allowed to timeout users in your chat.</div>
+                    <div>If you'd like to revoke this, please click <a onclick="revoke()">here</a></div>
+                  </h3>
                 `);
 
               }).catch(async err => {
@@ -1500,6 +1555,12 @@ app.get('/', async (request, response) => {
                 ).then(res => {
                   var data = res.data;
                   helper.dbQuery(`UPDATE access_tokens SET access_token = '${data.access_token}' WHERE refresh_token = '${tokens[0].refresh_token}';`);
+                  page = page.replace('#timeouts#', `<div>
+                    <h3 id="timeouts" style="text-align: center; padding: 5px;">
+                      <div>zHekBot is currently allowed to timeout users in your chat.</div>
+                      <div>If you'd like to revoke this, please click <a onclick="revoke()">here</a></div>
+                    </h3>
+                  `);
                 }).catch(err => {
                   helper.dumpError(err, "Home page time_perms refresh.");
                   userIds[rows[1].userid].time_perms = false;
@@ -1507,6 +1568,7 @@ app.get('/', async (request, response) => {
                   helper.dbQuery(`DELETE FROM access_tokens WHERE userid = '${rows[1].userid}' AND scope = 'moderator:manage:banned_users';`);
                   response.status(500);
                   response.redirect('/');
+                  return;
                 })
                 } else {
                   helper.dumpError(err, "Home page time_perms validate.");
@@ -1515,6 +1577,7 @@ app.get('/', async (request, response) => {
                   helper.dbQuery(`DELETE FROM access_tokens WHERE userid = '${rows[1].userid}' AND scope = 'moderator:manage:banned_users';`);
                   response.status(500);
                   response.redirect('/');
+                  return;
                 }
               })
             }
@@ -1609,6 +1672,48 @@ app.get('/enable/timeouts', async (request, response) => {
     
   } catch (err) {
     helper.dumpError(err, 'Enabling timeouts.');
+    response.sendStatus(500);
+  }
+});
+
+
+// Revoke timeout permissions.
+app.get('/revoke', async (request, response) => {
+  try {
+    var cookies = request.cookies;
+    let bearer;
+    if (cookies["auth"]) {
+      bearer = await helper.checkBearer(cookies["auth"]);
+      if ((!bearer[0])) {
+        response.sendStatus(401);
+        response.redirect('/');
+        return;
+      }
+    } else {
+      response.sendStatus(401);
+      response.redirect('/');
+      return;
+    }
+
+    let perms = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = '${bearer[1].userid}' AND scope = 'moderator:manage:banned_users';`);
+    if (!perms || !perms.length) throw new Error("No access tokens in DB.");
+
+    await axios.post('https://id.twitch.tv/oauth2/revoke', 
+    `client_id=${process.env.CLIENT_ID}&token=${perms[0].access_token}`)
+    .then(res => {
+      if (res.status === 200) {
+        userIds[bearer[1].userid].time_perms = false;
+        helper.dbQuery(`UPDATE allusers SET time_perms = false::bool WHERE user_id = '${bearer[1].userid}';`);
+        helper.dbQuery(`DELETE FROM access_tokens WHERE userid = '${bearer[1].userid}' AND access_token = '${perms[0].access_token}';`);
+        response.redirect('/');
+      } else {
+        throw new Error("Unknown status on revoke token: " + res.status);
+      }
+    }).catch(err => {
+      throw new Error("Could not revoke token.");
+    });
+  } catch (err) {
+    helper.dumpError(err, "Revoke endpoint.");
     response.sendStatus(500);
   }
 });
