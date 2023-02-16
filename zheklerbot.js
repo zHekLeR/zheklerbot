@@ -121,7 +121,7 @@ function say(channel, message, chatBot) {
  * @param {string} reason
  */
 async function timeout(channel, user, duration, reason) {
-  if (userIds[channel] || !user) return;
+  if (!user) return;
 
   let user_id = await getUser(user);
   if (!user_id) return;
