@@ -134,6 +134,7 @@ async function timeout(channel, user, duration, reason) {
       "Content-Type": "application/json"
     }
   }).then(res => {
+    console.log(res.status, res.data);
     if (res.status !== 200) throw new Error("Unknown status code: " + res.status);
   }).catch(err => {
     helper.dumpError(err, `Twitch timeout: ${channel} ${user} ${duration} ${reason}`);
