@@ -146,10 +146,12 @@ async function timeout(channel, user, duration, reason) {
  */
 async function getUser(username) {
   let user_id;
-  await axios.post(`https://api.twitch.tv/helix/users?login=${username}`,
+  await axios.get(`https://api.twitch.tv/helix/users?login=${username}`,
     {
-      "Authorization": `Bearer ${process.env.ACCESS_TOKEN}`,
-      "Client-Id": process.env.CLIENT_ID + ''
+      headers: {
+        "Authorization": `Bearer ${process.env.ACCESS_TOKEN}`,
+        "Client-Id": process.env.CLIENT_ID + ''
+      }
     }
   ).then(res => {
     user_id = res.data.data.id;
