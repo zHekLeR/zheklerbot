@@ -1465,7 +1465,59 @@ app.get('/', async (request, response) => {
                </h3>
          </div>`);
           } else {
-            page = page.replace('#timeouts#', '');
+            let tokens = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = '${rows[1].userid}' AND scope = 'moderator:manage:banned_users';`);
+            if (!tokens || !tokens.length) {
+              userIds[rows[1].userid].time_perms = false;
+              helper.dbQuery(`UPDATE access_tokens SET time_perms = false::bool WHERE userid = '${rows[1].userid};`);
+              page = page.replace('#timeouts#', `<div>
+            <h3 id="timeouts" style="text-align: center; padding: 5px;">
+               <div>Twitch will disable timeouts/bans through the Twitch IRC as of February 28, 2023.</div>
+               <div>You can read more about this <a onclick="updates()" style="text-decoration: underline;">here</a>.</div>
+               <div>As such, if you would like to have the chat games such as Revolver Roulette and Duels successfully time users out, you'll need to authorize zHekBot to do these things. If you have any questions, please reach out.</div>
+               <div>To enable that, please click <a onclick="time_perms()" style="text-decoration: underline;">here</a></div>
+               </h3>
+         </div>`);
+            } else {
+              await axios.get('https://id.twitch.tv/oauth2/validate', {
+                headers: {
+                  "Authorization": "Bearer " + tokens[0].access_token
+                }
+              }).then(res => {
+                page = page.replace('#timeouts#', `<div>
+                  <h3 id="timeouts" style="text-align: center; padding: 5px;">
+                    
+                `);
+
+              }).catch(async err => {
+                if (err.toString().includes('401')) {
+                  await axios.post('https://id.twitch.tv/oauth2/token', 
+                  `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&grant_type=refresh_token&refresh_token=${tokens[0].refresh_token}`,
+                  {
+                    headers: {
+                      "Content-Type": "application/x-www-form-urlencoded"
+                    }
+                  }
+                ).then(res => {
+                  var data = res.data;
+                  helper.dbQuery(`UPDATE access_tokens SET access_token = '${data.access_token}' WHERE refresh_token = '${tokens[0].refresh_token}';`);
+                }).catch(err => {
+                  helper.dumpError(err, "Home page time_perms refresh.");
+                  userIds[rows[1].userid].time_perms = false;
+                  helper.dbQuery(`UPDATE allusers SET time_perms = false::bool WHERE user_id = '${rows[1].userid}';`);
+                  helper.dbQuery(`DELETE FROM access_tokens WHERE userid = '${rows[1].userid}' AND scope = 'moderator:manage:banned_users';`);
+                  response.status(500);
+                  response.redirect('/');
+                })
+                } else {
+                  helper.dumpError(err, "Home page time_perms validate.");
+                  userIds[rows[1].userid].time_perms = false;
+                  helper.dbQuery(`UPDATE allusers SET time_perms = false::bool WHERE user_id = '${rows[1].userid}';`);
+                  helper.dbQuery(`DELETE FROM access_tokens WHERE userid = '${rows[1].userid}' AND scope = 'moderator:manage:banned_users';`);
+                  response.status(500);
+                  response.redirect('/');
+                }
+              })
+            }
           }
 
           response.send(page); 
@@ -2751,7 +2803,7 @@ app.get('/twovtwo/:channel', async (request, response) => {
       })
       .catch(async err => {
         if (err.response.data.status === 401) {
-          var tokens = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = '${bearer[1].userid}';`);
+          var tokens = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = '${bearer[1].userid}' AND scope = 'channel:manage:predictions, channel:read:predictions';`);
           if (!tokens) {
             console.log("No tokens returned - 2v2 refresh.");
             console.log(bearer[1]);
@@ -2775,7 +2827,7 @@ app.get('/twovtwo/:channel', async (request, response) => {
               console.log(data);
 
               helper.dbQuery(`UPDATE permissions SET tw_token = '${data.access_token}' WHERE userid = '${bearer[1].userid}';`);
-              helper.dbQuery(`UPDATE access_tokens SET access_token = '${data.access_token}', refresh_token = '${data.refresh_token}' WHERE userid = '${bearer[1].userid}';`);
+              helper.dbQuery(`UPDATE access_tokens SET access_token = '${data.access_token}', refresh_token = '${data.refresh_token}' WHERE userid = '${bearer[1].userid}' AND scope = 'channel:manage:predictions, channel:read:predictions';`);
 
               newToken = data.access_token;
               valid = false;
