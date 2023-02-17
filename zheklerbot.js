@@ -130,7 +130,7 @@ async function timeout(channel, user, duration, reason) {
     let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = '${channel}' AND scope = 'moderator:manage:banned_users';`);
     if (!rows || !rows[0].access_token) throw new Error("No access token for timeout.");
 
-    await axios.post(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140`, 
+    await axios.post(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=${userIds[channel].broadcaster_id}`, 
     `{
       "data": {
         "user_id":"${user}"
@@ -153,7 +153,7 @@ async function timeout(channel, user, duration, reason) {
         let retry = await refreshToken(rows[0].refresh_token);
 
         if (retry !== '') {
-          axios.post(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140`, 
+          axios.post(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=${userIds[channel].broadcaster_id}`, 
           `{
             "data": {
               "user_id":"${user}"
@@ -211,7 +211,7 @@ async function refreshToken(token) {
         "Content-Type": "application/x-www-form-urlencoded"
       }
     }).then(async res => {
-      await helper.dbQueryPromise(`UPDATE access_tokens SET access_token = '${res.data.access_token}' & refresh_token = '${token}';`);
+      await helper.dbQueryPromise(`UPDATE access_tokens SET access_token = '${res.data.access_token}' AND refresh_token = '${token}';`);
       return res.data.access_token;
     })
   } catch (err) {
