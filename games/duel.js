@@ -66,7 +66,6 @@ async function accept(pOne, stream) {
         if (res.length) {
 
           let rand = Math.round(Math.random());
-          let timeout = await helper.dbQueryPromise(`SELECT timeout FROM allusers WHERE user_id = '${stream}';`);
 
           if (rand) {
 

@@ -150,7 +150,7 @@ async function timeout(channel, user, duration, reason) {
     }).catch(async err => {
       if (err.toString().includes("401")) {
         console.log(err.message?err.message:err);
-        let retry = await refreshToken(rows[0].access_token);
+        let retry = await refreshToken(rows[0].refresh_token);
 
         if (retry !== '') {
           axios.post(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140`, 
