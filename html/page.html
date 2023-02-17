@@ -965,7 +965,6 @@
                               }
                               }
                            </style>
-                           #timeouts#
                            <div class="fluid-engine fe-63b3a2ec9c9da1295f225b29">
                               <div class="fe-block fe-block-yui_3_17_2_1_1672761820259_171094">
                                  <div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-yui_3_17_2_1_1672761820259_171094">
@@ -1790,42 +1789,42 @@
            });
          }
 
-         function updates() {
-            window.open('https://discuss.dev.twitch.tv/t/deprecation-of-chat-commands-through-irc/40486');
-         }
+         // function updates() {
+         //    window.open('https://discuss.dev.twitch.tv/t/deprecation-of-chat-commands-through-irc/40486');
+         // }
 
-         async function time_perms() {
-            await fetch(`/enable/timeouts`, {
-               headers: {
-                  'state': state
-               }
-            })
-            .then(res => {
-               if (res.status === 201) {
-                  window.location.href = url;
-               } else {
-                  throw new Error("Unknown status code on /enable/timeouts.");
-               }
-            })
-            .catch(err => {
-               console.log(err);
-               alert(err);
-            });
-         }
+         // async function time_perms() {
+         //    await fetch(`/enable/timeouts`, {
+         //       headers: {
+         //          'state': state
+         //       }
+         //    })
+         //    .then(res => {
+         //       if (res.status === 201) {
+         //          window.location.href = url;
+         //       } else {
+         //          throw new Error("Unknown status code on /enable/timeouts.");
+         //       }
+         //    })
+         //    .catch(err => {
+         //       console.log(err);
+         //       alert(err);
+         //    });
+         // }
 
 
-         async function revoke() {            
-            await fetch(`/revoke`)
-            .then(res => {
-               if (res.status !== 201) {
-                  throw new Error("Unknown status code on /revoke.");
-               }
-            })
-            .catch(err => {
-               console.log(err);
-               alert(err);
-            });
-         }
+         // async function revoke() {            
+         //    await fetch(`/revoke`)
+         //    .then(res => {
+         //       if (res.status !== 201) {
+         //          throw new Error("Unknown status code on /revoke.");
+         //       }
+         //    })
+         //    .catch(err => {
+         //       console.log(err);
+         //       alert(err);
+         //    });
+         // }
          
          async function twitch() {
            await fetch(`/logout`)
