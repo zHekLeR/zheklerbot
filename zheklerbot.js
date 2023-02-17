@@ -127,6 +127,9 @@ async function timeout(channel, user, duration, reason) {
     let user_id = await getUser(user);
     if (!user_id) return;
 
+    let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = '${channel}';`);
+    if (!rows || !rows[0].access_token) throw new Error("No access token for timeout.");
+
     axios.post(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140`, 
     `{
       "data": {
@@ -138,12 +141,37 @@ async function timeout(channel, user, duration, reason) {
     {
       headers: {
         "Client-Id": process.env.CLIENT_ID + '',
+        "Authorization": "Bearer " + rows[0].access_token,
         "Content-Type": "application/json"
       }
     }).then(res => {
       console.log(res.status, res.data);
       if (res.status !== 200) throw new Error("Unknown status code: " + res.status);
-    }).catch(err => {
+    }).catch(async err => {
+      if (err.toString().includes("401")) {
+        console.log(err.message?err.message:err);
+        let retry = await refreshToken(rows[0].access_token);
+
+        if (retry !== '') {
+          axios.post(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140`, 
+          `{
+            "data": {
+              "user_id":"${user}"
+              ${duration?',"duration":'+duration:''}
+              ${reason?',"reason":"' + reason + '"':''}
+            }
+          }`, 
+          {
+            headers: {
+              "Client-Id": process.env.CLIENT_ID + '',
+              "Authorization": "Bearer " + retry,
+              "Content-Type": "application/json"
+            }
+          }).then(res => {
+            if (res.status !== 200) throw new Error("Unknown status code in timeout: " + res.status);
+          });
+        }
+      }
       helper.dumpError(err, `Twitch timeout: ${channel} ${user} ${duration} ${reason}`);
     });
   } catch (err) {
@@ -171,6 +199,25 @@ async function getUser(username) {
   });
   
   return user_id;
+}
+
+
+async function refreshToken(token) {
+  try {
+    await axios.post('https://id.twitch.tv/oauth2/token', 
+    `grant_type=refresh_token&refresh_token=${token}&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}`,
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    }).then(async res => {
+      await helper.dbQueryPromise(`UPDATE access_tokens SET access_token = '${res.data.access_token}' & refresh_token = '${token}';`);
+      return res.data.access_token;
+    })
+  } catch (err) {
+    helper.dumpError(err, "Refresh timeout token: " + token);
+    return '';
+  }
 }
 
 
