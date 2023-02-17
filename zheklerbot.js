@@ -133,7 +133,7 @@ async function timeout(channel, user, duration, reason) {
     await axios.post(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=${userIds[channel].broadcaster_id}`, 
     `{
       "data": {
-        "user_id":"${user}"
+        "user_id":"${user_id}"
         ${duration?',"duration":'+duration:''}
         ${reason?',"reason":"' + reason + '"':''}
       }
