@@ -990,7 +990,7 @@ bot.on('chat', async (channel, tags, message) => {
 
       case '!test':
         if (channel.substring(1) !== 'huskerrs' || tags["username"] !== 'zhekler' || !splits[1]) return;
-        timeout(channel.substring(1), splits[1], 1, 'fuck it why not');
+        timeout(channel.substring(1), splits[1], 5, 'fuck it why not');
         break;
 
 
