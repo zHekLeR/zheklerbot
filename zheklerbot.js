@@ -155,7 +155,7 @@ async function getUser(username) {
       }
     }
   ).then(res => {
-    user_id = res.data.data.id;
+    user_id = res.data.data[0].id;
   }).catch(err => {
     helper.dumpError(err, "Get User." + username);
   });
