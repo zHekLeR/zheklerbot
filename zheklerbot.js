@@ -121,24 +121,28 @@ function say(channel, message, chatBot) {
  * @param {string} reason
  */
 async function timeout(channel, user, duration, reason) {
-  if (!user) return;
+  try {
+    if (!user) return;
 
-  let user_id = await getUser(user);
-  if (!user_id) return;
+    let user_id = await getUser(user);
+    if (!user_id) return;
 
-  axios.post(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140`, 
-  `{"data": {"user_id":"${user}"${duration?',"duration":'+duration:''}${reason?',"reason":"' + reason + '"':''}}}}`, 
-  {
-    headers: {
-      "Client-Id": process.env.CLIENT_ID + '',
-      "Content-Type": "application/json"
-    }
-  }).then(res => {
-    console.log(res.status, res.data);
-    if (res.status !== 200) throw new Error("Unknown status code: " + res.status);
-  }).catch(err => {
+    axios.post(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140`, 
+    `{"data": {"user_id":"${user}"${duration?',"duration":'+duration:''}${reason?',"reason":"' + reason + '"':''}}}}`, 
+    {
+      headers: {
+        "Client-Id": process.env.CLIENT_ID + '',
+        "Content-Type": "application/json"
+      }
+    }).then(res => {
+      console.log(res.status, res.data);
+      if (res.status !== 200) throw new Error("Unknown status code: " + res.status);
+    }).catch(err => {
+      helper.dumpError(err, `Twitch timeout: ${channel} ${user} ${duration} ${reason}`);
+    });
+  } catch (err) {
     helper.dumpError(err, `Twitch timeout: ${channel} ${user} ${duration} ${reason}`);
-  });
+  }
 }
 
 
