@@ -193,10 +193,12 @@ async function getUser(username) {
       }
     }
   ).then(res => {
+    console.log(res.data);
     user_id = res.data.data[0].id;
   }).catch(err => {
     helper.dumpError(err, "Get User." + username);
   });
+  console.log(user_id);
   
   return user_id;
 }
