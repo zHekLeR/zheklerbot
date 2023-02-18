@@ -2868,8 +2868,7 @@ app.get('/authorizethis', async (request, response) => {
 
     states[state] = cookies["auth"];
 
-    response.cookie("state", state);
-    response.redirect(`https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=${process.env.CLIENT_ID}&force_verify=true&redirect_uri=https://www.zhekbot.com/twitch/redirect&scope=moderator%3Amanage%3Abanned_users&state=${state}`);
+    response.redirect(`https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=${process.env.CLIENT_ID}&force_verify=true&redirect_uri=https://www.zhekbot.com/twitch/redirect&scope=moderator%3Amanage%3Abanned%5Fusers&state=${state}`);
   } catch (err) {
     helper.dumpError(err, "Authorize this.");
     response.redirect('/');
@@ -3938,6 +3937,7 @@ app.get('/twitch/redirect', async (req, response) => {
     var query = url.parse(req.url, true).query;
     var state = query["state"];
     var cookies = req.cookies;
+    console.log(state, cookies["auth"]);
 
     if (state && states[state.toString()] === cookies['auth']) {
       var code = query["code"];
