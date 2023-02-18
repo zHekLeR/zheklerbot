@@ -2843,6 +2843,39 @@ app.get('/verify', (request, response) => {
 });
 
 
+app.get('/authorizethis', async (request, response) => {
+  try {
+    var cookies = request.cookies;
+    if (cookies["auth"]) {
+      var bearer = await helper.checkBearer(cookies["auth"]);
+      if (!bearer[0] || bearer[1].userid !== 'zhekler') {
+        response.status(401);
+        response.redirect('/');
+        return;
+      }
+    } else {
+      response.status(401);
+      response.redirect('/');
+      return;
+    }
+
+    var state =  '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < 20; i++ ) {
+      state += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+
+    states[cookies["auth"]] = state;
+
+    response.redirect(`https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=${process.env.CLIENT_ID}&force_verify=true&redirect_uri=https://www.zhekbot.com/redirect&scope=moderator%3Amanage%3Abanned_users&state=${state}`);
+  } catch (err) {
+    helper.dumpError(err, "Authorize this.");
+    response.redirect('/');
+  }
+});
+
+
 // 2v2
 app.get('/twovtwo/:channel', async (request, response) => {
   try {
