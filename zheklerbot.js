@@ -149,11 +149,12 @@ async function timeout(channel, user, duration, reason) {
       if (res.status !== 200) throw new Error("Unknown status code: " + res.status);
     }).catch(async err => {
       if (err.toString().includes("401")) {
-        console.log(err.message?err.message:err);
+        helper.dumpError(err, "First timeout.");
         let retry = await refreshToken(rows[0].refresh_token);
+        console.log(retry);
 
         if (retry !== '') {
-          axios.post(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140`, 
+          await axios.post(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140`, 
           `{
             "data": {
               "user_id":"${user}"
@@ -169,6 +170,8 @@ async function timeout(channel, user, duration, reason) {
             }
           }).then(res => {
             if (res.status !== 200) throw new Error("Unknown status code in timeout: " + res.status);
+          }).catch(err => {
+            helper.dumpError(err, "Retry timeout.");
           });
         }
       }
@@ -219,6 +222,7 @@ async function refreshToken(token) {
       }
     }).then(async res => {
       await helper.dbQueryPromise(`UPDATE access_tokens SET access_token = '${res.data.access_token}' WHERE refresh_token = '${token}';`);
+      console.log(res.data);
       return res.data.access_token;
     })
   } catch (err) {
