@@ -218,7 +218,7 @@ async function refreshToken(token) {
         "Content-Type": "application/x-www-form-urlencoded"
       }
     }).then(async res => {
-      await helper.dbQueryPromise(`UPDATE access_tokens SET access_token = '${res.data.access_token}' AND refresh_token = '${token}';`);
+      await helper.dbQueryPromise(`UPDATE access_tokens SET access_token = '${res.data.access_token}' WHERE refresh_token = '${token}';`);
       return res.data.access_token;
     })
   } catch (err) {
