@@ -200,7 +200,64 @@ async function timeout(channel, user, user_id, game, duration, reason) {
   } catch (err) {
     helper.dumpError(err, `Twitch timeout: ${channel} ${user} ${duration} ${reason}`);
   }
-}
+};
+
+
+/**
+ * @param {string} channel
+ * @param {string} user
+ * @param {string} user_id
+ */
+async function untimeout(channel, user, user_id) {
+  try {
+    if (!user) return;
+
+    if (!user_id) {
+      user_id = await getUser(user);
+      
+      if (!user_id) {
+        return;
+      } 
+    }
+
+    let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
+    if (!rows || !rows[0].access_token) throw new Error("No access token for untimeout.");
+
+    await axios.delete(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140&user_id=${user_id}`, 
+    {
+      headers: {
+        'Authorization': 'Bearer ' + rows[0].access_token,
+        'Client-Id': process.env.CLIENT_ID + ''
+      }
+    }).then(res => {
+      console.log(res.status, res.data);
+      if (res.status !== 200) throw new Error("Unknown status code in untimeout: " + res.status);
+    }).catch(async err => {
+      if (err.toString().includes("401")) {
+        helper.dumpError(err, "First timeout.");
+        let retry = await refreshToken(rows[0].refresh_token);
+        console.log(retry);
+
+        if (retry !== '') {
+          await axios.delete(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140&user_id=${user_id}`, 
+          {
+            headers: {
+              "Client-Id": process.env.CLIENT_ID + '',
+              "Authorization": "Bearer " + retry,
+            }
+          }).then(res => {
+            if (res.status !== 200) throw new Error("Unknown status code in untimeout: " + res.status);
+          }).catch(err => {
+            helper.dumpError(err, "Retry untimeout.");
+          });
+        }
+      }
+      helper.dumpError(err, `Twitch untimeout: ${channel} ${user} ${duration} ${reason}`);
+    });
+  } catch (err) {
+    helper.dumpError(err, `Twitch untimeout: ${channel} ${user}`);
+  }
+};
 
 
 /**
@@ -994,10 +1051,7 @@ bot.on('chat', async (channel, tags, message) => {
       // Untimeout command for VIPs mainly.
       case '!untimeout':
         if (channel.substring(1) !== 'huskerrs' || (!tags["mod"] && !vips.includes(tags['username'] || ''))) break;
-        bot.unban(channel, splits[1])
-        .catch(err => {
-          console.log(`Untimeout: ${splits[1]}`);
-        })
+        untimeout(channel.substring(1), splits[1], '');
         break;
 
       // Ban command for VIPs mainly.
