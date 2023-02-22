@@ -252,7 +252,7 @@ async function untimeout(channel, user, user_id) {
           });
         }
       }
-      helper.dumpError(err, `Twitch untimeout: ${channel} ${user} ${duration} ${reason}`);
+      helper.dumpError(err, `Twitch untimeout: ${channel} ${user}`);
     });
   } catch (err) {
     helper.dumpError(err, `Twitch untimeout: ${channel} ${user}`);
