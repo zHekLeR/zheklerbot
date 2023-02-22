@@ -140,6 +140,15 @@ async function timeout(channel, user, user_id, game, duration, reason) {
 
     let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
     if (!rows || !rows[0].access_token) throw new Error("No access token for timeout.");
+    console.log(rows);
+    console.log(channel, user, user_id, game);
+    console.log(    `{
+      "data": {
+        "user_id":"${user_id}"
+        ${duration?',"duration":'+duration:''}
+        ${reason?',"reason":"' + reason + '"':''}
+      }
+    }`);
 
     await axios.post(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140`, 
     `{
