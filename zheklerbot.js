@@ -189,7 +189,7 @@ async function timeout(channel, user, user_id, game, duration, reason) {
               "Content-Type": "application/json"
             }
           }).then(res => {
-            if (res.status !== 204) throw new Error("Unknown status code in timeout: " + res.status);
+            if (res.status !== 200) throw new Error("Unknown status code in timeout: " + res.status);
           }).catch(err => {
             helper.dumpError(err, "Retry timeout.");
           });
@@ -231,7 +231,7 @@ async function untimeout(channel, user, user_id) {
       }
     }).then(res => {
       console.log(res.status, res.data);
-      if (res.status !== 200) throw new Error("Unknown status code in untimeout: " + res.status);
+      if (res.status !== 204) throw new Error("Unknown status code in untimeout: " + res.status);
     }).catch(async err => {
       if (err.toString().includes("401")) {
         helper.dumpError(err, "First timeout.");
