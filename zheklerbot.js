@@ -1044,7 +1044,7 @@ bot.on('chat', async (channel, tags, message) => {
       case '!ban':
         if (channel.substring(1) !== 'huskerrs' || (!tags["mod"] && !vips.includes(tags['username'] || ''))) break;
         if (!bot.isMod(channel.substring(1), splits[1])) {
-          bot.timeout(channel.substring(1), splits[1], undefined, splits[2]?' | ' + splits.splice(2).join(' '):"");
+          timeout(channel.substring(1), splits[1], '', '', 0, splits[2]?' | ' + splits.splice(2).join(' '):"");
         }
         break;
 
@@ -1052,6 +1052,7 @@ bot.on('chat', async (channel, tags, message) => {
       case '!unban':
         if (channel.substring(1) !== 'huskerrs' || (!tags["mod"] && !vips.includes(tags['username'] || ''))) break;
         untimeout(channel.substring(1), splits[1], '');
+        break;
 
 
       /*####################################################################################################################
