@@ -327,10 +327,7 @@ bot.on('chat', async (channel, tags, message) => {
 
     // Spam filter.
     if (channel.substring(1) === 'huskerrs' && message.match(/[\u2800-\u28FF]/g)) {
-      bot.timeout(channel, tags["username"] || '', 1, 'Spam?')
-      .catch(err => {
-        helper.dumpError(err, 'Spam filter.');
-      })
+      timeout(channel.substring(1), tags["username"] || '', '', '',  1, 'Spam?');
     }
 
     // Return if not a command.
