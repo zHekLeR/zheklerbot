@@ -131,7 +131,7 @@ async function timeout(channel, user, user_id, game, duration, reason) {
       
       if (!user_id) {
         return;
-      } else if (game && game === 'duel') {
+      } else if (game && game === 'duelduel') {
         helper.dbQuery(`UDPATE duelduel SET twitch_id = '${user_id}' WHERE userid = '${user}';`);
       } else if (game) {
         helper.dbQuery(`UPDATE ${game} SET twitch_id = '${user_id}' WHERE user_id = '${user}';`);
