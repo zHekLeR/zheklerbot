@@ -119,13 +119,24 @@ function say(channel, message, chatBot) {
  * @param {string} user
  * @param {number} duration
  * @param {string} reason
+ * @param {string} user_id
+ * @param {string} game
  */
-async function timeout(channel, user, duration, reason) {
+async function timeout(channel, user, user_id, game, duration, reason) {
   try {
     if (!user) return;
 
-    let user_id = await getUser(user);
-    if (!user_id) return;
+    if (!user_id) {
+      user_id = await getUser(user);
+      
+      if (!user_id) {
+        return;
+      } else if (game && game === 'duel') {
+        helper.dbQuery(`UDPATE duelduel SET twitch_id = '${user_id}' WHERE userid = '${user}';`);
+      } else if (game) {
+        helper.dbQuery(`UPDATE ${game} SET twitch_id = '${user_id}' WHERE user_id = '${user}';`);
+      }
+    }
 
     let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
     if (!rows || !rows[0].access_token) throw new Error("No access token for timeout.");
@@ -188,7 +199,7 @@ async function timeout(channel, user, duration, reason) {
  */
 async function getUser(username) {
   try {
-    let user_id;
+    let user_id = '';
     await axios.get(`https://api.twitch.tv/helix/users?login=${username}`,
       {
         headers: {
@@ -197,12 +208,10 @@ async function getUser(username) {
         }
       }
     ).then(res => {
-      console.log(res.data);
       user_id = res.data.data[0].id;
     }).catch(err => {
       helper.dumpError(err, "Get User." + username);
     });
-    console.log(user_id);
     
     return user_id;
   } catch (err) {
@@ -370,11 +379,13 @@ bot.on('chat', async (channel, tags, message) => {
       // Play Revolver Roulette.
       case '!rr': 
         if (!userIds[channel.substring(1)].revolverroulette) break;
+
         if (!bot.isMod(channel, 'zhekler')) {
-          say(channel, 'Revolver Roulette is unavailable since the bot is not modded.', bot);
           userIds[channel.substring(1)].revolverroulette = false;
           helper.dbQuery(`UPDATE allusers SET revolverroulette = false::bool WHERE user_id = '${channel.substring(1)}';`);
+          break;
         }
+
         if (!rrcd[tags["username"] || ''] || rrcd[tags["username"] || ''] < Date.now()) {
           rows = await revolverroulette.revolverroulette(tags["display-name"] || tags["username"] || '', channel);
           if (rows.error) {
@@ -589,19 +600,25 @@ bot.on('chat', async (channel, tags, message) => {
       // Play Big Vanish.
       case '!bigvanish':
         if (!userIds[channel.substring(1)].bigvanish) break;
+
         if (!bot.isMod(channel.substring(1), 'zhekler')) {
-          say(channel, "Big Vanish is unavailable since the bot is not modded.", bot);
           userIds[channel.substring(1)].bigvanish = false;
           helper.dbQuery(`UPDATE allusers SET bigvanish = false::bool WHERE user_id = '${channel.substring(1)}';`);
+          break;
         }
+
         if (!bvcd[tags["username"] || ''] || bvcd[tags["username"] || ''] < Date.now()) {
           rows = await bigvanish.bigVanish(tags["display-name"]?tags["display-name"]:tags["username"], channel);
+
           bot.timeout(channel, `${rows.person.user_id}`, rows.time, `You were timed out for ${numberWithCommas(rows.time)}! Your record high is ${numberWithCommas(rows.person.vanish)} seconds and low is ${numberWithCommas(rows.person.lowest)} seconds.`)
           .catch(err => {
             console.log(err.message);
           });
+
           say(channel.substring(1), `Big Vanish: ${rows.person.user_id} | ${numberWithCommas(rows.time)} seconds`, bot);
+
           rrcd[tags["username"] || ''] = Date.now() + 15000;
+
           setTimeout(function() { 
             bot.unban(channel.substring(1), rows.person.user_id)
             .catch(err => {
@@ -961,10 +978,7 @@ bot.on('chat', async (channel, tags, message) => {
         if (channel.substring(1) !== 'huskerrs' || (!tags["mod"] && !vips.includes(tags['username'] || ''))) break;
         if (splits.length < 3 || Number.isNaN(parseInt(splits[2]))) break;
         if (!bot.isMod(channel.substring(1), splits[1])) {
-          bot.timeout(channel, splits[1], parseInt(splits[2]), `${tags['username']} ${splits[3]?splits.slice(2).join(' '):""}`)
-          .catch(err => {
-            console.log(err.message);
-          });
+          timeout(channel.substring(1), splits[1], '', '', parseInt(splits[2]), splits[3]?splits.splice(2).join(' '):'' )
         }
         break;
 
@@ -999,7 +1013,7 @@ bot.on('chat', async (channel, tags, message) => {
 
       case '!test':
         if (channel.substring(1) !== 'huskerrs' || tags["username"] !== 'zhekler' || !splits[1]) return;
-        timeout(channel.substring(1), splits[1], 5, 'fuck it why not');
+        timeout(channel.substring(1), splits[1], '', '', 5, 'fuck it why not');
         break;
 
 

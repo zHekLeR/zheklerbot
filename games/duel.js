@@ -62,6 +62,7 @@ async function coward(pOne, stream) {
 async function accept(pOne, stream) {
     try {
         let res = await helper.dbQueryPromise(`SELECT * FROM duelduel WHERE oppid = '${pOne}' AND stream = '${stream}';`);
+        let res2 = await helper.dbQueryPromise(`SELECT * FROM duelduel WHERE userid = '${pOne}' AND stream = '${stream}';`);
 
         if (res.length) {
 
@@ -74,11 +75,10 @@ async function accept(pOne, stream) {
             helper.dbQuery(`INSERT INTO duelduel(userid, losses, stream) VALUES ('${pOne}', 1, '${stream}')
               ON CONFLICT (userid, stream) DO UPDATE SET losses = duelduel.losses + 1, streak = 0;`);
             
-            return { winner: res[0].userid, loser: pOne, streak: res[0].streak + 1 };
+            return { winner: res[0].userid, loser: pOne, streak: res[0].streak + 1, twitch_id: res2.length&&res2[0].twitch_id?res2[0].twitch_id:'' };
 
           } else {
 
-            let res2 = await helper.dbQueryPromise(`SELECT * FROM duelduel WHERE userid = '${pOne}' AND stream = '${stream}';`);
             if (res2.length) {
 
               helper.dbQuery(`UPDATE duelduel SET wins = wins + 1, streak = streak + 1${res2[0].streak + 1 > res2[0].longest?', longest = ' + (res2[0].streak + 1):''} 
@@ -91,7 +91,7 @@ async function accept(pOne, stream) {
 
             helper.dbQuery(`UPDATE duelduel SET oppid = ' ', expiration = 2147483647, losses = losses + 1, streak = 0 WHERE userid = '${res[0].userid}' AND stream = '${stream}';`);
 
-            return { winner: pOne, loser: res[0].userid, streak: (res2.length?res2[0].streak:0) + 1}
+            return { winner: pOne, loser: res[0].userid, streak: (res2.length?res2[0].streak:0) + 1, twitch_id: res.length&&res[0].twitch_id?res[0].twitch_id:'' }
           }
         }
     } catch (err) {

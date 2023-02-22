@@ -16,7 +16,7 @@ async function revolverroulette(id, channel) {
     if (!person) {
 
       // User has not played before. Add them to the database.
-      person = { user_id: id, survive: 0, die: 0 };
+      person = { user_id: id, survive: 0, die: 0, stream: channel.substring(1), twitch_id: '' };
       helper.dbQuery(`INSERT INTO revolverroulette(user_id, survive, die, stream)VALUES('${person.user_id}', ${person.survive}, ${person.die}, '${channel.substring(1)}');`);
       first = true;
 

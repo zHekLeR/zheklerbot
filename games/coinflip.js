@@ -29,7 +29,7 @@ async function coinflip(id, input, stream) {
     if (!person) {
 
       // User has not played before. Add stats to database.
-      person = { user_id: id, correct: rand==choice?1:0, wrong: rand==choice?0:1 };
+      person = { user_id: id, correct: rand==choice?1:0, wrong: rand==choice?0:1, stream: stream.substring(1), twitch_id: '' };
       helper.dbQuery(`INSERT INTO coinflip(user_id, correct, wrong, stream)VALUES('${person.user_id}', ${person.correct}, ${person.wrong}, '${stream.substring(1)}');`);
 
     } else {

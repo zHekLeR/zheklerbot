@@ -34,7 +34,7 @@ async function rps(id, input, stream) {
         if (!person) {
 
             // User is not in the database. Add them to it.
-            person = { user_id: id, win: result==1?1:0, loss: result==-1?1:0, tie: result==0?1:0 };
+            person = { user_id: id, win: result==1?1:0, loss: result==-1?1:0, tie: result==0?1:0, stream: stream.substring(1), twitch_id: '' };
             helper.dbQuery(`INSERT INTO rockpaperscissors(user_id, win, loss, tie, stream)VALUES('${person.user_id}', ${person.win}, ${person.loss}, ${person.tie}, '${stream.substring(1)}');`);
 
         } else {

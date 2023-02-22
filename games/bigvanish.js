@@ -15,7 +15,7 @@ async function bigVanish(id, channel) {
         if (!person) {
 
             // User is not in the database. Add them.
-            person = { user_id: id, vanish: rand, lowest: rand };
+            person = { user_id: id, vanish: rand, lowest: rand, stream: channel.substring(1), twitch_id: '' };
             helper.dbQuery(`INSERT INTO bigvanish(user_id, vanish, lowest, stream)VALUES('${person.user_id}', ${person.vanish}, ${person.lowest}, '${channel.substring(1)}');`);
 
         } else {
