@@ -160,7 +160,7 @@ async function timeout(channel, user, user_id, game, duration, reason) {
       }
     }`);
 
-    while (!refreshing) {
+    while (refreshing) {
       await sleep(50);
     }
 
