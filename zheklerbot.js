@@ -168,7 +168,7 @@ async function timeout(channel, user, user_id, game, duration, reason) {
       console.log(res.status, res.data);
       if (res.status !== 200) throw new Error("Unknown status code: " + res.status);
     }).catch(async err => {
-      if (err.data.status === 401) {
+      if (err.toString().includes(401)) {
         helper.dumpError(err, "First timeout.");
         let retry = await refreshToken(rows[0].refresh_token);
         console.log(retry);
@@ -194,7 +194,7 @@ async function timeout(channel, user, user_id, game, duration, reason) {
             helper.dumpError(err, "Retry timeout.");
           });
         }
-      } else if (err.data.status === 400) return;
+      } else if (err.toString().includes(400)) return;
       helper.dumpError(err, `Twitch timeout: ${channel} ${user} ${duration} ${reason}`);
     });
   } catch (err) {
