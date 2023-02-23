@@ -22,6 +22,7 @@ helper.discord.on("messageCreate", (message) => {
         .catch(err => {
           helper.dumpError(err, "Global bans.");
         });
+        timeout('huskerrs', temp.splice(0, 1).toString(), '', '', 0, temp.join(' ') + ' | Global ban');
       } 
     }
 });
@@ -114,6 +115,16 @@ function say(channel, message, chatBot) {
 };
 
 
+var refreshing = false;
+
+
+function sleep(ms) {
+  return new Promise((resolve => {
+    setTimeout(resolve, ms);
+  }));
+};
+
+
 /**
  * @param {string} channel
  * @param {string} user
@@ -140,8 +151,7 @@ async function timeout(channel, user, user_id, game, duration, reason) {
 
     let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
     if (!rows || !rows[0].access_token) throw new Error("No access token for timeout.");
-    console.log(rows);
-    console.log(channel, user, user_id, game);
+
     console.log(    `{
       "data": {
         "user_id":"${user_id}"
@@ -149,6 +159,10 @@ async function timeout(channel, user, user_id, game, duration, reason) {
         ${reason?',"reason":"' + reason + '"':''}
       }
     }`);
+
+    while (!refreshing) {
+      await sleep(50);
+    }
 
     await axios.post(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140`, 
     `{
@@ -172,6 +186,7 @@ async function timeout(channel, user, user_id, game, duration, reason) {
         helper.dumpError(err, "First timeout.");
         let retry = await refreshToken(rows[0].refresh_token);
         console.log(retry);
+        await sleep(50);
 
         if (retry !== '') {
           await axios.post(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140`, 
@@ -289,6 +304,7 @@ async function getUser(username) {
 
 async function refreshToken(token) {
   try {
+    refreshing = true;
     await axios.post('https://id.twitch.tv/oauth2/token', 
     `grant_type=refresh_token&refresh_token=${token}&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}`,
     {
@@ -303,6 +319,8 @@ async function refreshToken(token) {
   } catch (err) {
     helper.dumpError(err, "Refresh timeout token: " + token);
     return '';
+  } finally {
+    refreshing = false;
   }
 }
 
