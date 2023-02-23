@@ -115,16 +115,6 @@ function say(channel, message, chatBot) {
 };
 
 
-var refreshing = false;
-
-
-function sleep(ms) {
-  return new Promise((resolve => {
-    setTimeout(resolve, ms);
-  }));
-};
-
-
 /**
  * @param {string} channel
  * @param {string} user
@@ -160,10 +150,6 @@ async function timeout(channel, user, user_id, game, duration, reason) {
       }
     }`);
 
-    while (refreshing) {
-      await sleep(50);
-    }
-
     await axios.post(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140`, 
     `{
       "data": {
@@ -184,9 +170,8 @@ async function timeout(channel, user, user_id, game, duration, reason) {
     }).catch(async err => {
       if (err.toString().includes(401)) {
         helper.dumpError(err, "First timeout.");
-        let retry = await refreshToken(rows[0].refresh_token);
+        let retry = await refreshToken(rows[0].access_token, rows[0].refresh_token);
         console.log(retry);
-        await sleep(50);
 
         if (retry !== '') {
           await axios.post(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140`, 
@@ -250,7 +235,7 @@ async function untimeout(channel, user, user_id) {
     }).catch(async err => {
       if (err.toString().includes("401")) {
         helper.dumpError(err, "First timeout.");
-        let retry = await refreshToken(rows[0].refresh_token);
+        let retry = await refreshToken(rows[0].access_token, rows[0].refresh_token);
         console.log(retry);
 
         if (retry !== '') {
@@ -302,26 +287,49 @@ async function getUser(username) {
 }
 
 
-async function refreshToken(token) {
+async function revokeToken(token) {
   try {
-    refreshing = true;
+    await axios.post(`https://id.twitch.tv/oauth2/revoke`, 
+    `client_id=${process.env.CLIENT_ID}&token=${token}`, 
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    })
+    .then(res => {
+      if (res.status !== 200) throw new Error("Unexpected status on revoke: " + res.status + " | " + token);
+    })
+    .catch(err => {
+      if (!err.toString().includes('400')) {
+        helper.dumpError(err, "Revoke token call: " + token);
+      }
+    })
+  } catch (err) {
+    helper.dumpError(err, "Revoke token: " + token);
+  }
+}
+
+
+async function refreshToken(aToken, rToken) {
+  try {
     await axios.post('https://id.twitch.tv/oauth2/token', 
-    `grant_type=refresh_token&refresh_token=${token}&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}`,
+    `grant_type=refresh_token&refresh_token=${rToken}&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}`,
     {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
       }
     }).then(async res => {
-      await helper.dbQueryPromise(`UPDATE access_tokens SET access_token = '${res.data.access_token}' WHERE refresh_token = '${token}';`);
+      await helper.dbQueryPromise(`UPDATE access_tokens SET access_token = '${res.data.access_token}' WHERE refresh_token = '${rToken}';`);
       console.log(res.data);
+
+      setTimeout(function () { revokeToken(aToken)}, 5000);
+
       return res.data.access_token;
     })
   } catch (err) {
-    helper.dumpError(err, "Refresh timeout token: " + token);
+    helper.dumpError(err, "Refresh timeout token: " + rToken);
     return '';
-  } finally {
-    refreshing = false;
-  }
+  } 
 }
 
 
@@ -4648,7 +4656,7 @@ async function brookescribers() {
 };
 
 
-// Start'er'up
+// Start 'er up
 (async () => {
   try {
     
@@ -4711,6 +4719,14 @@ async function brookescribers() {
         console.log(`Match intervals: ${err}`);
       }
     }, 300000);
+    
+    let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
+    if (!rows || !rows.length) throw new Error(`No timeout perms.`);
+
+    let newToken = await refreshToken(rows[0].access_token, rows[0].refresh_token);
+    helper.dbQuery(`UPDATE access_tokens SET access_token = '${newToken}' WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
+
+    intervals["tokenRefresh"] = setInterval(function () { refreshToken(rows[0].access_token, rows[0].refresh_token); }, 1000*60*60*3);
 
   } catch (err) {
 
