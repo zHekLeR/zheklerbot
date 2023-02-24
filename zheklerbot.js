@@ -142,7 +142,7 @@ async function timeout(channel, user, user_id, game, duration, reason) {
     let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
     if (!rows || !rows[0].access_token) throw new Error("No access token for timeout.");
 
-    console.log(    `{
+    console.log(`{
       "data": {
         "user_id":"${user_id}"
         ${duration?',"duration":'+duration:''}
@@ -312,6 +312,7 @@ async function revokeToken(token) {
 
 async function refreshToken(aToken, rToken) {
   try {
+    let newToken = '';
     await axios.post('https://id.twitch.tv/oauth2/token', 
     `grant_type=refresh_token&refresh_token=${rToken}&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}`,
     {
@@ -324,8 +325,13 @@ async function refreshToken(aToken, rToken) {
 
       setTimeout(function () { revokeToken(aToken)}, 5000);
 
-      return res.data.access_token;
+      newToken = res.data.access_token;
     })
+    .catch(err => {
+      helper.dumpError(err, "Refresh timeout inner: " + rToken);
+    });
+
+    return newToken;
   } catch (err) {
     helper.dumpError(err, "Refresh timeout token: " + rToken);
     return '';
