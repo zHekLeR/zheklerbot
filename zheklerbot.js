@@ -273,7 +273,7 @@ async function getUser(username) {
     ).then(res => {
       user_id = res.data.data[0].id;
     }).catch(err => {
-      helper.dumpError(err, "Get User." + username);
+      helper.dumpError(err, "Get User: " + username);
     });
     
     return user_id;
@@ -3406,7 +3406,7 @@ app.get('/brookescribers', async (request, response) => {
     // Format string of ban statements.
     var str = '';
     for (var i = 0; i < rows.length; i++) {
-      str += `/ban ${rows[i].user_id} <br/>`;
+      str += `${rows[i].user_id} <br/>`;
     }
 
     // Return response.
