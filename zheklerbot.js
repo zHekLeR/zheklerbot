@@ -1239,7 +1239,6 @@ bot.on('chat', async (channel, tags, message) => {
  */
 async function tvtscores(channel, bearer) {
   try {
-    console.log(1);
     if (!tvtUpdate[channel] || tvtUpdate[channel] < Date.now()) {
       var res = await helper.dbQueryPromise(`SELECT * FROM twovtwo WHERE userid = '${channel}';`);
       var us = res[0].hkills + res[0].tkills;
@@ -1248,14 +1247,11 @@ async function tvtscores(channel, bearer) {
       ${res[0].mapreset != 0?(res[0].mapreset > 0?' (Up ':' (Down ') + Math.abs(res[0].mapreset) + ' after reset)':''}`;
 
       if (bearer.length && scoreBots[bearer[1].userid] && scoreBots[bearer[1].userid].scoreBot.getChannels().includes(`#${channel}`)) {
-        console.log(2);
         say(channel, str, scoreBots[bearer[1].userid].scoreBot);
         scoreBots[bearer[1].userid].timeout = DateTime.now().plus({ minutes: 30 }).toMillis();
       } else {
-        console.log(3);
         say(channel, str, bot);
       }
-      console.log(4);
       tvtUpdate[channel] = Date.now() + 2000;
     }
   } catch (err) {
@@ -3219,14 +3215,12 @@ app.get('/post/:channel/enable', jsonParser, async (request, response) => {
     var cookies = request.cookies, rows;
     if (cookies["auth"]) {
       rows = await helper.checkBearer(cookies["auth"]);
-      console.log(rows);
       if ((!rows[0] || !rows[1].perms || !rows[1].perms.split(',').includes(request.params.channel)) && rows[1].userid !== request.params.channel) {
         response.status(401);
         response.redirect('/');
         return;
       }
     } else {
-      console.log('else');
       response.status(401);
       response.redirect('/');
       return;
@@ -3234,16 +3228,13 @@ app.get('/post/:channel/enable', jsonParser, async (request, response) => {
 
     // Enable/disable 2v2.
     if (request.get('enabled') === userIds[request.params.channel].two_v_two) {
-      console.log('already');
       response.sendStatus(201);
     } else {
       
-      console.log('not');
       helper.dbQuery(`UPDATE allusers SET two_v_two = ${!userIds[request.params.channel].two_v_two}::bool WHERE user_id = '${request.params.channel}';`);
 
       userIds[request.params.channel].two_v_two = !userIds[request.params.channel].two_v_two;
 
-      console.log('not2');
       if (duelOff[request.params.channel]) {
         clearTimeout(duelOff[request.params.channel]);
       }
