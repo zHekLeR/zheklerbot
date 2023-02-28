@@ -81,7 +81,7 @@ function dumpError(err, where) {
         errString += 'Stacktrace:\n====================\n' + err.stack + '\n====================\n';
       }
       if (err.response && err.response.data) {
-        errString += '====================\HTTP data: \n' + JSON.stringify(err.response.data) + '\n====================\n';
+        errString += '====================\nHTTP data: \n' + JSON.stringify(err.response.data) + '\n====================\n';
       }
     } else {
       errString += err;

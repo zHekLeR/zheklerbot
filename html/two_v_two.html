@@ -1987,8 +1987,8 @@
              })
          })();
          
-         async function upStatus(setStat, stat) {
-             var elem = document.getElementById(stat);
+         async function upStatus(setStat) {
+             var elem = document.getElementById(setStat);
              if (document.getElementById(setStat).value.length == 0) { 
                  elem.checked = !elem.checked;
                  return;
