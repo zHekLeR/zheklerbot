@@ -3234,12 +3234,16 @@ app.get('/post/:channel/enable', jsonParser, async (request, response) => {
 
     // Enable/disable 2v2.
     if (request.get('enabled') === userIds[request.params.channel].two_v_two) {
+      console.log('already');
       response.sendStatus(201);
     } else {
+      
+      console.log('not');
       helper.dbQuery(`UPDATE allusers SET two_v_two = ${!userIds[request.params.channel].two_v_two}::bool WHERE user_id = '${request.params.channel}';`);
 
       userIds[request.params.channel].two_v_two = !userIds[request.params.channel].two_v_two;
 
+      console.log('not2');
       if (duelOff[request.params.channel]) {
         clearTimeout(duelOff[request.params.channel]);
       }
