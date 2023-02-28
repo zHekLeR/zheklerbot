@@ -1239,6 +1239,7 @@ bot.on('chat', async (channel, tags, message) => {
  */
 async function tvtscores(channel, bearer) {
   try {
+    console.log(1);
     if (!tvtUpdate[channel] || tvtUpdate[channel] < Date.now()) {
       var res = await helper.dbQueryPromise(`SELECT * FROM twovtwo WHERE userid = '${channel}';`);
       var us = res[0].hkills + res[0].tkills;
@@ -1247,11 +1248,14 @@ async function tvtscores(channel, bearer) {
       ${res[0].mapreset != 0?(res[0].mapreset > 0?' (Up ':' (Down ') + Math.abs(res[0].mapreset) + ' after reset)':''}`;
 
       if (bearer.length && scoreBots[bearer[1].userid] && scoreBots[bearer[1].userid].scoreBot.getChannels().includes(`#${channel}`)) {
-        scoreBots[bearer[1].userid].scoreBot.say(channel, str);
+        console.log(2);
+        say(channel, str, scoreBots[bearer[1].userid].scoreBot);
         scoreBots[bearer[1].userid].timeout = DateTime.now().plus({ minutes: 30 }).toMillis();
       } else {
+        console.log(3);
         say(channel, str, bot);
       }
+      console.log(4);
       tvtUpdate[channel] = Date.now() + 2000;
     }
   } catch (err) {
