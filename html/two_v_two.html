@@ -1660,7 +1660,7 @@
                                     <button class="change" onclick="add('hKills')">+</button>
                                     <span id="hKills">0</span> 
                                     <button class="change" onclick="sub('hKills')">-</button>&ensp;
-                                    <input type="checkbox" id="hStatus" class="hName" onclick="upStatus('hName')">&ensp;
+                                    <input type="checkbox" id="hStatus" class="hName" onclick="upStatus('hName', 'hStatus')">&ensp;
                                     <label for="hStatus">Enabled</label>
                                  </div>
                                  <div>
@@ -1669,7 +1669,7 @@
                                     <button class="change" onclick="add('tKills')">+</button>
                                     <span id="tKills">0</span> 
                                     <button class="change" onclick="sub('tKills')">-</button>&ensp;
-                                    <input type="checkbox" id="tStatus" class="tName" onclick="upStatus('tName')">&ensp;
+                                    <input type="checkbox" id="tStatus" class="tName" onclick="upStatus('tName', 'tStatus')">&ensp;
                                     <label for="tStatus">Enabled</label>
                                  </div>
                                  <div>
@@ -1678,7 +1678,7 @@
                                     <button class="change" onclick="add('o1Kills')">+</button>
                                     <span id="o1Kills">0</span> 
                                     <button class="change" onclick="sub('o1Kills')">-</button>&ensp;
-                                    <input type="checkbox" id="o1Status" class="o1Name" onclick="upStatus('o1Name')">&ensp;
+                                    <input type="checkbox" id="o1Status" class="o1Name" onclick="upStatus('o1Name', 'o1Status')">&ensp;
                                     <label for="o1Status">Enabled</label>
                                  </div>
                                  <div><input type="text" id="o2Name" placeholder="Opponent 2" size="8" style="text-align:center;">
@@ -1686,7 +1686,7 @@
                                     <button class="change" onclick="add('o2Kills')">+</button>
                                     <span id="o2Kills">0</span> 
                                     <button class="change" onclick="sub('o2Kills')">-</button>&ensp;
-                                    <input type="checkbox" id="o2Status" class="o2Name" onclick="upStatus('o2Name')">&ensp;
+                                    <input type="checkbox" id="o2Status" class="o2Name" onclick="upStatus('o2Name', 'o2Status')">&ensp;
                                     <label for="o2Status">Enabled</label>
                                  </div>
                                  <br>
@@ -1987,8 +1987,8 @@
              })
          })();
          
-         async function upStatus(setStat) {
-             var elem = document.getElementById(setStat);
+         async function upStatus(setStat, stat) {
+             var elem = document.getElementById(stat);
              if (document.getElementById(setStat).value.length == 0) { 
                  elem.checked = !elem.checked;
                  return;
@@ -1997,11 +1997,11 @@
              setTimeout(function () { elem.disabled = false; }, 2000)
              await fetch(`/post/${document.getElementById(setStat).value.toLowerCase()}/enable`, {
                  headers: {
-                     enabled: elem.checked
+                     enabled: !elem.checked
                  }
              })
              .then(resp => {
-                 if (resp.status !== 200) {
+                 if (resp.status == 200) {
                      elem.checked = !elem.checked;
                  } 
              })
