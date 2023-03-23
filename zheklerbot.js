@@ -4465,9 +4465,12 @@ app.post('/eventsub', async (req, res) => {
               helper.dbQuery(`UPDATE allusers SET online = true::bool WHERE user_id = '${notification.event.broadcaster_user_login.toLowerCase()}';`);
               if (online[notification.event.broadcaster_user_login.toLowerCase()]) delete online[notification.event.broadcaster_user_login.toLowerCase()];
               if (notification.event.broadcaster_user_login.toLowerCase() === 'huskerrs') {
+                let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
+                if (!rows || !rows[0].access_token) throw new Error("No access token for notis.");
+
                 axios.get('https://api.twitch.tv/helix/channels?broadcaster_id=30079255', {
                   headers: {
-                    "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
+                    "Authorization": "Bearer " + rows[0].access_token,
                     "Client-Id": process.env.CLIENT_ID + ''
                   }
                 })
