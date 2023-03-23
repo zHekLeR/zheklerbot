@@ -263,10 +263,13 @@ async function untimeout(channel, user, user_id) {
 async function getUser(username) {
   try {
     let user_id = '';
+    let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
+    if (!rows || !rows[0].access_token) throw new Error("No access token for untimeout.");
+
     await axios.get(`https://api.twitch.tv/helix/users?login=${username}`,
       {
         headers: {
-          "Authorization": `Bearer ${process.env.ACCESS_TOKEN}`,
+          "Authorization": `Bearer ${rows[0].access_token}`,
           "Client-Id": process.env.CLIENT_ID + ''
         }
       }
@@ -760,7 +763,7 @@ bot.on('chat', async (channel, tags, message) => {
           say(channel, 'Map count must be an integer.', bot);
           break;
         }
-        helper.dbQuery(`UPDATE customs SET map_count = ${parseInt(splits[1])} WHERE user_id = '${channel.substring(1)}';`);
+        helper.dbQuery(`UPDATE customs SET map_count = ${parseInt(splits[1])}, count = ${parseInt(splits[1])} WHERE user_id = '${channel.substring(1)}';`);
         say(channel, `Map count has been set to ${splits[1]}`, bot);
         break;
 
@@ -845,13 +848,34 @@ bot.on('chat', async (channel, tags, message) => {
         say(channel, str, bot);
         break;
 
+      // Best of X maps.
+      case '!bestof':
+        if (!userIds[channel.substring(1)].customs || (!tags["mod"] && tags["username"] !== channel.substring(1))) break;
+        if (splits.length !== 2 || isNaN(parseInt(splits[1])) || parseInt(splits[1]) <= 0) {
+          say(channel, 'This command requires one parameter that is a positive Integer.', bot);
+          break;
+        } 
+        res = await helper.dbQueryPromise(`SELECT * FROM customs WHERE user_id = '${channel.substring(1)}';`);
+
+        if (parseInt(splits[1]) > res[0].map_count) {
+          say(channel, 'This value cannot be higher than the map count.', bot);
+          break;
+        } 
+
+        helper.dbQuery(`UPDATE customs SET count = ${parseInt(splits[1])} WHERE user_id = '${channel.substring(1)}';`);
+        say(channel, `Best of ${splits[1]} | ${res[0].map_count} maps total`, bot);
+        break;
+
       // Get the score for the maps thus far.
       case '!score':
         if (!userIds[channel.substring(1)].customs && !userIds[channel.substring(1)].two_v_two) break;
+
         if (userIds[channel.substring(1)].customs) {
           res = await helper.dbQueryPromise(`SELECT * FROM customs WHERE user_id = '${channel.substring(1)}';`);
           score = [];
           var total = 0;
+          var lowest = [];
+          str = '';
           
           multis = res[0].multipliers.split(' '), placement = 0;
           
@@ -863,13 +887,28 @@ bot.on('chat', async (channel, tags, message) => {
               }
             }
             
-            score.push(`Map ${i + 1}: ${(res[0].maps.kills[i] * placement).toFixed(2)}`);
-            total += res[0].maps.kills[i] * placement;
+            score.push((res[0].maps.kills[i] * placement).toFixed(2));
           }
-          str = score.join(' | ');
+
+          if (score.length > res[0].count) {
+            var mapsbgone = score.length - res[0].count;
+
+            var badmaps = score;
+            badmaps.sort(function(a, b) { return parseFloat(a) - parseFloat(b);}).splice(mapsbgone);
+          }
+
+          for (let i = 0; i < score.length; i++) {
+            if (lowest.length && lowest.includes(score[i])) {
+              lowest.splice(i, 1);
+              continue;
+            }
+
+            str += `Map ${i + 1}: ${score[i]} | `;
+            total += parseFloat(score[i]);
+          }
           
-          if (score.length < res[0].map_count) str += score.length?` | Map ${score.length + 1}: TBD`:`Map 1: TBD`;
-          str += ` | Total: ${total.toFixed(2)} pts`;
+          if (score.length < res[0].map_count) str += score.length?`Map ${score.length + 1}: TBD`:`Map 1: TBD`;
+          str += (`Total: ${total.toFixed(2)} pts` + score.length > res[0].count?` | Best of ${res[0].count}`:'');
           say(channel, str, bot);
         } else if (userIds[channel.substring(1)]["two_v_two"]) {
           await tvtscores(channel.substring(1), [])
