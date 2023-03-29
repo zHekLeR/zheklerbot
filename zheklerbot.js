@@ -125,6 +125,7 @@ async function timeout(channel, user, user_id, game, duration, reason) {
     if (!user) return;
 
     if (!user_id) {
+      if (user.indexOf('@') === 0) user = user.substring(1);
       user_id = await getUser(user);
       
       if (!user_id) {
@@ -210,6 +211,7 @@ async function untimeout(channel, user, user_id) {
     if (!user) return;
 
     if (!user_id) {
+      if (user.indexOf('@') === 0) user = user.substring(1);
       user_id = await getUser(user);
       
       if (!user_id) {
