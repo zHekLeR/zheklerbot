@@ -897,9 +897,8 @@ bot.on('chat', async (channel, tags, message) => {
             console.log(mapsbgone);
 
             var badmaps = score;
-            lowest = badmaps.sort(function(a, b) { return parseFloat(a) - parseFloat(b);}).splice(mapsbgone);
-            console.log(lowest);
-            console.log(badmaps);
+            badmaps.sort(function(a, b) { return parseFloat(a) - parseFloat(b);}).splice(mapsbgone);
+            lowest = badmaps;
           }
 
           for (let i = 0; i < score.length; i++) {
