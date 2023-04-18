@@ -894,9 +894,11 @@ bot.on('chat', async (channel, tags, message) => {
 
           if (score.length > res[0].count) {
             var mapsbgone = score.length - res[0].count;
+            console.log(mapsbgone);
 
             var badmaps = score;
             badmaps.sort(function(a, b) { return parseFloat(a) - parseFloat(b);}).splice(mapsbgone);
+            console.log(badmaps);
           }
 
           for (let i = 0; i < score.length; i++) {
@@ -904,6 +906,8 @@ bot.on('chat', async (channel, tags, message) => {
               lowest.splice(i, 1);
               continue;
             }
+
+            console.log(lowest);
 
             str += `Map ${i + 1}: ${score[i]} | `;
             total += parseFloat(score[i]);
