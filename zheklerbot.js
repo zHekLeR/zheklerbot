@@ -904,7 +904,7 @@ bot.on('chat', async (channel, tags, message) => {
 
           for (let i = 0; i < score.length; i++) {
             if (lowest.length && lowest.includes(score[i])) {
-              lowest.splice(0);
+              lowest.splice(1);
               continue;
             }
 
