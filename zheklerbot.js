@@ -897,7 +897,7 @@ bot.on('chat', async (channel, tags, message) => {
             console.log(mapsbgone);
 
             var badmaps = score;
-            badmaps.sort(function(a, b) { return parseFloat(a) - parseFloat(b);}).splice(mapsbgone);
+            lowest = badmaps.sort(function(a, b) { return parseFloat(a) - parseFloat(b);}).splice(mapsbgone);
             console.log(badmaps);
           }
 
@@ -910,11 +910,11 @@ bot.on('chat', async (channel, tags, message) => {
             str += `Map ${i + 1}: ${score[i]} | `;
             total += parseFloat(score[i]);
           }
-          
-          console.log(lowest);
+          console.log(total);
           
           if (score.length < res[0].count) str += score.length?`Map ${score.length + 1}: TBD`:`Map 1: TBD`;
           str += (`Total: ${total.toFixed(2)} pts` + score.length > res[0].count?` | Best of ${res[0].count}`:'');
+          console.log(str);
           say(channel, str, bot);
         } else if (userIds[channel.substring(1)]["two_v_two"]) {
           await tvtscores(channel.substring(1), [])
