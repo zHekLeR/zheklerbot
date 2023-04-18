@@ -897,7 +897,7 @@ bot.on('chat', async (channel, tags, message) => {
             console.log(mapsbgone);
 
             var badmaps = score;
-            badmaps = badmaps.sort(function(a, b) { return parseFloat(a) - parseFloat(b);}).splice(mapsbgone);
+            badmaps.sort(function(a, b) { return parseFloat(a) - parseFloat(b);}).splice(mapsbgone);
             console.log(badmaps);
           }
 
@@ -913,7 +913,7 @@ bot.on('chat', async (channel, tags, message) => {
           
           console.log(lowest);
           
-          if (score.length < res[0].map_count) str += score.length?`Map ${score.length + 1}: TBD`:`Map 1: TBD`;
+          if (score.length < res[0].count) str += score.length?`Map ${score.length + 1}: TBD`:`Map 1: TBD`;
           str += (`Total: ${total.toFixed(2)} pts` + score.length > res[0].count?` | Best of ${res[0].count}`:'');
           say(channel, str, bot);
         } else if (userIds[channel.substring(1)]["two_v_two"]) {
