@@ -2477,14 +2477,14 @@ app.get('/modules/:channel', async (request, response) => {
     page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
     page = page.replace(/Login to Twitch/g, "Logout of Twitch");
     page = page.replace('var tabsEnabled = {};', `var tabsEnabled = {
-      'matches': ${userIds[request.params.channel.toLowerCase()].matches},
-      'revolverroulette': ${userIds[request.params.channel.toLowerCase()].revolverroulette},
-      'coinflip': ${userIds[request.params.channel.toLowerCase()].coinflip},
-      'rps': ${userIds[request.params.channel.toLowerCase()].rps},
-      'bigvanish': ${userIds[request.params.channel.toLowerCase()].bigvanish},
-      'customs': ${userIds[request.params.channel.toLowerCase()].customs},
-      'two_v_two': ${userIds[request.params.channel.toLowerCase()]["two_v_two"]},
-      'duel': ${userIds[request.params.channel.toLowerCase()].duel}
+      'Warzone Stats / Matches': ${userIds[request.params.channel.toLowerCase()].matches},
+      'Revolver Roulette': ${userIds[request.params.channel.toLowerCase()].revolverroulette},
+      'Coinflip': ${userIds[request.params.channel.toLowerCase()].coinflip},
+      'Rock Paper Scissors': ${userIds[request.params.channel.toLowerCase()].rps},
+      'Big Vanish': ${userIds[request.params.channel.toLowerCase()].bigvanish},
+      'Custom Tourney': ${userIds[request.params.channel.toLowerCase()].customs},
+      'Two vs Two': ${userIds[request.params.channel.toLowerCase()]["two_v_two"]},
+      'Duels': ${userIds[request.params.channel.toLowerCase()].duel}
     };`);
     page = page.replace(/#acti#/g, userIds[request.params.channel.toLowerCase()] && userIds[request.params.channel.toLowerCase()].acti_id?`value="${userIds[request.params.channel.toLowerCase()].acti_id}"`:'placeholder="Activision ID"'); 
     page = page.replace(/#pref_name#/g, userIds[request.params.channel.toLowerCase()].pref_name || '');
