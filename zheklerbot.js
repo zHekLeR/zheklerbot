@@ -913,8 +913,8 @@ bot.on('chat', async (channel, tags, message) => {
           }
           console.log(total);
           
-          if (score.length < res[0].count) { str += score.length?`Map ${score.length + 1}: TBD`:`Map 1: TBD`; }
-          str += ` | Total: ${total.toFixed(2)} pts` + (score.length > res[0].count?` | Best of ${res[0].count}`:'');
+          if (score.length < res[0].count) { str += score.length?`Map ${score.length + 1}: TBD | `:`Map 1: TBD | `; }
+          str += `Total: ${total.toFixed(2)} pts` + (score.length > res[0].count?` | Best of ${res[0].count}`:'');
           say(channel, str, bot);
         } else if (userIds[channel.substring(1)]["two_v_two"]) {
           await tvtscores(channel.substring(1), [])
