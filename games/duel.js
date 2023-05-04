@@ -164,8 +164,8 @@ async function duelLbRatioLow(stream) {
 
 async function duelLbStreak(stream) {
     try {
-        let res = await helper.dbQueryPromise(`SELECT * FROM duelduel WHERE streak = (SELECT MAX(streak) FROM duelduel WHERE stream = '${stream}') LIMIT 1;`);
-        let longStreak = await helper.dbQueryPromise(`SELECT * FROM duelduel WHERE longest = (SELECT MAX(longest) FROM duelduel WHERE stream = '${stream}') LIMIT 1;`);
+        let res = await helper.dbQueryPromise(`SELECT * FROM duelduel WHERE streak = (SELECT MAX(streak) FROM duelduel WHERE stream = '${stream}') AND stream = '${stream}' LIMIT 1;`);
+        let longStreak = await helper.dbQueryPromise(`SELECT * FROM duelduel WHERE longest = (SELECT MAX(longest) FROM duelduel WHERE stream = '${stream}') AND stream = '${stream}' LIMIT 1;`);
         return `Duel Leaderboard: Streak | ${res?'Current Longest: ' + res[0].userid + ' (' + res[0].streak + 'W) | Overall Longest: ' + 
           longStreak[0].userid + ' (' + longStreak[0].longest + 'W)':'No one has played yet.'}`;
     } catch (err) {

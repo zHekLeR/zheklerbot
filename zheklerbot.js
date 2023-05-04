@@ -344,6 +344,11 @@ async function refreshToken(aToken, rToken) {
 // Two vs Two arrays.
 var tvtUpdate = {};
 
+
+// Tracing array.
+var tracing = {};
+
+
 // Logs the Twitch bot being initialized.
 bot.on('logon', () => {
   console.log("Twitch bot logged on.");
@@ -1284,12 +1289,15 @@ bot.on('chat', async (channel, tags, message) => {
  */
 async function tvtscores(channel, bearer) {
   try {
+    if (tracing["tvtscores"]) console.log(`tvtscores(${channel}, ${bearer})`);
     if (!tvtUpdate[channel] || tvtUpdate[channel] < Date.now()) {
       var res = await helper.dbQueryPromise(`SELECT * FROM twovtwo WHERE userid = '${channel}';`);
       var us = res[0].hkills + res[0].tkills;
       var opp = res[0].o1kills + res[0].o2kills;
-      var str = `${us} - ${opp}${(us==6 && opp==9)?` Nice`:``} | ${us + res[0].mapreset > opp?("Up "+ (us + res[0].mapreset - opp)):(us + res[0].mapreset < opp)?("Down " + (opp - us - res[0].mapreset)):"Tied"}
-      ${res[0].mapreset != 0?(res[0].mapreset > 0?' (Up ':' (Down ') + Math.abs(res[0].mapreset) + ' after reset)':''}`;
+      var str = `${us} - ${opp}${(us==6 && opp==9)?` Nice`:``} | ${us + res[0].mapreset > opp?("Up "+ (us + res[0].mapreset - opp)):(us + res[0].mapreset < opp)?("Down " + (opp - us - res[0].mapreset)):"Tied"}      
+        ${res[0].mapreset != 0?(res[0].mapreset > 0?' (Up ':' (Down ') + Math.abs(res[0].mapreset) + ' after reset)':''}`;
+
+      if (tracing["tvtscores"]) console.log(`res: ${res}`, `us: ${us}`, `opp: ${opp}`, `str: ${str}`);
 
       if (bearer.length && scoreBots[bearer[1].userid] && scoreBots[bearer[1].userid].scoreBot.getChannels().includes(`#${channel}`)) {
         say(channel, str, scoreBots[bearer[1].userid].scoreBot);
@@ -1668,7 +1676,7 @@ var states = [];
 // Home page.
 app.get('/', async (request, response) => {
   try {
-    
+
     // Use site cookies to check whether user is logged in already.
     var cookies = await request.cookies;
     var page;
