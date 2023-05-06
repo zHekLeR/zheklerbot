@@ -31,6 +31,22 @@ async function duel(pOne, pTwo, stream) {
 };
 
 
+async function rematch(pOne, stream) {
+    try {
+        let res = await helper.dbQueryPromise(`SELECT * FROM duelduel WHERE userid = '${pOne.toLowerCase()}' AND stream = '${stream}';`);
+
+        if (!res.length || !res[0].rematch) {
+            return;
+        }
+
+        return await duel(pOne, res[0].rematch, stream);
+    } catch (err) {
+        helper.dumpError(err, "Duel Rematch.");
+        return;
+    }
+};
+
+
 async function cancel(pOne, stream) {
     try {
         let res = await helper.dbQueryPromise(`SELECT * FROM duelduel WHERE userid = '${pOne}';`);
@@ -71,25 +87,18 @@ async function accept(pOne, stream) {
           if (rand) {
 
             helper.dbQuery(`UPDATE duelduel SET oppid = ' ', expiration = 2147483647, wins = wins + 1, streak = streak + 1 
-              ${res[0].streak + 1 > res[0].longest?', longest = ' + (res[0].streak + 1):''} WHERE userid = '${res[0].userid}' AND stream = '${stream}';`);
-            helper.dbQuery(`INSERT INTO duelduel(userid, losses, stream) VALUES ('${pOne}', 1, '${stream}')
-              ON CONFLICT (userid, stream) DO UPDATE SET losses = duelduel.losses + 1, streak = 0;`);
+              ${res[0].streak + 1 > res[0].longest?', longest = ' + (res[0].streak + 1):''}, rematch = '${pOne}' WHERE userid = '${res[0].userid}' AND stream = '${stream}';`);
+            helper.dbQuery(`INSERT INTO duelduel(userid, losses, stream, rematch) VALUES ('${pOne}', 1, '${stream}', '${res2[0].userid}')
+              ON CONFLICT (userid, stream) DO UPDATE SET losses = duelduel.losses + 1, streak = 0, rematch = '${res2[0].userid}';`);
             
             return { winner: res[0].userid, loser: pOne, streak: res[0].streak + 1, twitch_id: res2.length&&res2[0].twitch_id?res2[0].twitch_id:'' };
 
           } else {
 
-            if (res2.length) {
+            helper.dbQuery(`INSERT INTO duelduel(userid, wins, stream, streak, longest, rematch) VALUES ('${pOne}', 1, '${stream}', 1, 1, '${res[0].userid}')
+              ON CONFLICT (userid, stream) DO UPDATE SET wins = wins + 1, streak = streak + 1${res2[0].streak + 1 > res2[0].longest?', longest = ' + (res2[0].streak + 1):''}, rematch = '${res[0].userid}';`);
 
-              helper.dbQuery(`UPDATE duelduel SET wins = wins + 1, streak = streak + 1${res2[0].streak + 1 > res2[0].longest?', longest = ' + (res2[0].streak + 1):''} 
-                WHERE userid = '${pOne}' AND stream = '${stream}';`);
-
-            } else {
-
-              helper.dbQuery(`INSERT INTO duelduel(userid, wins, stream, streak, longest) VALUES ('${pOne}', 1, '${stream}', 1, 1);`);
-            }
-
-            helper.dbQuery(`UPDATE duelduel SET oppid = ' ', expiration = 2147483647, losses = losses + 1, streak = 0 WHERE userid = '${res[0].userid}' AND stream = '${stream}';`);
+            helper.dbQuery(`UPDATE duelduel SET oppid = ' ', expiration = 2147483647, losses = losses + 1, streak = 0, rematch = '${pOne}' WHERE userid = '${res[0].userid}' AND stream = '${stream}';`);
 
             return { winner: pOne, loser: res[0].userid, streak: (res2.length?res2[0].streak:0) + 1, twitch_id: res.length&&res[0].twitch_id?res[0].twitch_id:'' }
           }
@@ -175,4 +184,4 @@ async function duelLbStreak(stream) {
 }
 
 
-export { duel, cancel, coward, accept, duelScore, duelLb, duelLbRatio, duelLbRatioLow, duelLbStreak };
+export { duel, rematch, cancel, coward, accept, duelScore, duelLb, duelLbRatio, duelLbRatioLow, duelLbStreak };

@@ -1159,8 +1159,18 @@ bot.on('chat', async (channel, tags, message) => {
           say(channel.substring(1), `@${tags["username"]} : You cannot duel yourself.`, bot);
           break;
         }
+
         if (splits[1].charAt(0) === '@') splits[1] = splits[1].substring(1);
         str = await duel.duel(tags["username"], splits[1], channel.substring(1));
+        if (str) say(channel.substring(1), str, bot);
+        break;
+
+      // Challenge user to a rematch.
+      case '!rematch':
+        if (!userIds[channel.substring(1)].duel) break;
+        if (dcd[tags["username"] || ''] && dcd[tags["username"] || ''] > Date.now()) break;
+
+        str = await duel.rematch(tags["username"], channel.substring(1));
         if (str) say(channel.substring(1), str, bot);
         break;
 
