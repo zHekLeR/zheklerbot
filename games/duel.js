@@ -80,7 +80,7 @@ async function accept(pOne, stream) {
         let res = await helper.dbQueryPromise(`SELECT * FROM duelduel WHERE oppid = '${pOne}' AND stream = '${stream}';`);
         let res2 = await helper.dbQueryPromise(`SELECT * FROM duelduel WHERE userid = '${pOne}' AND stream = '${stream}';`);
 
-        if (res.length) {
+        if (res.length && res2.length) {
 
           let rand = Math.round(Math.random());
 
