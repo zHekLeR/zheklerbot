@@ -95,8 +95,15 @@ async function accept(pOne, stream) {
 
           } else {
 
-            helper.dbQuery(`INSERT INTO duelduel(userid, wins, stream, streak, longest, rematch) VALUES ('${pOne}', 1, '${stream}', 1, 1, '${res[0].userid}')
-              ON CONFLICT (userid, stream) DO UPDATE SET wins = duelduel.wins + 1, streak = duelduel.streak + 1${res2[0].streak + 1 > res2[0].longest?', longest = ' + (res2[0].streak + 1):''}, rematch = '${pOne}';`);
+            if (res2.length) {
+
+                helper.dbQuery(`UPDATE duelduel SET wins = wins + 1, streak = streak + 1${res2[0].streak + 1 > res2[0].longest?', longest = ' + (res2[0].streak + 1):''} 
+                  WHERE userid = '${pOne}' AND stream = '${stream}';`);
+  
+              } else {
+  
+                helper.dbQuery(`INSERT INTO duelduel(userid, wins, stream, streak, longest) VALUES ('${pOne}', 1, '${stream}', 1, 1);`);
+              }
 
             helper.dbQuery(`UPDATE duelduel SET oppid = ' ', expiration = 2147483647, losses = losses + 1, streak = 0, rematch = '${pOne}' WHERE userid = '${res[0].userid}' AND stream = '${stream}';`);
 
