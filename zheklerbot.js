@@ -341,6 +341,15 @@ async function refreshToken(aToken, rToken) {
 }
 
 
+// OpenAI test for Sly.
+import { Configuration, OpenAIApi } from "openai";
+var aiConfig = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+var openai = new OpenAIApi(aiConfig);
+var aiEnabled = true;
+
+
 // Two vs Two arrays.
 var tvtUpdate = {};
 
@@ -1265,6 +1274,23 @@ bot.on('chat', async (channel, tags, message) => {
         var users = await helper.dbQueryPromise(`SELECT * FROM allusers;`);
         for (var i = 0; i < users.length; i++) {
           userIds[users[i].user_id] = users[i];
+        }
+        break;
+
+
+      /*####################################################################################################################
+        OpenAI API.
+      ####################################################################################################################*/
+      case '!chatgpt': 
+        if (channel.substring(1) !== "huskerrs" || (!tags["mod"] && tags["username"] !== channel.substring(1))) break;
+        if (splits.length <= 1) break;
+        var query = await openai.createChatCompletion({
+          model: "gpt-3.5-turbo",
+          messages: [{ "role": "user", "content": `In one sentence, ${splits.slice(1).join(' ')}` }],
+        });
+        if (query.data.choices[0].message) {
+          say(channel.substring(1), query.data.choices[0].message.content, bot);
+          console.log(`Message: ${splits.slice(1).join(' ')}`, `Response: ${query.data.choices[0].message}`);
         }
         break;
 
