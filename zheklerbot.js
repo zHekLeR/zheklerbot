@@ -1295,6 +1295,20 @@ bot.on('chat', async (channel, tags, message) => {
         break;
 
 
+      case '!catgpt':
+        if (channel.substring(1) !== "huskerrs" || (!tags["mod"] && tags["username"] !== channel.substring(1))) break;
+        if (splits.length <= 1) break;
+        var query = await openai.createChatCompletion({
+          model: "gpt-3.5-turbo",
+          messages: [{ "role": "user", "content": `Answering in one sentence and as though you are an uwu cat girl from an anime show, ${splits.slice(1).join(' ')}` }]
+        });
+        if (query.data.choices[0].message) {
+          say(channel.substring(1), query.data.choices[0].message.content, bot);
+          console.log(`Cat message: ${splits.slice(1).join(' ')}`, `Response: ${query.data.choices[0].message}`);
+        }
+        break;
+
+
       /*####################################################################################################################
         Goodbye channel peepoBye
       ####################################################################################################################*/
