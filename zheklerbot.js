@@ -4777,7 +4777,7 @@ async function brookescribers() {
 // Update Warzone 2 ranks.
 async function updateRanks() {
   try {
-    let players = (await axios.get("https://telescope.callofduty.com/api/ts-api/lb/v1/global/title/wz2/ranked/br")).data.data.ranks;
+    let players = (await axios.get("https://telescope.callofduty.com/api/ts-api/lb/v1/global/title/wz2/ranked/br")).data.data.data.ranks;
     let i = 0;
     while (i <= players.length) {
       if (players[i].gamertag !== 'HusKerrs') continue;
@@ -4864,6 +4864,7 @@ async function updateRanks() {
 
     intervals["tokenRefresh"] = setInterval(function () { refreshToken(rows[0].access_token, rows[0].refresh_token); }, 1000*60*60*3);
 
+    updateRanks();
     intervals["ranked"] = setInterval(function () { updateRanks() }, 1000*60*5);
 
   } catch (err) {
