@@ -4780,7 +4780,10 @@ async function updateRanks() {
     let players = (await axios.get("https://telescope.callofduty.com/api/ts-api/lb/v1/global/title/wz2/ranked/br")).data.data.data.ranks;
     let i = 0;
     while (i <= players.length) {
-      if (players[i].gamertag !== 'HusKerrs') continue;
+      if (players[i].gamertag !== 'HusKerrs') {
+        i++;
+        continue;
+      }
       helper.dbQuery(`INSERT INTO ranked(userid, rank, skill_rating) VALUES ('huskerrs', ${players[i].rank + 1}, ${players[i].skillRating})
         ON CONFLICT SET rank = ${players[i].rank + 1}, skill_rating = ${players[i].skillRating};`);
       break;
