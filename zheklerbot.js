@@ -1046,7 +1046,13 @@ bot.on('chat', async (channel, tags, message) => {
         if (channel.substring(1) !== 'huskerrs') break;
         rows = await helper.dbQueryPromise(`SELECT * FROM ranked WHERE userid = '${channel.substring(1)}';`);
         if (!rows || !rows.length) break;
-        say(channel, `${userIds[channel.substring(1)].pref_name} is currently ranked ${rows[0].rank} in the Top 250 with an SR of ${rows[0].skill_rating}`, bot);
+        let placement = rows[0].rank.toString();
+        if (placement.length >= 2 && placement.charAt(placement.length - 2) === '1') {
+          placement += 'th';
+        } else {
+          placement += placement.charAt(placement.length - 1)==='1'?'st':placement.charAt(placement.length - 1)==='2'?'nd':placement.charAt(placement.length - 1)==='3'?'rd':'th';
+        }
+        say(channel, `${userIds[channel.substring(1)].pref_name} is currently ranked ${placement} in the Top 250 with an SR of ${rows[0].skill_rating}`, bot);
         break;
 
         
