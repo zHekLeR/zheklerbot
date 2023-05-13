@@ -1041,6 +1041,14 @@ bot.on('chat', async (channel, tags, message) => {
         say(channel, await streak(channel.substring(1)), bot);
         break;
 
+      // Warzone 2 ranked?
+      case '!rank': 
+        if (channel.substring(1) !== 'huskerrs') break;
+        rows = await helper.dbQueryPromise(`SELECT * FROM ranked WHERE userid = '${channel.substring(1)}';`);
+        if (!rows || !rows.length) break;
+        say(channel, `${userIds[channel.substring(1)].pref_name} is currently ranked ${rows[0].rank} in the Top 250 with an SR of ${rows[0].skill_rating}`, bot);
+        break;
+
         
       /*####################################################################################################################
         Commands for 2v2 scorekeeping. Preferably used through the website but here in case.
@@ -4766,6 +4774,24 @@ async function brookescribers() {
 };
 
 
+// Update Warzone 2 ranks.
+async function updateRanks() {
+  try {
+    let players = (await axios.get("https://telescope.callofduty.com/api/ts-api/lb/v1/global/title/wz2/ranked/br")).data.data.ranks;
+    let i = 0;
+    while (i <= players.length) {
+      if (players[i].gamertag !== 'HusKerrs') continue;
+      helper.dbQuery(`INSERT INTO ranked(userid, rank, skill_rating) VALUES ('huskerrs', ${players[i].rank + 1}, ${players[i].skillRating})
+        ON CONFLICT SET rank = ${players[i].rank + 1}, skill_rating = ${players[i].skillRating};`);
+      break;
+    }
+  } catch (err) {
+    helper.dumpError(err, "Update ranks.");
+    return;
+  }
+}
+
+
 // Start 'er up
 (async () => {
   try {
@@ -4837,6 +4863,8 @@ async function brookescribers() {
     helper.dbQuery(`UPDATE access_tokens SET access_token = '${newToken}' WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
 
     intervals["tokenRefresh"] = setInterval(function () { refreshToken(rows[0].access_token, rows[0].refresh_token); }, 1000*60*60*3);
+
+    intervals["ranked"] = setInterval(function () { updateRanks() }, 1000*60*5);
 
   } catch (err) {
 
