@@ -4785,7 +4785,7 @@ async function updateRanks() {
         continue;
       }
       helper.dbQuery(`INSERT INTO ranked(userid, rank, skill_rating) VALUES ('huskerrs', ${players[i].rank + 1}, ${players[i].skillRating})
-        ON CONFLICT SET rank = ${players[i].rank + 1}, skill_rating = ${players[i].skillRating};`);
+        ON CONFLICT (userid) DO UPDATE SET rank = ${players[i].rank + 1}, skill_rating = ${players[i].skillRating};`);
       break;
     }
   } catch (err) {
