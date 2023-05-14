@@ -4815,7 +4815,6 @@ async function updateRanks() {
         i++;
         continue;
       }
-      console.log(players[i].gamertag)
       helper.dbQuery(`INSERT INTO ranked(userid, rank, skill_rating, hash_id) VALUES ('${players[i].gamertag.toLowerCase()}', ${players[i].rank + 1}, ${players[i].skillRating}, '${players[i].id}')
         ON CONFLICT (userid, hash_id) DO UPDATE SET rank = ${players[i].rank + 1}, skill_rating = ${players[i].skillRating};`);
       break;
