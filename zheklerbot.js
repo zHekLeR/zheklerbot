@@ -54,7 +54,7 @@ var rrcd = [], rpscd = [], cfcd = [], bvcd = [], dcd = [];
 var gcd = { };
 
 // Active elements for each user.
-var userIds = {}, online = {};
+var userIds = [], online = {};
 
 // Configuration for Twitch API.
 const client_config = {
@@ -347,6 +347,7 @@ var aiConfig = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
 var openai = new OpenAIApi(aiConfig);
+// @ts-ignore
 var aiEnabled = true;
 
 
@@ -1384,6 +1385,7 @@ async function duelExpiration() {
 
 
 // Twitch bot subscription handler.
+// @ts-ignore
 bot.on('subscription', (channel, username, method, message, userstate) => {
   if (!userIds[channel.substring(1)].subs) return;
   say(channel, `${username} Thank you for the sub, welcome to the Huskies huskHype huskLove`, bot);
@@ -1391,6 +1393,7 @@ bot.on('subscription', (channel, username, method, message, userstate) => {
 
 
 // Twitch bot resubscription handler.
+// @ts-ignore
 bot.on('resub', (channel, username, months, message, userstate, methods) => {
   if (!userIds[channel.substring(1)].subs) return;
   say(channel, `${username} Thank you for the ${userstate['msg-param-cumulative-months']} month resub huskHype huskLove`, bot);
@@ -1401,6 +1404,7 @@ var subs = {};
 
 
 // Twitch sub gift.
+// @ts-ignore
 bot.on('subgift', (channel, username, months, recipient, userstate, methods) => {
   if (!userIds[channel.substring(1)].subs) return;
   if (subs[username]) {
@@ -1414,6 +1418,7 @@ bot.on('subgift', (channel, username, months, recipient, userstate, methods) => 
 
 
 // Twitch anon sub gift.
+// @ts-ignore
 bot.on('anonsubgift', (channel, months, recipient, userstate, methods) => {
   if (!userIds[channel.substring(1)].subs) return;
   if (subs["anon"]) {
@@ -1427,6 +1432,7 @@ bot.on('anonsubgift', (channel, months, recipient, userstate, methods) => {
 
 
 // Twitch sub mystery gift.
+// @ts-ignore
 bot.on('submysterygift', (channel, username, numbOfSubs, userstate, methods) => {
   if (!userIds[channel.substring(1)].subs) return;
   subs[username] = numbOfSubs;
@@ -1437,6 +1443,7 @@ bot.on('submysterygift', (channel, username, numbOfSubs, userstate, methods) => 
 
 
 // Twitch sub mystery gift.
+// @ts-ignore
 bot.on('anonsubmysterygift', (channel, numbOfSubs, userstate, methods) => {
   if (!userIds[channel.substring(1)].subs) return;
   subs["anon"] = numbOfSubs;
@@ -1447,6 +1454,7 @@ bot.on('anonsubmysterygift', (channel, numbOfSubs, userstate, methods) => {
 
 
 // Prime paid upgrade.
+// @ts-ignore
 bot.on('primepaidupgrade', (channel, username, methods, tags) => {
   if (!userIds[channel.substring(1)].subs) return;
   say(channel, `${username} Thank you for upgrading from a Twitch Prime subscription! huskHype huskLove`, bot);
@@ -1454,6 +1462,7 @@ bot.on('primepaidupgrade', (channel, username, methods, tags) => {
 
 
 // Gifted paid upgrade.
+// @ts-ignore
 bot.on('giftpaidupgrade', (channel, username, sender, userstate) => {
   if (!userIds[channel.substring(1)].subs) return;
   say(channel, `${username} Thank you for continuing your gifted sub from ${sender}! huskHype huskLove`, bot);
@@ -1461,6 +1470,7 @@ bot.on('giftpaidupgrade', (channel, username, sender, userstate) => {
 
 
 // Anon gift paid upgrade.
+// @ts-ignore
 bot.on('anongiftpaidupgrade', (channel, username, userstate) => {
   if (!userIds[channel.substring(1)].subs) return;
   say(channel, `${username} Thank you for continuing your gifted sub from Anonymous! huskHype huskLove`, bot);
@@ -1689,6 +1699,7 @@ function date20(gamertag, platform, date) {
 }
 
 // Pull match info from match ID.
+// @ts-ignore
 function matchInfo(matchID) {
   return new Promise((resolve, reject) => {
       var urlInput = defaultBaseURL + `crm/cod/v2/title/mw/platform/acti/fullMatch/wz/${matchID}/en`;
@@ -1710,6 +1721,7 @@ function lifetime(gamertag, platform) {
 const app = express();
 
 import bodyParser from 'body-parser';
+// @ts-ignore
 import bodyParserErrorHandler from 'express-body-parser-error-handler';
 import cookieParser from 'cookie-parser';
 import fs from 'fs';
@@ -2707,6 +2719,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
                 "Client-Id": "" + process.env.CLIENT_ID,
                 "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
               }
+            // @ts-ignore
             }).then(resp => {
               helper.dbQuery(`UPDATE allusers SET online_sub_id = NULL WHERE user_id = '${request.params.channel}';`);
               delete userIds[request.params.channel].online_sub_id;
@@ -2724,6 +2737,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
                 "Client-Id": "" + process.env.CLIENT_ID,
                 "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
               }
+            // @ts-ignore
             }).then(resp => {
               helper.dbQuery(`UPDATE allusers SET offline_sub_id = NULL WHERE user_id = '${request.params.channel}';`);
               delete userIds[request.params.channel].offline_sub_id;
@@ -3190,6 +3204,7 @@ app.get('/twovtwo/:channel', async (request, response) => {
         timeout: DateTime.now().plus({ minutes: 30 }).toMillis,
       };
       await scoreBots[bearer[1].userid].scoreBot.connect()
+      // @ts-ignore
       .then(res => {
         page = page.replace(/#mescore#/g, `You are currently updating scores through your account. If you'd like to stop (and use zHekBot), click <a onclick="nomoscore()">here</a>`);        
       })
@@ -3294,12 +3309,15 @@ app.get('/post/:channel/reset', async (request, response) => {
 
     // Reset values in DB.
     helper.dbQuery(`UPDATE twovtwo SET hKills = 0, tKills = 0, o1Kills = 0, o2Kills = 0 WHERE userid = '${request.params.channel}';`);
+    // @ts-ignore
     if (userIds[request.get('tname')] && userIds[request.get('tname')]["two_v_two"] && rows[1].perms.split(',').includes(request.params.channel.toLowerCase())) {
       helper.dbQuery(`UPDATE twovtwo SET hKills = 0, tKills = 0, o1Kills = 0, o2Kills = 0 WHERE userid = '${request.get('tname')}';`)
     }
+    // @ts-ignore
     if (userIds[request.get('o1name')] && userIds[request.get('o1name')]["two_v_two"] && rows[1].perms.split(',').includes(request.params.channel.toLowerCase())) {
       helper.dbQuery(`UPDATE twovtwo SET hKills = 0, tKills = 0, o1Kills = 0, o2Kills = 0 WHERE userid = '${request.get('tname')}';`)
     }
+    // @ts-ignore
     if (userIds[request.get('o2name')] && userIds[request.get('o2name')]["two_v_two"] && rows[1].perms.split(',').includes(request.params.channel.toLowerCase())) {
       helper.dbQuery(`UPDATE twovtwo SET hKills = 0, tKills = 0, o1Kills = 0, o2Kills = 0 WHERE userid = '${request.get('tname')}';`)
     }
@@ -3400,14 +3418,17 @@ app.get('/send/:channel/:hKills/:tKills/:o1Kills/:o2Kills', async (request, resp
     await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.hKills}, tkills = ${request.params.tKills}, o1kills = ${request.params.o1Kills}, o2kills = ${request.params.o2Kills}, tname = '${request.get('tname')}', o1name = '${request.get('o1name')}', o2name = '${request.get('o2name')}', mapreset = ${parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.params.channel}';`);
     await tvtscores(request.params.channel.toLowerCase(), rows);
 
+    // @ts-ignore
     if (request.get('tstatus') === 'true' && userIds[request.get('tname')] && userIds[request.get('tname')]["two_v_two"] && rows[1].perms.split(',').includes(request.get('tname'))) {
       await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.tKills}, tkills = ${request.params.hKills}, o1kills = ${request.params.o1Kills}, o2kills = ${request.params.o2Kills}, mapreset = ${parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.get('tname')}';`)
       await tvtscores('' + request.get('tname'), rows);
     }
+    // @ts-ignore
     if (request.get('o1status') === 'true' && userIds[request.get('o1name')] && userIds[request.get('o1name')]["two_v_two"] && rows[1].perms.split(',').includes(request.get('o1name'))) {
       await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.o1Kills}, tkills = ${request.params.o2Kills}, o1kills = ${request.params.hKills}, o2kills = ${request.params.tKills}, mapreset = ${-1*parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.get('o1name')}';`)
       await tvtscores('' + request.get('o1name'), rows);
     }
+    // @ts-ignore
     if (request.get('o2status') === 'true' && userIds[request.get('o2name')] && userIds[request.get('o2name')]["two_v_two"] && rows[1].perms.split(',').includes(request.get('o2name'))) {
       await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.o2Kills}, tkills = ${request.params.o1Kills}, o1kills = ${request.params.hKills}, o2kills = ${request.params.tKills}, mapreset = ${-1*parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.get('o2name')}';`)
       await tvtscores('' + request.get('o2name'), rows);
@@ -4788,7 +4809,7 @@ async function updateRanks() {
     let players = (await axios.get("https://telescope.callofduty.com/api/ts-api/lb/v1/global/title/wz2/ranked/br")).data.data.data.ranks;
     let i = 0;
     while (i <= players.length) {
-      if (!peeps.include(players[i].gamertag)) {
+      if (!peeps.includes(players[i].gamertag)) {
         i++;
         continue;
       }
