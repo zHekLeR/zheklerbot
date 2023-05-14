@@ -1043,10 +1043,10 @@ bot.on('chat', async (channel, tags, message) => {
 
       // Warzone 2 ranked?
       case '!rank': 
-        if (channel.substring(1) !== 'huskerrs') break;
+        if (!userIds[channel.substring(1)]["top_250"]) break;
         rows = await helper.dbQueryPromise(`SELECT * FROM ranked WHERE userid = '${channel.substring(1)}';`);
         if (!rows || !rows.length) break;
-        let placement = rows[0].rank.toString();
+        placement = rows[0].rank.toString();
         if (placement.length >= 2 && placement.charAt(placement.length - 2) === '1') {
           placement += 'th';
         } else {
@@ -4783,15 +4783,18 @@ async function brookescribers() {
 // Update Warzone 2 ranks.
 async function updateRanks() {
   try {
+    let peeps = userIds.filter(function(x) { return x["top_250"]; });
+    console.log(peeps);
     let players = (await axios.get("https://telescope.callofduty.com/api/ts-api/lb/v1/global/title/wz2/ranked/br")).data.data.data.ranks;
     let i = 0;
     while (i <= players.length) {
-      if (players[i].gamertag !== 'HusKerrs') {
+      if (!peeps.include(players[i].gamertag)) {
         i++;
         continue;
       }
-      helper.dbQuery(`INSERT INTO ranked(userid, rank, skill_rating) VALUES ('huskerrs', ${players[i].rank + 1}, ${players[i].skillRating})
-        ON CONFLICT (userid) DO UPDATE SET rank = ${players[i].rank + 1}, skill_rating = ${players[i].skillRating};`);
+      console.log(players[i].gamertag)
+      helper.dbQuery(`INSERT INTO ranked(userid, rank, skill_rating, hash_id) VALUES ('${players[i].gamertag.toLowerCase()}', ${players[i].rank + 1}, ${players[i].skillRating}, '${players[i].id}')
+        ON CONFLICT (userid, hash_id) DO UPDATE SET rank = ${players[i].rank + 1}, skill_rating = ${players[i].skillRating};`);
       break;
     }
   } catch (err) {
@@ -4874,7 +4877,7 @@ async function updateRanks() {
     intervals["tokenRefresh"] = setInterval(function () { refreshToken(rows[0].access_token, rows[0].refresh_token); }, 1000*60*60*3);
 
     updateRanks();
-    intervals["ranked"] = setInterval(function () { updateRanks() }, 1000*60*5);
+    intervals["ranked"] = setInterval(function () { updateRanks() }, 1000*60*2);
 
   } catch (err) {
 
