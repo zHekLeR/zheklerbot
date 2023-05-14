@@ -4806,12 +4806,15 @@ async function brookescribers() {
 // Update Warzone 2 ranks.
 async function updateRanks() {
   try {
-    let peeps = userIds.filter(function(x) { console.log(x); return x["top_250"]; });
+    let peeps = [];
+    for (var x in userIds) {
+      if (userIds[x]["top_250"]) peeps.push(userIds[x].ranked_id);
+    }
     console.log(peeps);
     let players = (await axios.get("https://telescope.callofduty.com/api/ts-api/lb/v1/global/title/wz2/ranked/br")).data.data.data.ranks;
     let i = 0;
     while (i <= players.length) {
-      if (!players[i] || !peeps.includes(players[i].gamertag)) {
+      if (!players[i] || !peeps.includes(players[i].id)) {
         i++;
         continue;
       }
