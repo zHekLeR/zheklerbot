@@ -4806,7 +4806,7 @@ async function brookescribers() {
 // Update Warzone 2 ranks.
 async function updateRanks() {
   try {
-    let peeps = userIds.filter(function(x) { return x["top_250"]; });
+    let peeps = userIds.filter(function(x) { console.log(x); return x["top_250"]; });
     console.log(peeps);
     let players = (await axios.get("https://telescope.callofduty.com/api/ts-api/lb/v1/global/title/wz2/ranked/br")).data.data.data.ranks;
     let i = 0;
