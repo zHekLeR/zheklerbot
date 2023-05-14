@@ -4809,7 +4809,6 @@ async function updateRanks() {
     let players = (await axios.get("https://telescope.callofduty.com/api/ts-api/lb/v1/global/title/wz2/ranked/br")).data.data.data.ranks;
     let i = 0;
     while (i <= players.length) {
-      console.log(players[i]);
       if (!players[i] || !peeps.includes(players[i].gamertag)) {
         i++;
         continue;
