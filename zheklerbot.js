@@ -4810,7 +4810,7 @@ async function updateRanks() {
     let i = 0;
     while (i <= players.length) {
       console.log(players[i]);
-      if (!peeps.includes(players[i].gamertag)) {
+      if (!players[i] || !peeps.includes(players[i].gamertag)) {
         i++;
         continue;
       }
