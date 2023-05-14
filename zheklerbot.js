@@ -1047,13 +1047,12 @@ bot.on('chat', async (channel, tags, message) => {
         if (!userIds[channel.substring(1)]["top_250"]) break;
         rows = await helper.dbQueryPromise(`SELECT * FROM ranked WHERE userid = '${channel.substring(1)}';`);
         if (!rows || !rows.length) break;
-        placement = rows[0].rank.toString();
-        if (placement.length >= 2 && placement.charAt(placement.length - 2) === '1') {
-          placement += 'th';
-        } else {
-          placement += placement.charAt(placement.length - 1)==='1'?'st':placement.charAt(placement.length - 1)==='2'?'nd':placement.charAt(placement.length - 1)==='3'?'rd':'th';
+        placement = addEnd(rows[0].rank);
+        let change = 0;
+        if (rows[0].sess_start) {
+          change = rows[0].skill_rating - rows[0].sess_start;
         }
-        say(channel, `${userIds[channel.substring(1)].pref_name} is currently ranked ${placement} in the Top 250 with an SR of ${rows[0].skill_rating}`, bot);
+        say(channel, `${userIds[channel.substring(1)].pref_name} is currently ranked ${placement} in the Top 250 with an SR of ${change !== 0?' (' + (change?'Up ' + change:'Down ' + (change * -1)) + ' this session)':''}`, bot);
         break;
 
         
@@ -4562,6 +4561,9 @@ app.post('/eventsub', async (req, res) => {
             case "stream.online":
               userIds[notification.event.broadcaster_user_login.toLowerCase()].online = true;
               helper.dbQuery(`UPDATE allusers SET online = true::bool WHERE user_id = '${notification.event.broadcaster_user_login.toLowerCase()}';`);
+              if (userIds[notification.event.broadcaster_user_login.toLowerCase()]["top_250"]) {
+                helper.dbQuery(`UPDATE ranked SET sess_start = ranked.skill_rating WHERE hash_id = '${userIds[notification.event.broadcaster_user_login.toLowerCase()].ranked_id}';`);
+              }
               if (online[notification.event.broadcaster_user_login.toLowerCase()]) delete online[notification.event.broadcaster_user_login.toLowerCase()];
               if (notification.event.broadcaster_user_login.toLowerCase() === 'huskerrs') {
                 let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
