@@ -4605,7 +4605,7 @@ app.post('/eventsub', async (req, res) => {
               userIds[notification.event.broadcaster_user_login.toLowerCase()].online = false;
               helper.dbQuery(`UPDATE allusers SET online = false::bool WHERE user_id = '${notification.event.broadcaster_user_login.toLowerCase()}';`);
               if (userIds[notification.event.broadcaster_user_login.toLowerCase()]["top_250"]) {
-                helper.dbQuery(`UPDATE ranked SET sess_start = 0 WHERE hash_id = '${userIds[notification.event.broadcaster_user_login.toLowerCase()].ranked_id}';`);
+                helper.dbQuery(`UPDATE ranked SET sess_start = NULL WHERE hash_id = '${userIds[notification.event.broadcaster_user_login.toLowerCase()].ranked_id}';`);
               }
               break;
 
