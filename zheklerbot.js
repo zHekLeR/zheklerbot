@@ -4604,6 +4604,9 @@ app.post('/eventsub', async (req, res) => {
             case "stream.offline":
               userIds[notification.event.broadcaster_user_login.toLowerCase()].online = false;
               helper.dbQuery(`UPDATE allusers SET online = false::bool WHERE user_id = '${notification.event.broadcaster_user_login.toLowerCase()}';`);
+              if (userIds[notification.event.broadcaster_user_login.toLowerCase()]["top_250"]) {
+                helper.dbQuery(`UPDATE ranked SET sess_start = 0 WHERE hash_id = '${userIds[notification.event.broadcaster_user_login.toLowerCase()].ranked_id}';`);
+              }
               break;
 
             default: 
@@ -4810,7 +4813,6 @@ async function updateRanks() {
     for (var x in userIds) {
       if (userIds[x]["top_250"]) peeps.push(userIds[x].ranked_id);
     }
-    console.log(peeps);
     let players = (await axios.get("https://telescope.callofduty.com/api/ts-api/lb/v1/global/title/wz2/ranked/br")).data.data.data.ranks;
     let i = 0;
     while (i <= players.length) {
