@@ -1052,7 +1052,8 @@ bot.on('chat', async (channel, tags, message) => {
         if (rows[0].sess_start) {
           change = rows[0].skill_rating - rows[0].sess_start;
         }
-        say(channel, `${userIds[channel.substring(1)].pref_name} is currently ranked ${placement} in the Top 250 with an SR of ${rows[0].skill_rating}${change !== 0?' (' + (change?'Up ' + change:'Down ' + (change * -1)) + ' this session)':''}`, bot);
+        say(channel, `${userIds[channel.substring(1)].pref_name} is currently ranked ${placement} in the Top 250 with an SR of 
+          ${rows[0].skill_rating}${change !== 0?' (' + (change?('Up ' + change):('Down ' + (change * -1))) + ' this session)':''}`, bot);
         break;
 
         
@@ -4822,7 +4823,6 @@ async function updateRanks() {
       }
       helper.dbQuery(`INSERT INTO ranked(userid, rank, skill_rating, hash_id) VALUES ('${players[i].gamertag.toLowerCase()}', ${players[i].rank + 1}, ${players[i].skillRating}, '${players[i].id}')
         ON CONFLICT (userid, hash_id) DO UPDATE SET rank = ${players[i].rank + 1}, skill_rating = ${players[i].skillRating};`);
-      break;
     }
   } catch (err) {
     helper.dumpError(err, "Update ranks.");
