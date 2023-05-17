@@ -4835,7 +4835,7 @@ async function updateRanks() {
     let i = 0;
     while (i <= players.length) {
       i++;
-      allRanks[players[i].gamertag.toLowerCase()] = { "skillRating": players[i].skillRating, "rank": players[i].rank + 1 };
+      if (players[i]) allRanks[players[i].gamertag.toLowerCase()] = { "skillRating": players[i].skillRating, "rank": players[i].rank + 1 };
       if (!players[i] || !peeps.includes(players[i].id)) {
         continue;
       }
