@@ -4,7 +4,7 @@
   "description": "Twitch bot for warzone stats, scorekeeping, and other stuff.",
   "main": "zheklerbot.js",
   "scripts": {
-    "start": "node zheklerbot.js"
+    "start": "node --optimize_for_size --max_old_space_size=460 zheklerbot.js"
   },
   "engines": {
     "node": "16.13.2",
