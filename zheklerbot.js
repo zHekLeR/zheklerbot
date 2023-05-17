@@ -1062,7 +1062,7 @@ bot.on('chat', async (channel, tags, message) => {
         case '!rankcheck':
         case '!ranksearch':
           if (!userIds[channel.substring(1)]["top_250"]) break;
-          if (tags['username'] !== channel.substring(1) || !tags['mod']) break;
+          if (tags['username'] !== channel.substring(1) && !tags['mod']) break;
           if (splits.length < 2) break;
           str = splits.slice(1).join(' ').toLowerCase();
           if (str === 'huskerrs') break;
