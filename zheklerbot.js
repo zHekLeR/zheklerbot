@@ -347,8 +347,10 @@ var aiConfig = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
 var openai = new OpenAIApi(aiConfig);
-// @ts-ignore
-var aiEnabled = true;
+
+
+// Ranks.
+var allRanks = {};
 
 
 // Two vs Two arrays.
@@ -1052,9 +1054,24 @@ bot.on('chat', async (channel, tags, message) => {
         if (rows[0].sess_start) {
           change = rows[0].skill_rating - rows[0].sess_start;
         }
-        say(channel, `${userIds[channel.substring(1)].pref_name} is currently ranked ${placement} in the Top 250 with an SR of 
-          ${rows[0].skill_rating}${change !== 0?(' (' + (change > 0?('Up ' + change):('Down ' + (change * -1))) + ' this session)'):''}`, bot);
+        say(channel, `${userIds[channel.substring(1)].pref_name} is ranked ${placement} in the Top 250 with an SR of 
+          ${numberWithCommas(rows[0].skill_rating)}${change !== 0?(' (' + (change > 0?('Up ' + change):('Down ' + (change * -1))) + ' this session)'):''}`, bot);
         break;
+
+        // Rank check.
+        case '!rankcheck':
+        case '!ranksearch':
+          if (!userIds[channel.substring(1)]["top_250"]) break;
+          if (tags['username'] !== channel.substring(1) || !tags['mod']) break;
+          if (splits.length < 2) break;
+          str = splits.slice(1).join(' ').toLowerCase();
+          if (str === 'huskerrs') break;
+          console.log("Rank check: " + str);
+          if (allRanks[str]) {
+            say(channel, `${splits.slice(1).join(' ')} is ranked ${addEnd(allRanks[str].rank)} in the Top 250 with an SR of ${numberWithCommas(allRanks[str].skill_rating)} 
+              | ${allRanks[str].rank < allRanks['huskerrs'].rank?(((allRanks['huskerrs'].rank - allRanks[str].rank) + ' ranks and ' + (allRanks[str].skill_rating - allRanks['huskerrs'].skill_rating)) + ' SR ahead of Huskerrs'):
+              (((allRanks[str].rank - allRanks['huskerrs'].rank) + ' ranks and ' + (allRanks['huskerrs'].skill_rating - allRanks[str].skill_rating)) + ' SR behind HusKerrs')})}`, bot);
+          }
 
         
       /*####################################################################################################################
@@ -4818,6 +4835,7 @@ async function updateRanks() {
     let i = 0;
     while (i <= players.length) {
       i++;
+      allRanks[players[i].gamertag.toLowerCase()] = { "skillRating": players[i].skillRating, "rank": players[i].rank + 1 };
       if (!players[i] || !peeps.includes(players[i].id)) {
         continue;
       }
