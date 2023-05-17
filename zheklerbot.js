@@ -1068,10 +1068,12 @@ bot.on('chat', async (channel, tags, message) => {
           if (str === 'huskerrs') break;
           console.log("Rank check: " + str);
           if (allRanks[str]) {
+            console.log(allRanks[str]);
             say(channel, `${splits.slice(1).join(' ')} is ranked ${addEnd(allRanks[str].rank)} in the Top 250 with an SR of ${numberWithCommas(allRanks[str].skillRating)} 
               | ${allRanks[str].rank < allRanks['huskerrs'].rank?(((allRanks['huskerrs'].rank - allRanks[str].rank) + ' ranks and ' + (allRanks[str].skillRating - allRanks['huskerrs'].skillRating)) + ' SR ahead of Huskerrs'):
               (((allRanks[str].rank - allRanks['huskerrs'].rank) + ' ranks and ' + (allRanks['huskerrs'].skillRating - allRanks[str].skillRating)) + ' SR behind HusKerrs')})}`, bot);
           }
+          break;
 
         
       /*####################################################################################################################
