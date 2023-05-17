@@ -1043,18 +1043,18 @@ bot.on('chat', async (channel, tags, message) => {
         break;
 
       // Warzone 2 ranked?
-      // case '!rank': 
-      //   if (!userIds[channel.substring(1)]["top_250"]) break;
-      //   rows = await helper.dbQueryPromise(`SELECT * FROM ranked WHERE userid = '${channel.substring(1)}';`);
-      //   if (!rows || !rows.length) break;
-      //   placement = addEnd(rows[0].rank);
-      //   let change = 0;
-      //   if (rows[0].sess_start) {
-      //     change = rows[0].skill_rating - rows[0].sess_start;
-      //   }
-      //   say(channel, `${userIds[channel.substring(1)].pref_name} is currently ranked ${placement} in the Top 250 with an SR of 
-      //     ${rows[0].skill_rating}${change !== 0?' (' + change?('Up ' + change):('Down ' + (change * -1)) + ' this session)':''}`, bot);
-      //   break;
+      case '!rank': 
+        if (!userIds[channel.substring(1)]["top_250"]) break;
+        rows = await helper.dbQueryPromise(`SELECT * FROM ranked WHERE userid = '${channel.substring(1)}';`);
+        if (!rows || !rows.length) break;
+        placement = addEnd(rows[0].rank);
+        let change = 0;
+        if (rows[0].sess_start) {
+          change = rows[0].skill_rating - rows[0].sess_start;
+        }
+        say(channel, `${userIds[channel.substring(1)].pref_name} is currently ranked ${placement} in the Top 250 with an SR of 
+          ${rows[0].skill_rating}${change !== 0?(' (' + change?('Up ' + change):('Down ' + (change * -1)) + ' this session)'):''}`, bot);
+        break;
 
         
       /*####################################################################################################################
@@ -4817,8 +4817,8 @@ async function updateRanks() {
     let players = (await axios.get("https://telescope.callofduty.com/api/ts-api/lb/v1/global/title/wz2/ranked/br")).data.data.data.ranks;
     let i = 0;
     while (i <= players.length) {
+      i++;
       if (!players[i] || !peeps.includes(players[i].id)) {
-        i++;
         continue;
       }
       helper.dbQuery(`INSERT INTO ranked(userid, rank, skill_rating, hash_id) VALUES ('${players[i].gamertag.toLowerCase()}', ${players[i].rank + 1}, ${players[i].skillRating}, '${players[i].id}')
