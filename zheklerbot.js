@@ -4834,9 +4834,7 @@ async function updateRanks() {
       if (userIds[x]["top_250"]) peeps.push(userIds[x].ranked_id);
     }
     let players = (await axios.get("https://telescope.callofduty.com/api/ts-api/lb/v1/global/title/wz2/ranked/br")).data.data.data.ranks;
-    let i = 0;
-    while (i <= players.length) {
-      i++;
+    for (let i = 0; i < players.length; i++) {
       if (players[i]) allRanks[players[i].gamertag.toLowerCase()] = { "skillRating": players[i].skillRating, "rank": players[i].rank + 1 };
       if (!players[i] || !peeps.includes(players[i].id)) {
         continue;
