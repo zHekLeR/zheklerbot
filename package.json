@@ -4,7 +4,7 @@
   "description": "Twitch bot for warzone stats, scorekeeping, and other stuff.",
   "main": "zheklerbot.js",
   "scripts": {
-    "start": "serve -s zheklerbot.js"
+    "start": "node zheklerbot.js"
   },
   "engines": {
     "node": "16.13.2",
@@ -27,7 +27,6 @@
     "openai": "^3.2.1",
     "pg": "^8.7.3",
     "profanity-js": "^0.1.4",
-    "serve-favicon": "^2.5.0",
     "tmi.js": "^1.8.5",
     "uniqid": "^5.4.0"
   },
