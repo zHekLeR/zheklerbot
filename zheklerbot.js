@@ -1061,15 +1061,16 @@ bot.on('chat', async (channel, tags, message) => {
         // Rank check.
         case '!rankcheck':
         case '!ranksearch':
-          if (!userIds[channel.substring(1)]["top_250"]) break;
-          if (tags['username'] !== channel.substring(1) && !tags['mod']) break;
+        case '!checkrank':
+        case '!searchrank':
+          if (channel.substring(1) !== 'huskerrs' || !userIds[channel.substring(1)]["top_250"]) break;
           if (splits.length < 2) break;
           str = splits.slice(1).join(' ').toLowerCase();
           if (str === 'huskerrs') break;
           console.log("Rank check: " + str);
           if (allRanks[str]) {
             console.log(allRanks[str]);
-            say(channel, `${splits.slice(1).join(' ')} is ranked ${addEnd(allRanks[str].rank)} in the Top 250 with an SR of ${numberWithCommas(allRanks[str].skillRating)} 
+            say(channel, `${allRanks[str].gamertag} is ranked ${addEnd(allRanks[str].rank)} in the Top 250 with an SR of ${numberWithCommas(allRanks[str].skillRating)} 
               | ${allRanks[str].rank < allRanks['huskerrs'].rank?(((allRanks['huskerrs'].rank - allRanks[str].rank) + ' ranks and ' + (allRanks[str].skillRating - allRanks['huskerrs'].skillRating)) + ' SR ahead of Huskerrs'):
               (((allRanks[str].rank - allRanks['huskerrs'].rank) + ' ranks and ' + (allRanks['huskerrs'].skillRating - allRanks[str].skillRating)) + ' SR behind HusKerrs')}`, bot);
           }
@@ -4835,7 +4836,7 @@ async function updateRanks() {
     }
     let players = (await axios.get("https://telescope.callofduty.com/api/ts-api/lb/v1/global/title/wz2/ranked/br")).data.data.data.ranks;
     for (let i = 0; i < players.length; i++) {
-      if (players[i]) allRanks[players[i].gamertag.toLowerCase()] = { "skillRating": players[i].skillRating, "rank": players[i].rank + 1 };
+      if (players[i]) allRanks[players[i].gamertag.toLowerCase()] = { "gamertag": players[i].gamertag, "skillRating": players[i].skillRating, "rank": players[i].rank + 1 };
       if (!players[i] || !peeps.includes(players[i].id)) {
         continue;
       }
