@@ -1210,6 +1210,15 @@ bot.on('chat', async (channel, tags, message) => {
         if (str) say(channel.substring(1), str, bot);
         break;
 
+      // Make me duel you.
+      case '!duelme':
+        if (!userIds[channel.substring(1)].duel) break;
+        if (dcd[tags["username"] || ''] && dcd[tags["username"] || ''] > Date.now()) break;
+
+        str = await duel.duel('zhekler', tags["username"], channel.substring(1));
+        if (str) say(channel.substring(1), str, bot);
+        break;
+
       // Challenge user to a rematch.
       case '!rematch':
         if (!userIds[channel.substring(1)].duel) break;
