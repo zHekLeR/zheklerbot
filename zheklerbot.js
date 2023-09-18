@@ -4779,7 +4779,7 @@ async function brookescribers() {
     var sixAgo = DateTime.now().setZone('America/Denver').minus({hours:6}).toMillis()/1000;
 
       // Get BrookeAB's last 20 followers.
-      await symAxios.get('https://api.twitch.tv/helix/users/followers?to_id=214560121')
+      await symAxios.get('https://api.twitch.tv/helix/channels/followers?to_id=214560121')
       .then(async resp => {
         try {
           // Pull most recent follower from database.
@@ -4892,7 +4892,7 @@ async function updateRanks() {
     });
 
     // Authenticate with Twitch API and set 2 minute interval for BrookeAB's followers.
-    await authenticate();
+    // await authenticate();
 
     // Hourly call to verify access token.
     // intervals["access_token"] = setInterval(function() {
