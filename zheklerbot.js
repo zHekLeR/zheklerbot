@@ -3158,98 +3158,98 @@ app.get('/twovtwo/:channel', async (request, response) => {
       page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
     }
 
-    if (scoreBots[bearer[1].userid] && scoreBots[bearer[1].userid].channels && !scoreBots[bearer[1].userid].channels.includes(request.params.channel)) {
-      scoreBots[bearer[1].userid].scoreBot.join(request.params.channel);
-      page = page.replace(/#mescore#/g, `You are currently updating scores through your account. If you'd like to stop (and use zHekBot), click <a onclick="nomoscore()">here</a>`)
-    } else if (bearer[1].tw_token) {
-      var valid = true, newToken;
+    // if (scoreBots[bearer[1].userid] && scoreBots[bearer[1].userid].channels && !scoreBots[bearer[1].userid].channels.includes(request.params.channel)) {
+    //   scoreBots[bearer[1].userid].scoreBot.join(request.params.channel);
+    //   page = page.replace(/#mescore#/g, `You are currently updating scores through your account. If you'd like to stop (and use zHekBot), click <a onclick="nomoscore()">here</a>`)
+    // } else if (bearer[1].tw_token) {
+    //   var valid = true, newToken;
 
-      await axios.get('https://id.twitch.tv/oauth2/validate', {
-        headers: {
-          "Authorization": `OAuth ${bearer[1].tw_token}`
-        }
-      })
-      .then(res => {
-        console.log(res.data);
-      })
-      .catch(async err => {
-        if (err.response.data.status === 401) {
-          var tokens = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = '${bearer[1].userid}' AND scope = 'channel:manage:predictions, channel:read:predictions';`);
-          if (!tokens) {
-            console.log("No tokens returned - 2v2 refresh.");
-            console.log(bearer[1]);
-            console.log(tokens);
-            page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
-            page = page.replace(/#mescore#/g, 'If you would like the scores to be updated through your account, click <a onclick="mescore()">here</a>');
-            response.send(page);
-            return;
-          } else {
+    //   await axios.get('https://id.twitch.tv/oauth2/validate', {
+    //     headers: {
+    //       "Authorization": `OAuth ${bearer[1].tw_token}`
+    //     }
+    //   })
+    //   .then(res => {
+    //     console.log(res.data);
+    //   })
+    //   .catch(async err => {
+    //     if (err.response.data.status === 401) {
+    //       var tokens = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = '${bearer[1].userid}' AND scope = 'channel:manage:predictions, channel:read:predictions';`);
+    //       if (!tokens) {
+    //         console.log("No tokens returned - 2v2 refresh.");
+    //         console.log(bearer[1]);
+    //         console.log(tokens);
+    //         page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
+    //         page = page.replace(/#mescore#/g, 'If you would like the scores to be updated through your account, click <a onclick="mescore()">here</a>');
+    //         response.send(page);
+    //         return;
+    //       } else {
 
-            await axios.post('https://id.twitch.tv/oauth2/token', 
-              `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&grant_type=refresh_token&refresh_token=${tokens[0].refresh_token}`,
-              {
-                headers: {
-                  "Content-Type": "application/x-www-form-urlencoded"
-                }
-              }
-            )
-            .then(res => {
-              var data = res.data;
-              console.log(data);
+    //         await axios.post('https://id.twitch.tv/oauth2/token', 
+    //           `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&grant_type=refresh_token&refresh_token=${tokens[0].refresh_token}`,
+    //           {
+    //             headers: {
+    //               "Content-Type": "application/x-www-form-urlencoded"
+    //             }
+    //           }
+    //         )
+    //         .then(res => {
+    //           var data = res.data;
+    //           console.log(data);
 
-              helper.dbQuery(`UPDATE permissions SET tw_token = '${data.access_token}' WHERE userid = '${bearer[1].userid}';`);
-              helper.dbQuery(`UPDATE access_tokens SET access_token = '${data.access_token}', refresh_token = '${data.refresh_token}' WHERE userid = '${bearer[1].userid}' AND scope = 'channel:manage:predictions, channel:read:predictions';`);
+    //           helper.dbQuery(`UPDATE permissions SET tw_token = '${data.access_token}' WHERE userid = '${bearer[1].userid}';`);
+    //           helper.dbQuery(`UPDATE access_tokens SET access_token = '${data.access_token}', refresh_token = '${data.refresh_token}' WHERE userid = '${bearer[1].userid}' AND scope = 'channel:manage:predictions, channel:read:predictions';`);
 
-              newToken = data.access_token;
-              valid = false;
-            })
-            .catch(err => {
-              helper.dbQuery(`UPDATE permissions SET tw_token = '' WHERE userid = '${bearer[1].userid}';`);
+    //           newToken = data.access_token;
+    //           valid = false;
+    //         })
+    //         .catch(err => {
+    //           helper.dbQuery(`UPDATE permissions SET tw_token = '' WHERE userid = '${bearer[1].userid}';`);
 
-              helper.dumpError(err, "2v2 refresh token.");
-              response.redirect('/');
-            });
+    //           helper.dumpError(err, "2v2 refresh token.");
+    //           response.redirect('/');
+    //         });
 
-          }
-        } else {
-          helper.dbQuery(`UPDATE permissions SET tw_token = '' WHERE userid = '${bearer[1].userid}';`);
+    //       }
+    //     } else {
+    //       helper.dbQuery(`UPDATE permissions SET tw_token = '' WHERE userid = '${bearer[1].userid}';`);
 
-          helper.dumpError(err, "Validating 2v2.");
-          response.redirect('/');
-        }
-      });
+    //       helper.dumpError(err, "Validating 2v2.");
+    //       response.redirect('/');
+    //     }
+    //   });
 
-      scoreBots[bearer[1].userid] = {
-        scoreBot: new tmi.Client({
-          connection: {
-            reconnect: true,
-            secure: true
-          },
-          identity: {
-            username: bearer[1].userid,
-            password: valid?bearer[1].tw_token:newToken
-          },
-          channels: [ request.params.channel ]
-        }),
-        timeout: DateTime.now().plus({ minutes: 30 }).toMillis,
-      };
-      await scoreBots[bearer[1].userid].scoreBot.connect()
-      // @ts-ignore
-      .then(res => {
-        page = page.replace(/#mescore#/g, `You are currently updating scores through your account. If you'd like to stop (and use zHekBot), click <a onclick="nomoscore()">here</a>`);        
-      })
-      .catch(err => {
-        helper.dumpError(err, "Bot connect.");
-        console.log(bearer);
-        console.log(valid);
-        console.log(newToken);
-        page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
-        page = page.replace(/#mescore#/g, 'If you would like the scores to be updated through your account, click <a onclick="mescore()">here</a>');
-      });
-    } else {
-      page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
-      page = page.replace(/#mescore#/g, 'If you would like the scores to be updated through your account, click <a onclick="mescore()">here</a>');
-    }
+    //   scoreBots[bearer[1].userid] = {
+    //     scoreBot: new tmi.Client({
+    //       connection: {
+    //         reconnect: true,
+    //         secure: true
+    //       },
+    //       identity: {
+    //         username: bearer[1].userid,
+    //         password: valid?bearer[1].tw_token:newToken
+    //       },
+    //       channels: [ request.params.channel ]
+    //     }),
+    //     timeout: DateTime.now().plus({ minutes: 30 }).toMillis,
+    //   };
+    //   await scoreBots[bearer[1].userid].scoreBot.connect()
+    //   // @ts-ignore
+    //   .then(res => {
+    //     page = page.replace(/#mescore#/g, `You are currently updating scores through your account. If you'd like to stop (and use zHekBot), click <a onclick="nomoscore()">here</a>`);        
+    //   })
+    //   .catch(err => {
+    //     helper.dumpError(err, "Bot connect.");
+    //     console.log(bearer);
+    //     console.log(valid);
+    //     console.log(newToken);
+    //     page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
+    //     page = page.replace(/#mescore#/g, 'If you would like the scores to be updated through your account, click <a onclick="mescore()">here</a>');
+    //   });
+    // } else {
+    //   page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
+    //   page = page.replace(/#mescore#/g, 'If you would like the scores to be updated through your account, click <a onclick="mescore()">here</a>');
+    // }
 
     response.send(page);
   } catch (err) {
