@@ -1440,6 +1440,10 @@ bot.on('subgift', (channel, username, months, recipient, userstate, methods) => 
   if (subs[username]) {
     subs[username] -= 1;
   } else {
+    if (userIds[channel.substring(1)].subathon) {
+      helper.dbQuery(`INSERT INTO subathon(gifter, subs, dates) VALUES('${username}', ${userstate["msg-param-sender-count"]}, '${new Date()} (${userstate["msg-param-sender-count"]})' 
+        ON CONFLICT(gifter) DO UPDATE SET subs = subs + ${userstate["msg-param-sender-count"]}, dates = dates || '${new Date()} (${userstate["msg-param-sender-count"]})';`);
+    }
     say(channel, `@${username} Thank you for the ${userstate["msg-param-sender-count"] > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs!':'gifted sub to ' + recipient}! huskHype huskLove`, bot);
   }
 
@@ -1454,6 +1458,10 @@ bot.on('anonsubgift', (channel, months, recipient, userstate, methods) => {
   if (subs["anon"]) {
     subs["anon"] -= 1;
   } else {
+    if (userIds[channel.substring(1)].subathon) {
+      helper.dbQuery(`INSERT INTO subathon(gifter, subs, dates) VALUES('anonymous', ${userstate["msg-param-sender-count"]}, '${new Date()} (${userstate["msg-param-sender-count"]})' 
+        ON CONFLICT(gifter) DO UPDATE SET subs = subs + ${userstate["msg-param-sender-count"]}, dates = dates || '${new Date()} (${userstate["msg-param-sender-count"]})';`);
+    }
     say(channel, `Anonymous, thank you for the ${userstate["msg-param-sender-count"] > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs':'gifted sub to ' + recipient}! huskHype huskLove`, bot);
   }
 
@@ -1467,6 +1475,11 @@ bot.on('submysterygift', (channel, username, numbOfSubs, userstate, methods) => 
   if (!userIds[channel.substring(1)].subs) return;
   subs[username] = numbOfSubs;
 
+  if (userIds[channel.substring(1)].subathon) {
+    helper.dbQuery(`INSERT INTO subathon(gifter, subs, dates) VALUES('${username}', ${numbOfSubs}, '${new Date()} (${numbOfSubs})' 
+      ON CONFLICT(gifter) DO UPDATE SET subs = subs + ${numbOfSubs}, dates = dates || '${new Date()} (${numbOfSubs})';`);
+  }
+
   console.log('submysterygift ' + username + ' ' + numbOfSubs);
   say(channel, `${username} Thank you for the ${numbOfSubs > 1?''+ numbOfSubs + ' gifted subs':'gifted sub'}! huskHype huskLove`, bot);
 });
@@ -1477,6 +1490,11 @@ bot.on('submysterygift', (channel, username, numbOfSubs, userstate, methods) => 
 bot.on('anonsubmysterygift', (channel, numbOfSubs, userstate, methods) => {
   if (!userIds[channel.substring(1)].subs) return;
   subs["anon"] = numbOfSubs;
+
+  if (userIds[channel.substring(1)].subathon) {
+    helper.dbQuery(`INSERT INTO subathon(gifter, subs, dates) VALUES('anonymous', ${numbOfSubs}, '${new Date()} (${numbOfSubs})' 
+      ON CONFLICT(gifter) DO UPDATE SET subs = subs + ${numbOfSubs}, dates = dates || '${new Date()} (${numbOfSubs})';`);
+  }
 
   console.log('submysterygift ' + numbOfSubs);
   say(channel, `Anonymous, thank you for the ${numbOfSubs > 1?''+ numbOfSubs + ' gifted subs':'gifted sub'}! huskHype huskLove`, bot);
@@ -4597,6 +4615,11 @@ app.post('/eventsub', async (req, res) => {
               }
               if (online[notification.event.broadcaster_user_login.toLowerCase()]) delete online[notification.event.broadcaster_user_login.toLowerCase()];
               if (notification.event.broadcaster_user_login.toLowerCase() === 'huskerrs') {
+                if (!userIds['huskerrs'].subathon && new Date(2023, 10, 9) <= new Date()) {
+                  userIds['huskerrs'].subathon = true;
+                  helper.dbQuery(`UPDATE all_users SET subathon = true::bool WHERE user_id = 'huskerrs';`);
+                }
+
                 let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
                 if (!rows || !rows[0].access_token) throw new Error("No access token for notis.");
 
