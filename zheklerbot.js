@@ -1418,6 +1418,9 @@ async function duelExpiration() {
 // @ts-ignore
 bot.on('subscription', (channel, username, method, message, userstate) => {
   if (!userIds[channel.substring(1)].subs) return;
+  if (userIds[channel.substring(1)].subathon) {
+    helper.dbQuery(`INSERT INTO subathon(gifter, subs) VALUES('SubsKerrs', 1) ON CONFLICT(gifter) DO UPDATE SET subs = subathon.subs + 1;`);
+  }
   say(channel, `${username} Thank you for the sub, welcome to the Huskies huskHype huskLove`, bot);
 });
 
@@ -1426,6 +1429,7 @@ bot.on('subscription', (channel, username, method, message, userstate) => {
 // @ts-ignore
 bot.on('resub', (channel, username, months, message, userstate, methods) => {
   if (!userIds[channel.substring(1)].subs) return;
+  helper.dbQuery(`INSERT INTO subathon(gifter, subs) VALUES('SubsKerrs', 1) ON CONFLICT(gifter) DO UPDATE SET subs = subathon.subs + 1;`);
   say(channel, `${username} Thank you for the ${userstate['msg-param-cumulative-months']} month resub huskHype huskLove`, bot);
 });
 
