@@ -1591,7 +1591,8 @@
             .then(async res => {
                if (res.status == 200) {
                   let subs = await res.json();
-                  document.getElementById('subcount').innerHTML = subs.subs.subs;
+                  console.log(res);
+                  document.getElementById('subcount').innerHTML = subs.subs[0].subs;
                   
                   let table = document.getElementsByClassName('table-1')[0];
                   let total = 0;
@@ -1609,7 +1610,6 @@
             })
          }
 
-         update();
          setInterval(update(), 30000);
          
          async function twitch() {
