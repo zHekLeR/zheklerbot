@@ -1615,7 +1615,7 @@
             })
          }
 
-         setInterval(await update(), 30000);
+         setInterval(async function() { await update(); }, 30000);
          
          async function twitch() {
            await fetch(`/login`, {
