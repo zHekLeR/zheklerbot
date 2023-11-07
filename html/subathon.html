@@ -1587,7 +1587,7 @@
          var url = `https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=${client_id}&force_verify=true&redirect_uri=https://www.zhekbot.com/redirect&scope=&state=${state}`;
          
          async function update() {
-            document.getElementsByClassName('table-1').innerHTML = `<tr>
+            document.getElementsByClassName('table-1')[0].innerHTML = `<tr>
                                                 <th class="th-1" style="text-align: center;">Username</th>
                                                 <th class="th-2" style="text-align: center;"># of Gifted</th>
                                              </tr>`;
