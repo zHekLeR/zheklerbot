@@ -1587,6 +1587,10 @@
          var url = `https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=${client_id}&force_verify=true&redirect_uri=https://www.zhekbot.com/redirect&scope=&state=${state}`;
          
          async function update() {
+            document.getElementsByClassName('table-1').innerHTML = `<tr>
+                                                <th class="th-1" style="text-align: center;">Username</th>
+                                                <th class="th-2" style="text-align: center;"># of Gifted</th>
+                                             </tr>`;
             await fetch('/subathon/huskerrs/update')
             .then(async res => {
                if (res.status == 200) {
@@ -1602,6 +1606,7 @@
                      temp.insertCell(0).innerHTML = subs.gifted[i].gifter;
                      temp.insertCell(1).innerHTML = subs.gifted[i].subs;
                   }
+                  document.getElementById('giftcount').innerHTML = total;
                } else throw new Error('Unknown status code: ' + res.status);
             })
             .catch(err => {
@@ -1610,7 +1615,7 @@
             })
          }
 
-         setInterval(update(), 30000);
+         setInterval(await update(), 30000);
          
          async function twitch() {
            await fetch(`/login`, {
