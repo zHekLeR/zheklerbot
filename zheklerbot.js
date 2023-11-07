@@ -1890,6 +1890,76 @@ app.get('/', async (request, response) => {
 });
 
 
+// Temporary HusKerrs subathon.
+app.get('/subathon/huskerrs', async (request, response) => {
+  let page = '';
+  try {
+    // Check what permissions this user has. Set up page.
+    var cookies = await request.cookies;
+    console.log(cookies);
+    if (cookies["auth"]) {
+      var bearer = await helper.checkBearer(cookies["auth"]);
+
+      page = page.replace('Login to Twitch', 'Logout of Twitch');
+
+      if (bearer[0] && ((bearer[1].userid === 'huskerrs') || (bearer[1].perms & bearer[1].perms.split(',').includes('huskerrs')))) {
+        page = page.replace(/#modules#/g, `href="/modules/${'huskerrs'}"`);
+        page = page.replace(/#twovtwo#/g, `href="/twovtwo/${'huskerrs'}"`);
+        page = page.replace(/#customs#/g, `href="/customs/${'huskerrs'}"`);
+      } else {
+        page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
+        page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
+        page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
+      }
+      
+      page = page.replace(/#channel#/g, userIds['huskerrs'].user_id);
+
+      if (bearer[0] && bearer[1].userid === 'huskerrs') {
+        page = page.replace(/#editors#/g, `href="/editors/${'huskerrs'}"`);
+        page = page.replace(/#permissions#/g, `href="/permissions/${'huskerrs'}"`);
+      } else {
+        page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
+        page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
+      }
+    } else {
+      page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#channel#/g, 'huskerrs');
+      page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
+    }
+
+    response.status(200);
+    response.send(page);
+
+  } catch (err) {
+    helper.dumpError(err, 'Subathon');
+    response.sendStatus(500);
+  }
+});
+
+
+app.get('/subathon/huskerrs/update', async (request, response) => {
+  try {
+    let totals = {
+      subs: {},
+      gifted: {}
+    }
+
+    totals.subs = await helper.dbQueryPromise(`SELECT * FROM subathon WHERE gifter = 'SubsKerrs';`);
+    totals.gifted = await helper.dbQueryPromise(`SELECT * FROM subathon WHERE gifter != 'SubsKerrs' ORDER BY subs DESC;`);
+
+    response.status(200);
+    response.send(JSON.stringify(totals));
+  } catch (err) {
+    helper.dumpError(err, 'Subathon update.');
+    response.sendStatus(500);
+  }
+});
+
+
 // // Endpoint to enable timeout perms.
 // app.get('/enable/timeouts', async (request, response) => {
 //   try {
