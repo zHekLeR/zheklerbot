@@ -1892,7 +1892,7 @@ app.get('/', async (request, response) => {
 
 // Temporary HusKerrs subathon.
 app.get('/subathon/huskerrs', async (request, response) => {
-  let page = '';
+  let page = fs.readFileSync('./html/subathon.html').toString('utf-8');
   try {
     // Check what permissions this user has. Set up page.
     var cookies = await request.cookies;
