@@ -1960,6 +1960,24 @@ app.get('/subathon/huskerrs/update', async (request, response) => {
 });
 
 
+app.get('/subathon/huskerrs/browsersource', async (request, response) => {
+  try {
+    let subs = await helper.dbQueryPromise(`SELECT * FROM subathon WHERE gifter = 'SubsKerrs';`);
+    let gifted = await helper.dbQueryPromise(`SELECT SUM(subs) AS gifted FROM subathon WHERE gifter != 'SubsKerrs';`);
+
+    let page = fs.readFileSync('./html/subathon_source.html').toString('utf-8');
+    page = page.replace('#subs#', subs[0].subs);
+    page = page.replace('#gifted#', gifted[0].gifted);
+
+    response.status(200);
+    response.send(page);
+  } catch (err) {
+    helper.dumpError(err, 'Browser source.');
+    response.sendStatus(500);
+  }
+});
+
+
 // // Endpoint to enable timeout perms.
 // app.get('/enable/timeouts', async (request, response) => {
 //   try {
