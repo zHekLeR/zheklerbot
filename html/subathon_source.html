@@ -1,20 +1,18 @@
 <!doctype html>
 <html>
-    <div id="subs" style="color: #14437C; font-size: 50px;">Subs/Resubs: #subs#</div>
-    <div id="gifted" style="color: #14437C; font-size: 50px;">Gifted Subs: #gifted#</div>
+    <div id="subs" style="color: #14437C; font-size: 50px;">Subs: #subs#</div>
     <script>
         function update() {
             fetch('/subathon/huskerrs/update')
             .then(async res => {
                if (res.status == 200) {
                   let subs = await res.json();
-                  document.getElementById('subs').innerHTML = `Subs/Resubs: ${subs.subs[0]?.subs || 0}`;
                   
-                  let total = 0;
+                  let total = subs.subs[0]?.subs || 0;
                   for (let i = 0; i < subs.gifted.length; i++) {
                      total += subs.gifted[i].subs;
                   }
-                  document.getElementById('gifted').innerHTML = `Gifted Subs: ${total}`;
+                  document.getElementById('subs').innerHTML = `Subs: ${total}`;
                } else throw new Error('Unknown status code: ' + res.status);
             })
             .catch(err => {
