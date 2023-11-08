@@ -1587,10 +1587,11 @@
          var url = `https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=${client_id}&force_verify=true&redirect_uri=https://www.zhekbot.com/redirect&scope=&state=${state}`;
          
          async function update() {
-            document.getElementsByClassName('table-1')[0].innerHTML = `<tr>
-                                                <th class="th-1" style="text-align: center;">Username</th>
-                                                <th class="th-2" style="text-align: center;"># of Gifted</th>
-                                             </tr>`;
+            document.getElementsByClassName('table-1')[0].innerHTML
+            let base = `<tr>
+                           <th class="th-1" style="text-align: center;">Username</th>
+                           <th class="th-2" style="text-align: center;"># of Gifted</th>
+                        </tr>`;
             await fetch('/subathon/huskerrs/update')
             .then(async res => {
                if (res.status == 200) {
@@ -1600,13 +1601,13 @@
                   
                   let table = document.getElementsByClassName('table-1')[0];
                   let total = 0;
+                  let temp = '';
                   for (let i = 0; i < subs.gifted.length; i++) {
                      total += subs.gifted[i].subs;
-                     let temp = table.insertRow();
-                     temp.insertCell(0).innerHTML = subs.gifted[i].gifter;
-                     temp.insertCell(1).innerHTML = subs.gifted[i].subs;
+                     temp += `<tr><th>${subs.gifted[i].gifter}</th><th>${subs.gifted[i].subs}</th></tr>`;
                   }
                   document.getElementById('giftcount').innerHTML = total;
+                  table.innerHTML = base + temp;
                } else throw new Error('Unknown status code: ' + res.status);
             })
             .catch(err => {
