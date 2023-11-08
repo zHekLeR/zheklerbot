@@ -1596,7 +1596,7 @@
                if (res.status == 200) {
                   let subs = await res.json();
                   console.log(res);
-                  document.getElementById('subcount').innerHTML = subs.subs[0].subs;
+                  document.getElementById('subcount').innerHTML = subs.subs[0]?.subs || 0;
                   
                   let table = document.getElementsByClassName('table-1')[0];
                   let total = 0;
