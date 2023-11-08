@@ -1966,8 +1966,8 @@ app.get('/subathon/huskerrs/browsersource', async (request, response) => {
     let gifted = await helper.dbQueryPromise(`SELECT SUM(subs) AS gifted FROM subathon WHERE gifter != 'SubsKerrs';`);
 
     let page = fs.readFileSync('./html/subathon_source.html').toString('utf-8');
-    page = page.replace('#subs#', subs[0].subs);
-    page = page.replace('#gifted#', gifted[0].gifted);
+    page = page.replace('#subs#', subs[0]?.subs || 0);
+    page = page.replace('#gifted#', gifted[0]?.gifted || 0);
 
     response.status(200);
     response.send(page);
