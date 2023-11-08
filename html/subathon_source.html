@@ -8,13 +8,13 @@
             .then(async res => {
                if (res.status == 200) {
                   let subs = await res.json();
-                  document.getElementById('subs').innerHTML = subs.subs[0]?.subs || 0;
+                  document.getElementById('subs').innerHTML = `Subs/Resubs: ${subs.subs[0]?.subs || 0}`;
                   
                   let total = 0;
                   for (let i = 0; i < subs.gifted.length; i++) {
                      total += subs.gifted[i].subs;
                   }
-                  document.getElementById('gifed').innerHTML = total;
+                  document.getElementById('gifted').innerHTML = `Gifted Subs: ${total}`;
                } else throw new Error('Unknown status code: ' + res.status);
             })
             .catch(err => {
