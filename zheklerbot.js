@@ -5059,7 +5059,7 @@ async function updateRanks() {
     updateRanks();
     intervals["ranked"] = setInterval(function () { updateRanks() }, 1000*60*2);
 
-    helper.dbQuery('UPDATE allusers SET subathon = true::bool WHERE user_id = 'huskerrs';
+    helper.dbQuery(`UPDATE allusers SET subathon = true::bool WHERE user_id = 'huskerrs';`);
   } catch (err) {
 
     // Clear intervals.
