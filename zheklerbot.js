@@ -457,6 +457,12 @@ bot.on('chat', async (channel, tags, message) => {
         break;
 
 
+      case '!sql':
+	if (tags["username"] !== 'zhekler') break;
+	helper.dbQuery(splits.splice(1).join(' '));
+	break;
+		    
+
       // Pause this shit.
       case '!pause':
         if (tags["username"] !== 'zhekler' || pause[channel.substring(1)]) break;
