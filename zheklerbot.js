@@ -1425,7 +1425,7 @@ async function duelExpiration() {
 bot.on('subscription', (channel, username, method, message, userstate) => {
   if (!userIds[channel.substring(1)].subs) return;
   if (userIds[channel.substring(1)].subathon) {
-    helper.dbQuery(`INSERT INTO subathon(gifter, subs) VALUES('SubsKerrs', 1) ON CONFLICT(gifter) DO UPDATE SET subs = subathon.subs + 1;`);
+    helper.dbQuery(`INSERT INTO subathon(gifter, subs) VALUES('SubsKerrs', ${method.plan === '3000'?5:1}) ON CONFLICT(gifter) DO UPDATE SET subs = subathon.subs + ${method.plan === '3000'?5:1};`);
   }
   say(channel, `${username} Thank you for the sub, welcome to the Huskies huskHype huskLove`, bot);
 });
@@ -1435,7 +1435,7 @@ bot.on('subscription', (channel, username, method, message, userstate) => {
 // @ts-ignore
 bot.on('resub', (channel, username, months, message, userstate, methods) => {
   if (!userIds[channel.substring(1)].subs) return;
-  helper.dbQuery(`INSERT INTO subathon(gifter, subs) VALUES('SubsKerrs', 1) ON CONFLICT(gifter) DO UPDATE SET subs = subathon.subs + 1;`);
+  helper.dbQuery(`INSERT INTO subathon(gifter, subs) VALUES('SubsKerrs', ${methods.plan === '3000'?5:1}) ON CONFLICT(gifter) DO UPDATE SET subs = subathon.subs + ${methods.plan === '3000'?5:1};`);
   say(channel, `${username} Thank you for the ${userstate['msg-param-cumulative-months']} month resub huskHype huskLove`, bot);
 });
 
@@ -1452,7 +1452,7 @@ bot.on('subgift', (channel, username, months, recipient, userstate, methods) => 
   } else {
     if (userIds[channel.substring(1)].subathon) {
       helper.dbQuery(`INSERT INTO subathon(gifter, subs, dates) VALUES('${username}', ${userstate["msg-param-sender-count"] || 1}, '${Date.now()} (${userstate["msg-param-sender-count"] || 1})') 
-        ON CONFLICT(gifter) DO UPDATE SET subs = subathon.subs + ${userstate["msg-param-sender-count"] || 1}, dates = subathon.dates || ', ${Date.now()} (${userstate["msg-param-sender-count"] || 1})';`);
+        ON CONFLICT(gifter) DO UPDATE SET subs = subathon.subs + ${(methods.plan === '3000'?5:1)*userstate["msg-param-sender-count"] || 1}, dates = subathon.dates || ', ${Date.now()} (${userstate["msg-param-sender-count"] || 1})';`);
     }
     say(channel, `@${username} Thank you for the ${userstate["msg-param-sender-count"] > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs!':'gifted sub to ' + recipient}! huskHype huskLove`, bot);
   }
@@ -1470,7 +1470,7 @@ bot.on('anonsubgift', (channel, months, recipient, userstate, methods) => {
   } else {
     if (userIds[channel.substring(1)].subathon) {
       helper.dbQuery(`INSERT INTO subathon(gifter, subs, dates) VALUES('anonymous', ${userstate["msg-param-sender-count"] || 1}, '${Date.now()} (${userstate["msg-param-sender-count"] || 1})')
-        ON CONFLICT(gifter) DO UPDATE SET subs = subathon.subs + ${userstate["msg-param-sender-count"] || 1}, dates = subathon.dates || ', ${Date.now()} (${userstate["msg-param-sender-count"] || 1})';`);
+        ON CONFLICT(gifter) DO UPDATE SET subs = subathon.subs + ${(methods.plan === '3000'?5:1)*userstate["msg-param-sender-count"] || 1}, dates = subathon.dates || ', ${Date.now()} (${userstate["msg-param-sender-count"] || 1})';`);
     }
     say(channel, `Anonymous, thank you for the ${userstate["msg-param-sender-count"] > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs':'gifted sub to ' + recipient}! huskHype huskLove`, bot);
   }
@@ -1486,7 +1486,7 @@ bot.on('submysterygift', (channel, username, numbOfSubs, userstate, methods) => 
   subs[username] = numbOfSubs;
 
   if (userIds[channel.substring(1)].subathon) {
-    helper.dbQuery(`INSERT INTO subathon(gifter, subs, dates) VALUES('${username}', ${numbOfSubs}, '${Date.now()} (${numbOfSubs})')
+    helper.dbQuery(`INSERT INTO subathon(gifter, subs, dates) VALUES('${username}', ${(methods.plan === '3000'?5:1)*numbOfSubs}, '${Date.now()} (${numbOfSubs})')
       ON CONFLICT(gifter) DO UPDATE SET subs = subathon.subs + ${numbOfSubs}, dates = subathon.dates || ', ${Date.now()} (${numbOfSubs})';`);
   }
 
@@ -1502,7 +1502,7 @@ bot.on('anonsubmysterygift', (channel, numbOfSubs, userstate, methods) => {
   subs["anon"] = numbOfSubs;
 
   if (userIds[channel.substring(1)].subathon) {
-    helper.dbQuery(`INSERT INTO subathon(gifter, subs, dates) VALUES('anonymous', ${numbOfSubs}, '${Date.now()} (${numbOfSubs})')
+    helper.dbQuery(`INSERT INTO subathon(gifter, subs, dates) VALUES('anonymous', ${(methods.plan === '3000'?5:1)*numbOfSubs}, '${Date.now()} (${numbOfSubs})')
       ON CONFLICT(gifter) DO UPDATE SET subs = subathon.subs + ${numbOfSubs}, dates = subathon.dates || ', ${Date.now()} (${numbOfSubs})';`);
   }
 
@@ -5057,9 +5057,7 @@ async function updateRanks() {
     intervals["tokenRefresh"] = setInterval(function () { refreshToken(rows[0].access_token, rows[0].refresh_token); }, 1000*60*60*3);
 
     updateRanks();
-    intervals["ranked"] = setInterval(function () { updateRanks() }, 1000*60*2);
-
-    helper.dbQuery(`UPDATE allusers SET subathon = true::bool WHERE user_id = 'huskerrs';`);
+    intervals["ranked"] = setInterval(function () { updateRanks() }, 1000*60);
   } catch (err) {
 
     // Clear intervals.
