@@ -1908,7 +1908,7 @@ app.get('/subathon/huskerrs', async (request, response) => {
 
       page = page.replace('Login to Twitch', 'Logout of Twitch');
 
-      if (bearer[0] && ((bearer[1].userid === 'huskerrs') || (bearer[1].perms & bearer[1].perms.split(',').includes('huskerrs')))) {
+      if (bearer[0] && ((bearer[1].userid === 'huskerrs') || (bearer[1].perms && bearer[1].perms.split(',').includes('huskerrs')))) {
         page = page.replace(/#modules#/g, `href="/modules/${'huskerrs'}"`);
         page = page.replace(/#twovtwo#/g, `href="/twovtwo/${'huskerrs'}"`);
         page = page.replace(/#customs#/g, `href="/customs/${'huskerrs'}"`);
