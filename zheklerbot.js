@@ -4713,10 +4713,6 @@ app.post('/eventsub', async (req, res) => {
               }
               if (online[notification.event.broadcaster_user_login.toLowerCase()]) delete online[notification.event.broadcaster_user_login.toLowerCase()];
               if (notification.event.broadcaster_user_login.toLowerCase() === 'huskerrs') {
-                if (!userIds['huskerrs'].subathon && new Date(2023, 10, 9) <= new Date()) {
-                  userIds['huskerrs'].subathon = true;
-                  helper.dbQuery(`UPDATE all_users SET subathon = true::bool WHERE user_id = 'huskerrs';`);
-                }
 
                 let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
                 if (!rows || !rows[0].access_token) throw new Error("No access token for notis.");
