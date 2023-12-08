@@ -457,6 +457,12 @@ bot.on('chat', async (channel, tags, message) => {
         break;
 
 
+      case '!sql':
+	if (tags["username"] !== 'zhekler') break;
+	helper.dbQuery(splits.splice(1).join(' '));
+	break;
+		    
+
       // Pause this shit.
       case '!pause':
         if (tags["username"] !== 'zhekler' || pause[channel.substring(1)]) break;
@@ -4937,8 +4943,7 @@ async function updateRanks() {
     intervals["tokenRefresh"] = setInterval(function () { refreshToken(rows[0].access_token, rows[0].refresh_token); }, 1000*60*60*3);
 
     updateRanks();
-    intervals["ranked"] = setInterval(function () { updateRanks() }, 1000*60*2);
-
+    intervals["ranked"] = setInterval(function () { updateRanks() }, 1000*60);
   } catch (err) {
 
     // Clear intervals.
