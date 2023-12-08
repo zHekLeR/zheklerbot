@@ -1418,9 +1418,6 @@ async function duelExpiration() {
 // @ts-ignore
 bot.on('subscription', (channel, username, method, message, userstate) => {
   if (!userIds[channel.substring(1)].subs) return;
-  if (userIds[channel.substring(1)].subathon) {
-    helper.dbQuery(`INSERT INTO subathon(gifter, subs) VALUES('SubsKerrs', 1) ON CONFLICT(gifter) DO UPDATE SET subs = subathon.subs + 1;`);
-  }
   say(channel, `${username} Thank you for the sub, welcome to the Huskies huskHype huskLove`, bot);
 });
 
@@ -1429,7 +1426,6 @@ bot.on('subscription', (channel, username, method, message, userstate) => {
 // @ts-ignore
 bot.on('resub', (channel, username, months, message, userstate, methods) => {
   if (!userIds[channel.substring(1)].subs) return;
-  helper.dbQuery(`INSERT INTO subathon(gifter, subs) VALUES('SubsKerrs', 1) ON CONFLICT(gifter) DO UPDATE SET subs = subathon.subs + 1;`);
   say(channel, `${username} Thank you for the ${userstate['msg-param-cumulative-months']} month resub huskHype huskLove`, bot);
 });
 
@@ -1444,10 +1440,6 @@ bot.on('subgift', (channel, username, months, recipient, userstate, methods) => 
   if (subs[username]) {
     subs[username] -= 1;
   } else {
-    if (userIds[channel.substring(1)].subathon) {
-      helper.dbQuery(`INSERT INTO subathon(gifter, subs, dates) VALUES('${username}', ${userstate["msg-param-sender-count"] || 1}, '${Date.now()} (${userstate["msg-param-sender-count"] || 1})') 
-        ON CONFLICT(gifter) DO UPDATE SET subs = subathon.subs + ${userstate["msg-param-sender-count"] || 1}, dates = subathon.dates || ', ${Date.now()} (${userstate["msg-param-sender-count"] || 1})';`);
-    }
     say(channel, `@${username} Thank you for the ${userstate["msg-param-sender-count"] > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs!':'gifted sub to ' + recipient}! huskHype huskLove`, bot);
   }
 
@@ -1462,10 +1454,6 @@ bot.on('anonsubgift', (channel, months, recipient, userstate, methods) => {
   if (subs["anon"]) {
     subs["anon"] -= 1;
   } else {
-    if (userIds[channel.substring(1)].subathon) {
-      helper.dbQuery(`INSERT INTO subathon(gifter, subs, dates) VALUES('anonymous', ${userstate["msg-param-sender-count"] || 1}, '${Date.now()} (${userstate["msg-param-sender-count"] || 1})')
-        ON CONFLICT(gifter) DO UPDATE SET subs = subathon.subs + ${userstate["msg-param-sender-count"] || 1}, dates = subathon.dates || ', ${Date.now()} (${userstate["msg-param-sender-count"] || 1})';`);
-    }
     say(channel, `Anonymous, thank you for the ${userstate["msg-param-sender-count"] > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs':'gifted sub to ' + recipient}! huskHype huskLove`, bot);
   }
 
@@ -1479,11 +1467,6 @@ bot.on('submysterygift', (channel, username, numbOfSubs, userstate, methods) => 
   if (!userIds[channel.substring(1)].subs) return;
   subs[username] = numbOfSubs;
 
-  if (userIds[channel.substring(1)].subathon) {
-    helper.dbQuery(`INSERT INTO subathon(gifter, subs, dates) VALUES('${username}', ${numbOfSubs}, '${Date.now()} (${numbOfSubs})')
-      ON CONFLICT(gifter) DO UPDATE SET subs = subathon.subs + ${numbOfSubs}, dates = subathon.dates || ', ${Date.now()} (${numbOfSubs})';`);
-  }
-
   console.log('submysterygift ' + username + ' ' + numbOfSubs);
   say(channel, `${username} Thank you for the ${numbOfSubs > 1?''+ numbOfSubs + ' gifted subs':'gifted sub'}! huskHype huskLove`, bot);
 });
@@ -1494,11 +1477,6 @@ bot.on('submysterygift', (channel, username, numbOfSubs, userstate, methods) => 
 bot.on('anonsubmysterygift', (channel, numbOfSubs, userstate, methods) => {
   if (!userIds[channel.substring(1)].subs) return;
   subs["anon"] = numbOfSubs;
-
-  if (userIds[channel.substring(1)].subathon) {
-    helper.dbQuery(`INSERT INTO subathon(gifter, subs, dates) VALUES('anonymous', ${numbOfSubs}, '${Date.now()} (${numbOfSubs})')
-      ON CONFLICT(gifter) DO UPDATE SET subs = subathon.subs + ${numbOfSubs}, dates = subathon.dates || ', ${Date.now()} (${numbOfSubs})';`);
-  }
 
   console.log('submysterygift ' + numbOfSubs);
   say(channel, `Anonymous, thank you for the ${numbOfSubs > 1?''+ numbOfSubs + ' gifted subs':'gifted sub'}! huskHype huskLove`, bot);
@@ -1886,94 +1864,6 @@ app.get('/', async (request, response) => {
     });
     response.status(500);
     response.redirect('/');
-  }
-});
-
-
-// Temporary HusKerrs subathon.
-app.get('/subathon/huskerrs', async (request, response) => {
-  let page = fs.readFileSync('./html/subathon.html').toString('utf-8');
-  try {
-    // Check what permissions this user has. Set up page.
-    var cookies = await request.cookies;
-    console.log(cookies);
-    if (cookies["auth"]) {
-      var bearer = await helper.checkBearer(cookies["auth"]);
-
-      page = page.replace('Login to Twitch', 'Logout of Twitch');
-
-      if (bearer[0] && ((bearer[1].userid === 'huskerrs') || (bearer[1].perms & bearer[1].perms.split(',').includes('huskerrs')))) {
-        page = page.replace(/#modules#/g, `href="/modules/${'huskerrs'}"`);
-        page = page.replace(/#twovtwo#/g, `href="/twovtwo/${'huskerrs'}"`);
-        page = page.replace(/#customs#/g, `href="/customs/${'huskerrs'}"`);
-      } else {
-        page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
-        page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
-        page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
-      }
-      
-      page = page.replace(/#channel#/g, userIds['huskerrs'].user_id);
-
-      if (bearer[0] && bearer[1].userid === 'huskerrs') {
-        page = page.replace(/#editors#/g, `href="/editors/${'huskerrs'}"`);
-        page = page.replace(/#permissions#/g, `href="/permissions/${'huskerrs'}"`);
-      } else {
-        page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
-        page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
-      }
-    } else {
-      page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
-      page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
-      page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
-      page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
-      page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
-      page = page.replace(/#channel#/g, 'huskerrs');
-      page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
-    }
-
-    response.status(200);
-    response.send(page);
-
-  } catch (err) {
-    helper.dumpError(err, 'Subathon');
-    response.sendStatus(500);
-  }
-});
-
-
-app.get('/subathon/huskerrs/update', async (request, response) => {
-  try {
-    let totals = {
-      subs: {},
-      gifted: {}
-    }
-
-    totals.subs = await helper.dbQueryPromise(`SELECT * FROM subathon WHERE gifter = 'SubsKerrs';`);
-    totals.gifted = await helper.dbQueryPromise(`SELECT * FROM subathon WHERE gifter != 'SubsKerrs' ORDER BY subs DESC;`);
-
-    response.status(200);
-    response.send(JSON.stringify(totals));
-  } catch (err) {
-    helper.dumpError(err, 'Subathon update.');
-    response.sendStatus(500);
-  }
-});
-
-
-app.get('/subathon/huskerrs/browsersource', async (request, response) => {
-  try {
-    let subs = await helper.dbQueryPromise(`SELECT * FROM subathon WHERE gifter = 'SubsKerrs';`);
-    let gifted = await helper.dbQueryPromise(`SELECT SUM(subs) AS gifted FROM subathon WHERE gifter != 'SubsKerrs';`);
-
-    let page = fs.readFileSync('./html/subathon_source.html').toString('utf-8');
-    page = page.replace('#subs#', subs[0]?.subs || 0);
-    page = page.replace('#gifted#', gifted[0]?.gifted || 0);
-
-    response.status(200);
-    response.send(page);
-  } catch (err) {
-    helper.dumpError(err, 'Browser source.');
-    response.sendStatus(500);
   }
 });
 
@@ -3769,27 +3659,27 @@ app.get ('/customs/:channel', async (request, response) => {
     }
 
     // Currently disabled.
-    // var rows = await helper.dbQueryPromise(`SELECT * FROM customs WHERE user_id = '${request.params.channel}';`);
+    var rows = await helper.dbQueryPromise(`SELECT * FROM customs WHERE user_id = '${request.params.channel}';`);
 
-    // var multis = [];
-    // if (!rows || !rows.length) {
-    //   multis.push('Multipliers not defined. Please use the !setmultipliers command in chat.');
-    // } else {
-    //   var raw = rows[0].multipliers.split(' ');
-    //   for (var i = 0; i < raw.length/2; i++) {
-    //     var temp = '';
-    //     if (i + 1 >= raw.length/2) {
-    //       temp = `${addEnd(raw[2*i])}+ : ${raw[2*i + 1]}x`;
-    //     } else if (parseInt(raw[2*i]) + 1 === parseInt(raw[2*i + 2])) {
-    //       temp = `${addEnd(raw[2*i])} : ${raw[2*i + 1]}x`;
-    //     } else {
-    //       temp = `${addEnd(raw[2*i])}-${addEnd(parseInt(raw[2*i + 2]) - 1)} : ${raw[2*i + 1]}x`;
-    //     }
-    //     multis.push(temp);
-    //   }
-    // }
+    var multis = [];
+    if (!rows || !rows.length) {
+      multis.push('Multipliers not defined. Please use the !setmultipliers command in chat.');
+    } else {
+      var raw = rows[0].multipliers.split(' ');
+      for (var i = 0; i < raw.length/2; i++) {
+        var temp = '';
+        if (i + 1 >= raw.length/2) {
+          temp = `${addEnd(raw[2*i])}+ : ${raw[2*i + 1]}x`;
+        } else if (parseInt(raw[2*i]) + 1 === parseInt(raw[2*i + 2])) {
+          temp = `${addEnd(raw[2*i])} : ${raw[2*i + 1]}x`;
+        } else {
+          temp = `${addEnd(raw[2*i])}-${addEnd(parseInt(raw[2*i + 2]) - 1)} : ${raw[2*i + 1]}x`;
+        }
+        multis.push(temp);
+      }
+    }
 
-    // page = page.replace(/#multipliers#/g, multis.join('<br>'));
+    page = page.replace(/#multipliers#/g, multis.join('<br>'));
 
     response.send(page);
   } catch (err) {
@@ -4707,10 +4597,6 @@ app.post('/eventsub', async (req, res) => {
               }
               if (online[notification.event.broadcaster_user_login.toLowerCase()]) delete online[notification.event.broadcaster_user_login.toLowerCase()];
               if (notification.event.broadcaster_user_login.toLowerCase() === 'huskerrs') {
-                if (!userIds['huskerrs'].subathon && new Date(2023, 10, 9) <= new Date()) {
-                  userIds['huskerrs'].subathon = true;
-                  helper.dbQuery(`UPDATE all_users SET subathon = true::bool WHERE user_id = 'huskerrs';`);
-                }
 
                 let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
                 if (!rows || !rows[0].access_token) throw new Error("No access token for notis.");
