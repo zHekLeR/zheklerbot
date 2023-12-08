@@ -3651,7 +3651,7 @@ app.get ('/customs/:channel', async (request, response) => {
     }
 
     // Set up page.
-    var page = fs.readFileSync('./html/customs.html').toString('utf-8');
+    var page = fs.readFileSync('./html/customs2.html').toString('utf-8');
     page = page.replace(/Login to Twitch/g, "Logout of Twitch");
     page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
     page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
