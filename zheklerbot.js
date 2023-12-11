@@ -413,7 +413,7 @@ bot.on('chat', async (channel, tags, message) => {
           Some run of the mill commands to set up zHekBot.
       ####################################################################################################################*/
       // Enable command.
-      case '!enable': 
+      case '!enablecom': 
         if (tags['username'] !== channel.substring(1) && !tags['mod']) break;
         if (coms.indexOf(splits[1]) < 0) break;
         coms.splice(coms.indexOf(splits[1]), 1);
@@ -421,7 +421,7 @@ bot.on('chat', async (channel, tags, message) => {
         helper.dbQuery(`UPDATE allusers SET disabled = '${coms.join(',')}' WHERE user_id = '${channel.substring(1)}';`);
         break;
 
-      case '!disable':
+      case '!disablecom':
         if (tags['username'] !== channel.substring(1) && !tags['mod']) break;
         if (coms.indexOf(splits[1]) > -1) break;
         coms.push(splits[1]);
@@ -756,8 +756,8 @@ bot.on('chat', async (channel, tags, message) => {
       case '!customon':
         if (userIds[channel.substring(1)].customs || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
         if (channel.substring(1) === 'huskerrs') {
-          say(channel, '!enable !score false', bot);
-          say(channel, '!enable !mc false', bot);
+          say(channel, '!disable !score', bot);
+          say(channel, '!disable !mc', bot);
         } else {
           say(channel, 'Custom tourney scoring enabled.', bot);
         }
@@ -773,8 +773,8 @@ bot.on('chat', async (channel, tags, message) => {
       case '!customoff':
         if (!userIds[channel.substring(1)].customs || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;;
         if (channel.substring(1) === 'huskerrs') {
-          say(channel, '!enable !score true', bot);
-          say(channel, '!enable !mc true', bot);
+          say(channel, '!enable !score', bot);
+          say(channel, '!enable !mc', bot);
         } else {
           say(channel, 'Custom tourney scoring disabled.', bot);
         }
@@ -1092,7 +1092,7 @@ bot.on('chat', async (channel, tags, message) => {
       case '!2v2on':
         if (userIds[channel.substring(1)]["two_v_two"] || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
         if (channel.substring(1) === 'huskerrs') {
-          say(channel, '!enable !score false', bot);
+          say(channel, '!disable !score', bot);
         } else {
           say(channel, 'Score recording enabled.', bot);
         }
@@ -1107,7 +1107,7 @@ bot.on('chat', async (channel, tags, message) => {
       case '!2v2off':
         if (!userIds[channel.substring(1)]["two_v_two"] || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;;
         if (channel.substring(1) === 'huskerrs') {
-          say(channel, '!enable !score true', bot);
+          say(channel, '!enable !score', bot);
         } else {
           say(channel, 'Score recording disabled.', bot);
         }
