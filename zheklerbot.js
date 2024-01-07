@@ -343,10 +343,9 @@ async function refreshToken(aToken, rToken) {
 
 // OpenAI test for Sly.
 import OpenAI from "openai";
-var openai;
-//  new OpenAI({
-//   apiKey: process.env.OPENAI_API_KEY, // This is the default and can be omitted
-// });
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY, // This is the default and can be omitted
+});
 
 
 // Two vs Two arrays.
