@@ -1302,6 +1302,7 @@ bot.on('chat', async (channel, tags, message) => {
           model: "gpt-3.5-turbo",
           messages: [{ "role": "user", "content": `In one sentence, ${splits.slice(1).join(' ')}` }],
         });
+        console.log(`ChatGPT response: ${query}`);
         if (query.choices[0].message.content) {
           say(channel.substring(1), query.choices[0].message.content, bot);
           console.log(`Message: ${splits.slice(1).join(' ')}`, `Response: ${query.choices[0].message.content}`);
