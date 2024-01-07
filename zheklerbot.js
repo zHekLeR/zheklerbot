@@ -342,15 +342,10 @@ async function refreshToken(aToken, rToken) {
 
 
 // OpenAI test for Sly.
-import { Configuration, OpenAIApi } from "openai";
-var aiConfig = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
+import OpenAI from "openai";
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY, // This is the default and can be omitted
 });
-var openai = new OpenAIApi(aiConfig);
-
-
-// Ranks.
-var allRanks = {};
 
 
 // Two vs Two arrays.
@@ -1051,38 +1046,6 @@ bot.on('chat', async (channel, tags, message) => {
         say(channel, await streak(channel.substring(1)), bot);
         break;
 
-      // Warzone 2 ranked?
-      case '!rank': 
-        if (!userIds[channel.substring(1)]["top_250"]) break;
-        rows = await helper.dbQueryPromise(`SELECT * FROM ranked WHERE userid = '${channel.substring(1)}';`);
-        if (!rows || !rows.length) break;
-        placement = addEnd(rows[0].rank);
-        let change = 0;
-        if (rows[0].sess_start) {
-          change = rows[0].skill_rating - rows[0].sess_start;
-        }
-        say(channel, `${userIds[channel.substring(1)].pref_name} is ranked ${placement} in the Top 250 with an SR of 
-          ${numberWithCommas(rows[0].skill_rating)}${change !== 0?(' (' + (change > 0?('Up ' + change):('Down ' + (change * -1))) + ' this session)'):''}`, bot);
-        break;
-
-        // Rank check.
-        case '!rankcheck':
-        case '!ranksearch':
-        case '!checkrank':
-        case '!searchrank':
-          if (channel.substring(1) !== 'huskerrs' || !userIds[channel.substring(1)]["top_250"]) break;
-          if (splits.length < 2) break;
-          str = splits.slice(1).join(' ').toLowerCase();
-          if (str === 'huskerrs') break;
-          console.log("Rank check: " + str);
-          if (allRanks[str]) {
-            console.log(allRanks[str]);
-            say(channel, `${allRanks[str].gamertag} is ranked ${addEnd(allRanks[str].rank)} in the Top 250 with an SR of ${numberWithCommas(allRanks[str].skillRating)} 
-              | ${allRanks[str].rank < allRanks['huskerrs'].rank?(((allRanks['huskerrs'].rank - allRanks[str].rank) + ' ranks and ' + (allRanks[str].skillRating - allRanks['huskerrs'].skillRating)) + ' SR ahead of Huskerrs'):
-              (((allRanks[str].rank - allRanks['huskerrs'].rank) + ' ranks and ' + (allRanks['huskerrs'].skillRating - allRanks[str].skillRating)) + ' SR behind HusKerrs')}`, bot);
-          }
-          break;
-
         
       /*####################################################################################################################
         Commands for 2v2 scorekeeping. Preferably used through the website but here in case.
@@ -1335,13 +1298,13 @@ bot.on('chat', async (channel, tags, message) => {
       case '!chatgpt': 
         if (channel.substring(1) !== "huskerrs" || (!tags["mod"] && tags["username"] !== channel.substring(1))) break;
         if (splits.length <= 1) break;
-        var query = await openai.createChatCompletion({
+        var query = await openai.chat.completions.create({
           model: "gpt-3.5-turbo",
           messages: [{ "role": "user", "content": `In one sentence, ${splits.slice(1).join(' ')}` }],
         });
-        if (query.data.choices[0].message) {
-          say(channel.substring(1), query.data.choices[0].message.content, bot);
-          console.log(`Message: ${splits.slice(1).join(' ')}`, `Response: ${query.data.choices[0].message}`);
+        if (query.choices[0].message.content) {
+          say(channel.substring(1), query.choices[0].message.content, bot);
+          console.log(`Message: ${splits.slice(1).join(' ')}`, `Response: ${query.choices[0].message.content}`);
         }
         break;
 
@@ -1349,13 +1312,13 @@ bot.on('chat', async (channel, tags, message) => {
       case '!catgpt':
         if (channel.substring(1) !== "huskerrs" || (!tags["mod"] && tags["username"] !== channel.substring(1))) break;
         if (splits.length <= 1) break;
-        var query = await openai.createChatCompletion({
+        var query = await openai.chat.completions.create({
           model: "gpt-3.5-turbo",
           messages: [{ "role": "user", "content": `Answering in one sentence and as though you are an uwu cat girl from an anime show, ${splits.slice(1).join(' ')}` }]
         });
-        if (query.data.choices[0].message) {
-          say(channel.substring(1), query.data.choices[0].message.content, bot);
-          console.log(`Cat message: ${splits.slice(1).join(' ')}`, `Response: ${query.data.choices[0].message}`);
+        if (query.choices[0].message.content) {
+          say(channel.substring(1), query.choices[0].message.content, bot);
+          console.log(`Cat message: ${splits.slice(1).join(' ')}`, `Response: ${query.choices[0].message.content}`);
         }
         break;
 
@@ -4598,9 +4561,7 @@ app.post('/eventsub', async (req, res) => {
             case "stream.online":
               userIds[notification.event.broadcaster_user_login.toLowerCase()].online = true;
               helper.dbQuery(`UPDATE allusers SET online = true::bool WHERE user_id = '${notification.event.broadcaster_user_login.toLowerCase()}';`);
-              if (userIds[notification.event.broadcaster_user_login.toLowerCase()]["top_250"]) {
-                helper.dbQuery(`UPDATE ranked SET sess_start = ranked.skill_rating WHERE hash_id = '${userIds[notification.event.broadcaster_user_login.toLowerCase()].ranked_id}';`);
-              }
+
               if (online[notification.event.broadcaster_user_login.toLowerCase()]) delete online[notification.event.broadcaster_user_login.toLowerCase()];
               if (notification.event.broadcaster_user_login.toLowerCase() === 'huskerrs') {
 
@@ -4642,9 +4603,6 @@ app.post('/eventsub', async (req, res) => {
             case "stream.offline":
               userIds[notification.event.broadcaster_user_login.toLowerCase()].online = false;
               helper.dbQuery(`UPDATE allusers SET online = false::bool WHERE user_id = '${notification.event.broadcaster_user_login.toLowerCase()}';`);
-              if (userIds[notification.event.broadcaster_user_login.toLowerCase()]["top_250"]) {
-                helper.dbQuery(`UPDATE ranked SET sess_start = NULL WHERE hash_id = '${userIds[notification.event.broadcaster_user_login.toLowerCase()].ranked_id}';`);
-              }
               break;
 
             default: 
@@ -4844,32 +4802,6 @@ async function brookescribers() {
 };
 
 
-// Update Warzone 2 ranks.
-async function updateRanks() {
-  try {
-    let peeps = [];
-    for (var x in userIds) {
-      if (userIds[x]["top_250"]) peeps.push(userIds[x].ranked_id);
-    }
-    let players = (await axios.get("https://telescope.callofduty.com/api/ts-api/lb/v1/global/title/wz2/ranked/br"))?.data?.data?.data?.ranks;
-    
-    if (!players) return;
-
-    for (let i = 0; i < players.length; i++) {
-      if (players[i]) allRanks[players[i].gamertag.toLowerCase()] = { "gamertag": players[i].gamertag, "skillRating": players[i].skillRating, "rank": players[i].rank + 1 };
-      if (!players[i] || !peeps.includes(players[i].id)) {
-        continue;
-      }
-      helper.dbQuery(`INSERT INTO ranked(userid, rank, skill_rating, hash_id) VALUES ('${players[i].gamertag.toLowerCase()}', ${players[i].rank + 1}, ${players[i].skillRating}, '${players[i].id}')
-        ON CONFLICT (userid, hash_id) DO UPDATE SET rank = ${players[i].rank + 1}, skill_rating = ${players[i].skillRating};`);
-    }
-  } catch (err) {
-    helper.dumpError(err, "Update ranks.");
-    return;
-  }
-}
-
-
 // Start 'er up
 (async () => {
   try {
@@ -4942,8 +4874,6 @@ async function updateRanks() {
 
     intervals["tokenRefresh"] = setInterval(function () { refreshToken(rows[0].access_token, rows[0].refresh_token); }, 1000*60*60*3);
 
-    updateRanks();
-    intervals["ranked"] = setInterval(function () { updateRanks() }, 1000*60);
   } catch (err) {
 
     // Clear intervals.
