@@ -3012,6 +3012,8 @@ app.get('/verify', (request, response) => {
             }
           }
 
+          console.log(details[0]);
+
           // Set up standard pieces.
           if (!userIds[details[0]["display_name"].toLowerCase()]) {
             userIds[details[0]["display_name"].toLowerCase()] = {
