@@ -3029,9 +3029,10 @@ app.get('/verify', (request, response) => {
               "two_v_two": false,
               "twitch": false,
               "duel": false,
-              "pref_name": details[0]["display_name"]
+              "pref_name": details[0]["display_name"],
+              "broadcaster_id": details[0]["id"]
             };
-            helper.dbQuery(`INSERT INTO allusers(user_id, pref_name) VALUES ('${details[0]["display_name"].toLowerCase()}', '${details[0]["display_name"]}');`);
+            helper.dbQuery(`INSERT INTO allusers(user_id, pref_name, broadcaster_id) VALUES ('${details[0]["display_name"].toLowerCase()}', '${details[0]["display_name"]}', '${details[0]["id"]}');`);
           }
 
         }).catch(err => {
