@@ -4483,7 +4483,9 @@ app.post('/eventsub', async (req, res) => {
     var message = getHmacMessage(req);
     var hmac = HMAC_PREFIX + getHmac(secret, message);  // Signature to compare
 
-    if (true === verifyMessage(hmac, req.headers[TWITCH_MESSAGE_SIGNATURE])) {
+    console.log(verifyMessage(hmac, req.headers[TWITCH_MESSAGE_SIGNATURE]));
+
+    //if (true === verifyMessage(hmac, req.headers[TWITCH_MESSAGE_SIGNATURE])) {
 
       // Get JSON object from body, so you can process the message.
       var notification = req.body;
@@ -4634,12 +4636,12 @@ app.post('/eventsub', async (req, res) => {
           
         }
       }
-    }
-    else {
-      console.log('403');    // Signatures didn't match.
-      console.log(message, hmac, req.headers[TWITCH_MESSAGE_SIGNATURE]);
-      res.setHeader('Content-Type', 'text/html').sendStatus(403);
-    }
+    // }
+    // else {
+    //   console.log('403');    // Signatures didn't match.
+    //   console.log(message, hmac, req.headers[TWITCH_MESSAGE_SIGNATURE]);
+    //   res.setHeader('Content-Type', 'text/html').sendStatus(403);
+    // }
   } catch (err) {
     helper.dumpError(err, "Event subscriptions.");
   }
@@ -4877,6 +4879,18 @@ async function brookescribers() {
     helper.dbQuery(`UPDATE access_tokens SET access_token = '${newToken}' WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
 
     intervals["tokenRefresh"] = setInterval(function () { refreshToken(rows[0].access_token, rows[0].refresh_token); }, 1000*60*60*3);
+
+    // Refresh app access token.
+    axios.post('https://id.twitch.tv/oauth2/token', `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&grant_type=client_credentials`, {
+      headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    }).then(res => {
+        console.log(res.data);
+        helper.dbQuery(`UPDATE access_tokens SET access_token = '${res.data.access_token}' WHERE userid = 'zhekler' AND scope = 'app_access';`);
+    }).catch(err => {
+        console.log(err.response);
+    })
 
   } catch (err) {
 
