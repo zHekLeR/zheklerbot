@@ -4475,6 +4475,7 @@ const HMAC_PREFIX = 'sha256=';
 
 // Message IDs.
 var idArray = [], intArray = {};
+var numErrors = 0;
 
 
 app.post('/eventsub', async (req, res) => {
@@ -4484,7 +4485,9 @@ app.post('/eventsub', async (req, res) => {
     var hmac = HMAC_PREFIX + getHmac(secret, message);  // Signature to compare
 
     console.log(message, hmac, req.headers[TWITCH_MESSAGE_SIGNATURE]);
-    console.log(verifyMessage(hmac, req.headers[TWITCH_MESSAGE_SIGNATURE]));
+    if (!verifyMessage(hmac, req.headers[TWITCH_MESSAGE_SIGNATURE]) && numErrors <= 3) {
+      helper.dumpError(`Message: ${message}\nhmac: ${hmac}\nExpected signature: ${req.headers[TWITCH_MESSAGE_SIGNATURE]}`);
+    }
 
     //if (true === verifyMessage(hmac, req.headers[TWITCH_MESSAGE_SIGNATURE])) {
 
