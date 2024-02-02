@@ -2070,7 +2070,7 @@ app.get('/commands/:channel', async (request, response) => {
 
         page = page.replace('Login to Twitch', 'Logout of Twitch');
 
-        if (bearer[0] && ((bearer[1].userid === request.params.channel.toLowerCase()) || (bearer[1].perms & bearer[1].perms.split(',').includes(request.params.channel)))) {
+        if (bearer[0] && ((bearer[1].userid === request.params.channel.toLowerCase()) || (bearer[1].perms & (bearer[1].perms === request.params.channel.toLowerCase() || bearer[1].perms.split(',')?bearer[1].perms.split(',').includes(request.params.channel):false)))) {
           page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
           page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
           page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
@@ -2131,7 +2131,7 @@ app.get('/leaderboards/:channel', async (request, response) => {
 
         page = page.replace('Login to Twitch', 'Logout of Twitch');
 
-        if (bearer[0] && ((bearer[1].userid === request.params.channel.toLowerCase()) || (bearer[1].perms & bearer[1].perms.split(',').includes(request.params.channel)))) {
+        if (bearer[0] && ((bearer[1].userid === request.params.channel.toLowerCase()) || (bearer[1].perms & (bearer[1].perms === request.params.channel || bearer[1].perms.split(',')?bearer[1].perms.split(',').includes(request.params.channel):false)))) {
           page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
           page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
           page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
