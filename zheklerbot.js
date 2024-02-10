@@ -518,7 +518,7 @@ bot.on('chat', async (channel, tags, message) => {
               say(channel, `${rows.user.user_id} lost RR! L mod immunity. Their record is ${rows.user["survive"]} survivals and ${rows.user["die"]} deaths`, bot);
             }
           }
-          rrcd[tags["username"] || ''] = Date.now() + 30000;
+          if (!rows.first) rrcd[tags["username"] || ''] = Date.now() + 30000;
         }
         break;
 
@@ -4484,12 +4484,11 @@ app.post('/eventsub', async (req, res) => {
     var message = getHmacMessage(req);
     var hmac = HMAC_PREFIX + getHmac(secret, message);  // Signature to compare
 
-    console.log(message, hmac, req.headers[TWITCH_MESSAGE_SIGNATURE]);
     if (!verifyMessage(hmac, req.headers[TWITCH_MESSAGE_SIGNATURE]) && numErrors <= 3) {
       helper.dumpError(`Message: ${message}\nhmac: ${hmac}\nExpected signature: ${req.headers[TWITCH_MESSAGE_SIGNATURE]}`);
     }
 
-    //if (true === verifyMessage(hmac, req.headers[TWITCH_MESSAGE_SIGNATURE])) {
+    if ((true === verifyMessage(hmac, req.headers[TWITCH_MESSAGE_SIGNATURE])) && (numErrors < 1)) {
 
       // Get JSON object from body, so you can process the message.
       var notification = req.body;
@@ -4640,12 +4639,12 @@ app.post('/eventsub', async (req, res) => {
           
         }
       }
-    // }
-    // else {
-    //   console.log('403');    // Signatures didn't match.
-    //   console.log(message, hmac, req.headers[TWITCH_MESSAGE_SIGNATURE]);
-    //   res.setHeader('Content-Type', 'text/html').sendStatus(403);
-    // }
+    }
+    else {
+      console.log('403');    // Signatures didn't match.
+      console.log(message, hmac, req.headers[TWITCH_MESSAGE_SIGNATURE]);
+      res.setHeader('Content-Type', 'text/html').sendStatus(403);
+    }
   } catch (err) {
     helper.dumpError(err, "Event subscriptions.");
   }
