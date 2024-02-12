@@ -1325,6 +1325,42 @@ bot.on('chat', async (channel, tags, message) => {
 
 
       /*####################################################################################################################
+        Top 250 Ranks
+      ####################################################################################################################*/
+
+      case '!rankson':
+        if (userIds[channel.substring(1)]["top_250"] || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
+        helper.dbQuery(`UPDATE allusers SET top_250 = true::bool WHERE user_id = '${channel.substring(1)}';`);
+        userIds[channel.substring(1)]["top_250"] = true;
+        break;
+
+
+      case '!ranksoff':
+        if (!userIds[channel.substring(1)]["top_250"] || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
+        helper.dbQuery(`UPDATE allusers SET top_250 = false::bool WHERE user_id = '${channel.substring(1)}';`);
+        userIds[channel.substring(1)]["top_250"] = false;
+        break;
+
+
+      case '!rank':
+        if (!userIds[channel.substring(1)]["top_250"]) break;
+        
+        let tempUser = userIds[channel.substring(1)]["ranked_id"];
+        if (splits.length > 1) {
+          tempUser = splits.slice(1).join(' ');
+        }
+
+        if (ranks[tempUser]) {
+          str = `${ranks[tempUser].gamertag} is ranked ${addEnd(ranks[tempUser].rank + 1)} in the Top 250 with ${ranks[tempUser].skillRating} SR`;
+        } else {
+          str = `${tempUser} is not ranked in the Top 250`;
+        }
+
+        say(channel.substring(1), str, bot)
+        break;
+
+
+      /*####################################################################################################################
         Goodbye channel peepoBye
       ####################################################################################################################*/
       
@@ -4811,6 +4847,26 @@ async function brookescribers() {
 };
 
 
+var ranks = {};
+
+// Update ranks.
+async function updateRanks() {
+  try {
+    axios.get('https://app.wzstats.gg/wz2/top-250-leaderboard/')
+    .then(res => {
+      for (let i = 0; i < res.data.length; i++) {
+        ranks[res.data[i].gamertag.toLowerCase()] = res.data[i];
+      }
+    })
+    .catch(err => {
+        helper.dumpError(err, "Get T250 leaderboard.");
+    });
+  } catch (err) {
+    helper.dumpError(err, "Update ranks.");
+  }
+}
+
+
 // Start 'er up
 (async () => {
   try {
@@ -4894,6 +4950,8 @@ async function brookescribers() {
     }).catch(err => {
         console.log(err.response);
     })
+
+    intervals["updateRanks"] = setInterval(updateRanks, 1000*5);
 
   } catch (err) {
 
