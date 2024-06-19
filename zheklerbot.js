@@ -4484,11 +4484,11 @@ app.post('/eventsub', async (req, res) => {
     var message = getHmacMessage(req);
     var hmac = HMAC_PREFIX + getHmac(secret, message);  // Signature to compare
 
-    if (!verifyMessage(hmac, req.headers[TWITCH_MESSAGE_SIGNATURE]) && numErrors <= 3) {
+    if (!verifyMessage(hmac, req.headers[TWITCH_MESSAGE_SIGNATURE]) && numErrors <= 1) {
       helper.dumpError(`Message: ${message}\nhmac: ${hmac}\nExpected signature: ${req.headers[TWITCH_MESSAGE_SIGNATURE]}`);
     }
 
-    if ((true === verifyMessage(hmac, req.headers[TWITCH_MESSAGE_SIGNATURE])) && (numErrors < 1)) {
+    if ((true === verifyMessage(hmac, req.headers[TWITCH_MESSAGE_SIGNATURE])) || (numErrors > 0)) {
 
       // Get JSON object from body, so you can process the message.
       var notification = req.body;
