@@ -4485,7 +4485,7 @@ app.post('/eventsub', async (req, res) => {
     var hmac = HMAC_PREFIX + getHmac(secret, message);  // Signature to compare
 
     if (!verifyMessage(hmac, req.headers[TWITCH_MESSAGE_SIGNATURE]) && numErrors <= 1) {
-      helper.dumpError(`Message: ${message}\nhmac: ${hmac}\nExpected signature: ${req.headers[TWITCH_MESSAGE_SIGNATURE]}`);
+      helper.dumpError(`Message: ${message}\nhmac: ${hmac}\nExpected signature: ${req.headers[TWITCH_MESSAGE_SIGNATURE]}`, "EventSub hmac");
     }
 
     if ((true === verifyMessage(hmac, req.headers[TWITCH_MESSAGE_SIGNATURE])) || (numErrors > 0)) {

@@ -3501,9 +3501,9 @@
                                         <a href="/" data-animation-role="header-element">
                                             <img
                                                 src="
-  
+
     //images.squarespace-cdn.com/content/v1/63b216f1ba1dcd5626727f09/6a3d21e6-a276-4e71-a42b-18f1bde1388c/android-chrome-512x512.png?format=1500w
-  
+
 "
                                                 alt="zHekBot"
                                             />
@@ -3628,9 +3628,9 @@
                                         <a href="/" data-animation-role="header-element">
                                             <img
                                                 src="
-  
+
     //images.squarespace-cdn.com/content/v1/63b216f1ba1dcd5626727f09/6a3d21e6-a276-4e71-a42b-18f1bde1388c/android-chrome-512x512.png?format=1500w
-  
+
 "
                                                 alt="zHekBot"
                                             />
@@ -4729,10 +4729,9 @@
                                                         data-alignment="center"
                                                         data-button-size="medium"
                                                         data-button-type="primary"
-                                                        onclick="enable('matches', 'Warzone Stats / Matches')"
                                                         id="Warzone Stats / Matches"
                                                     >
-                                                        <a id="matches" class="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element">
+                                                        <a id="matches" class="sqs-block-button-element--medium sqs-button-element--primary sqs-block-button-element" disabled="true">
                                                             Enable
                                                         </a>
                                                     </div>
@@ -4749,7 +4748,7 @@
                                         <div class="fe-block fe-block-yui_3_17_2_1_1672706097558_1288536">
                                             <div class="sqs-block html-block sqs-block-html" data-block-type="2" id="block-yui_3_17_2_1_1672706097558_1288536">
                                                 <div class="sqs-block-content">
-                                                    <p class="" style="white-space: pre-wrap;"><input id="acti" type="text" #acti# style="width: 95%;" /></p>
+                                                    <p class="" style="white-space: pre-wrap;"><input id="acti" type="text" #acti# style="width: 95%;" disabled="true"/></p>
                                                 </div>
                                             </div>
                                         </div>
@@ -5301,6 +5300,7 @@
                             alert(err.message);
                         });
                 } else if (module === "matches") {
+                    return;
                     var acti = document.getElementById("acti").value;
                     if (!acti.length || acti === "") {
                         alert("You must enter an Activision ID to turn on match tracking.");
