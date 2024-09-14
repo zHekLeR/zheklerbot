@@ -807,7 +807,7 @@ bot.on('chat', async (channel, tags, message) => {
       // Add a map to the scores.
       case '!addmap':
         if (!userIds[channel.substring(1)].customs || (!tags["mod"] && tags['username'] !== channel.substring(1)) || splits.length != 3) break;
-        if (!isNaN(parseInt(splits[1])) || !isNaN(parseInt(splits[2]))) {
+        if (isNaN(parseInt(splits[1])) || isNaN(parseInt(splits[2]))) {
           say(channel, 'Placement and kills must be integers.', bot);
           break;
         }
