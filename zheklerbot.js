@@ -807,8 +807,16 @@ bot.on('chat', async (channel, tags, message) => {
       // Add a map to the scores.
       case '!addmap':
         if (!userIds[channel.substring(1)].customs || (!tags["mod"] && tags['username'] !== channel.substring(1)) || splits.length != 3) break;
-        if (!parseInt(splits[1]) || !parseInt(splits[2])) {
+        if (!isNaN(parseInt(splits[1])) || !isNaN(parseInt(splits[2]))) {
           say(channel, 'Placement and kills must be integers.', bot);
+          break;
+        }
+        if (parseInt(splits[1]) <= 0) {
+          say(channel, 'Can they really get 0th place?', bot);
+          break;
+        }
+        if (parseInt(splits[2]) < 0) {
+          say(channel, 'Negative kills?', bot);
           break;
         }
         res = await helper.dbQueryPromise(`SELECT * FROM customs WHERE user_id = '${channel.substring(1)}';`);
