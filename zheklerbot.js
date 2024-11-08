@@ -2078,11 +2078,18 @@ app.get('/commands/:channel', async (request, response) => {
 
         page = page.replace('Login to Twitch', 'Logout of Twitch');
 
-        if (bearer[0] && ((bearer[1].userid === request.params.channel.toLowerCase()) || (bearer[1].perms & (bearer[1].perms === request.params.channel.toLowerCase() || bearer[1].perms.split(',')?bearer[1].perms.split(',').includes(request.params.channel):false)))) {
-          page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
-          page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
-          page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
-        } else {
+        try {
+          if (bearer[0] && ((bearer[1].userid === request.params.channel.toLowerCase()) || (bearer[1].perms & (bearer[1].perms === request.params.channel.toLowerCase() || bearer[1].perms?.split(',')?bearer[1].perms.split(',').includes(request.params.channel):false)))) {
+            page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
+            page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
+            page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
+          } else {
+            page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
+            page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
+            page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
+          }
+        } catch (err) {
+          helper.dumpError(err, "Bearer thing: " + bearer);
           page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
           page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
           page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
@@ -2139,11 +2146,18 @@ app.get('/leaderboards/:channel', async (request, response) => {
 
         page = page.replace('Login to Twitch', 'Logout of Twitch');
 
-        if (bearer[0] && ((bearer[1].userid === request.params.channel.toLowerCase()) || (bearer[1].perms & (bearer[1].perms === request.params.channel || bearer[1].perms.split(',')?bearer[1].perms.split(',').includes(request.params.channel):false)))) {
-          page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
-          page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
-          page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
-        } else {
+        try {
+          if (bearer[0] && ((bearer[1].userid === request.params.channel.toLowerCase()) || (bearer[1].perms & (bearer[1].perms === request.params.channel || bearer[1].perms.split(',')?bearer[1].perms.split(',').includes(request.params.channel):false)))) {
+            page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
+            page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
+            page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
+          } else {
+            page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
+            page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
+            page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
+          }
+        } catch (err) {
+          helper.dumpError(err, "Bearer thing: " + bearer);
           page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
           page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
           page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
@@ -4593,9 +4607,10 @@ app.post('/eventsub', async (req, res) => {
                 })
                 .then(res => {
                   let data = res.data.data;
-
+                  let twitchEmoji = helper.discord.emojis.cache.get("773987327130599464");
+                  let huskLogo = helper.discord.emojis.cache.get("764996106819862528");
                   // @ts-ignore
-                  helper.discord.channels.cache.get('1016735961138335804').send(":twitch: Hey @everyone the main man is LIVE!!! click on the link and don't miss out on those amazing moments. :HuskLogo:");
+                  helper.discord.channels.cache.get('1016735961138335804').send(`${twitchEmoji?twitchEmoji:''} Hey @everyone the main man is LIVE!!! click on the link and don't miss out on those amazing moments. ${huskLogo?huskLogo:''}`);
                   // @ts-ignore
                   helper.discord.channels.cache.get('1016735961138335804').send({ embeds: [{
                     color: 3447003,
