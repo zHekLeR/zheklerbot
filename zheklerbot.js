@@ -2583,7 +2583,6 @@ app.get('/modules/:channel', async (request, response) => {
     page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
     page = page.replace(/Login to Twitch/g, "Logout of Twitch");
     page = page.replace('var tabsEnabled = {};', `var tabsEnabled = {
-      'Warzone Stats / Matches': ${userIds[request.params.channel.toLowerCase()].matches},
       'Revolver Roulette': ${userIds[request.params.channel.toLowerCase()].revolverroulette},
       'Coinflip': ${userIds[request.params.channel.toLowerCase()].coinflip},
       'Rock Paper Scissors': ${userIds[request.params.channel.toLowerCase()].rps},
