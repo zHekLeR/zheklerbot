@@ -2793,49 +2793,49 @@ app.get('/modules/:channel/:module', async (request, response) => {
 
 
 // Update Acti settings.
-app.get('/updateacti/:channel', async (request, response) => {
-  try {
-    request.params.channel = request.params.channel.toLowerCase();
+// app.get('/updateacti/:channel', async (request, response) => {
+//   try {
+//     request.params.channel = request.params.channel.toLowerCase();
 
-    // Check whether this channel is in the local cache.
-    if (!userIds[request.params.channel]) {
-      response.status(404);
-      response.redirect('/not-found');
-      return;
-    }
+//     // Check whether this channel is in the local cache.
+//     if (!userIds[request.params.channel]) {
+//       response.status(404);
+//       response.redirect('/not-found');
+//       return;
+//     }
     
-    // Check permissions. Editors and channel owner may use this path.
-    var cookies = request.cookies;
-    if (cookies["auth"]) {
-      let bearer = await helper.checkBearer(cookies["auth"]);
-      if ((!bearer[0] || !bearer[1].perms || !bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
-        response.status(401);
-        response.redirect('/');
-        return;
-      }
-    } else {
-      response.status(401);
-      response.redirect('/');
-      return;
-    }
+//     // Check permissions. Editors and channel owner may use this path.
+//     var cookies = request.cookies;
+//     if (cookies["auth"]) {
+//       let bearer = await helper.checkBearer(cookies["auth"]);
+//       if ((!bearer[0] || !bearer[1].perms || !bearer[1].perms.split(',').includes(request.params.channel)) && bearer[1].userid !== request.params.channel) {
+//         response.status(401);
+//         response.redirect('/');
+//         return;
+//       }
+//     } else {
+//       response.status(401);
+//       response.redirect('/');
+//       return;
+//     }
 
-    // Get Activision ID and Warzone type (1 or 2).
-    var acti = decodeURIComponent(request.get('Acti') || '');
-    var wzType = decodeURIComponent(request.get('wzType') || '');
+//     // Get Activision ID and Warzone type (1 or 2).
+//     var acti = decodeURIComponent(request.get('Acti') || '');
+//     var wzType = decodeURIComponent(request.get('wzType') || '');
 
-    if (profanity.isProfane(acti || '')) throw new Error('No profanity allowed.');
+//     if (profanity.isProfane(acti || '')) throw new Error('No profanity allowed.');
   
-    var data = await last20(acti, 'uno');
-    var uno = data.matches[0].player.uno;
+//     var data = await last20(acti, 'uno');
+//     var uno = data.matches[0].player.uno;
 
-    helper.dbQuery(`UPDATE allusers SET acti_id = '${acti}', uno_id = '${uno}', wz_type = ${wzType==='Warzone 1'?1:2} WHERE user_id = '${request.params.channel}';`);
+//     helper.dbQuery(`UPDATE allusers SET acti_id = '${acti}', uno_id = '${uno}', wz_type = ${wzType==='Warzone 1'?1:2} WHERE user_id = '${request.params.channel}';`);
 
-    response.sendStatus(200);
-  } catch (err) {
-    helper.dumpError(err, "Update Acti.");
-    response.sendStatus(400);
-  }
-});
+//     response.sendStatus(200);
+//   } catch (err) {
+//     helper.dumpError(err, "Update Acti.");
+//     response.sendStatus(400);
+//   }
+// });
 
 
 // Set new preferred name.

@@ -5345,10 +5345,12 @@
             async function newname() {
                 var button = document.getElementById("Update Name");
                 var name = document.getElementById("pref_name").value;
-                button.style = `background-color: gray; border: 1px solid gray;`;
+                button.style.backgroundColor = `gray`;
+                button.style.border = `1px solid gray`;
                 button.disabled = true;
                 setTimeout(function () {
-                    button.style = `background-color: white; border: 1px solid gray;`;
+                    button.style.backgroundColor = `white`
+                    button.style.border = `1px solid gray`;
                     button.disabled = false;
                 }, 1000);
 
@@ -5370,31 +5372,31 @@
                     });
             }
 
-            async function updateacti() {
-                var acti = document.getElementById("acti").value;
-                var wzType = document.getElementById("wz_type").value;
+            // async function updateacti() {
+            //     var acti = document.getElementById("acti").value;
+            //     var wzType = document.getElementById("wz_type").value;
 
-                if (!acti || (acti.toLowerCase() === oActi.toLowerCase() && wzType === oType)) {
-                    alert("These settings are already in use.");
-                } else {
-                    await fetch(`/updateacti/#channel#`, {
-                        headers: {
-                            Acti: encodeURIComponent(acti),
-                            wzType: encodeURIComponent(wzType),
-                        },
-                    })
-                        .then((res) => {
-                            if (res.status !== 200) {
-                                throw new Error(`Error updating: status ${res.status}`);
-                            }
-                            oActi = acti;
-                            oType = wzType;
-                        })
-                        .catch((err) => {
-                            alert(err.message);
-                        });
-                }
-            }
+            //     if (!acti || (acti.toLowerCase() === oActi.toLowerCase() && wzType === oType)) {
+            //         alert("These settings are already in use.");
+            //     } else {
+            //         await fetch(`/updateacti/#channel#`, {
+            //             headers: {
+            //                 Acti: encodeURIComponent(acti),
+            //                 wzType: encodeURIComponent(wzType),
+            //             },
+            //         })
+            //             .then((res) => {
+            //                 if (res.status !== 200) {
+            //                     throw new Error(`Error updating: status ${res.status}`);
+            //                 }
+            //                 oActi = acti;
+            //                 oType = wzType;
+            //             })
+            //             .catch((err) => {
+            //                 alert(err.message);
+            //             });
+            //     }
+            // }
 
             async function twitch() {
                 await fetch(`/logout`)
