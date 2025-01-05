@@ -5261,8 +5261,8 @@
         <script>
             var tabsEnabled = {};
             var prefName = document.getElementById("pref_name").value;
-            var oActi = document.getElementById("acti").value;
-            var oType = document.getElementById("wz_type").value;
+            // var oActi = document.getElementById("acti").value;
+            // var oType = document.getElementById("wz_type").value;
 
             var tabs = Object.keys(tabsEnabled);
             for (var i = 0; i < tabs.length; i++) {
@@ -5299,31 +5299,31 @@
                             console.log(err);
                             alert(err.message);
                         });
-                } else if (module === "matches") {
-                    return;
-                    var acti = document.getElementById("acti").value;
-                    if (!acti.length || acti === "") {
-                        alert("You must enter an Activision ID to turn on match tracking.");
-                        return;
-                    } else if (acti.toLowerCase() === oActi.toLowerCase()) {
-                        alert("This is already your Activision ID.");
-                        return;
-                    } else {
-                        await fetch(`/modules/#channel#/${module}`, { headers: { Acti: encodeURIComponent(acti) } })
-                            .then((res) => {
-                                if (res.status == 200) {
-                                    button.innerHTML = "Disable";
-                                    tabsEnabled[evtName] = true;
-                                    document.getElementById(module).innerHTML = !tabsEnabled[evtName] ? "Enable" : "Disable";
-                                } else {
-                                    throw new Error(`${res.status == 401 ? "Account is private." : res.status == 404 ? "Account not found." : res.status == 405 ? "Bot is not enabled." : "Unknown error."}`);
-                                }
-                            })
-                            .catch((err) => {
-                                console.log(err);
-                                alert(err.message);
-                            });
-                    }
+                // } else if (module === "matches") {
+                //     return;
+                //     var acti = document.getElementById("acti").value;
+                //     if (!acti.length || acti === "") {
+                //         alert("You must enter an Activision ID to turn on match tracking.");
+                //         return;
+                //     } else if (acti.toLowerCase() === oActi.toLowerCase()) {
+                //         alert("This is already your Activision ID.");
+                //         return;
+                //     } else {
+                //         await fetch(`/modules/#channel#/${module}`, { headers: { Acti: encodeURIComponent(acti) } })
+                //             .then((res) => {
+                //                 if (res.status == 200) {
+                //                     button.innerHTML = "Disable";
+                //                     tabsEnabled[evtName] = true;
+                //                     document.getElementById(module).innerHTML = !tabsEnabled[evtName] ? "Enable" : "Disable";
+                //                 } else {
+                //                     throw new Error(`${res.status == 401 ? "Account is private." : res.status == 404 ? "Account not found." : res.status == 405 ? "Bot is not enabled." : "Unknown error."}`);
+                //                 }
+                //             })
+                //             .catch((err) => {
+                //                 console.log(err);
+                //                 alert(err.message);
+                //             });
+                //     }
                 } else {
                     await fetch(`/modules/#channel#/${module}`)
                         .then((res) => {
