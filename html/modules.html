@@ -5266,12 +5266,12 @@
 
             var tabs = Object.keys(tabsEnabled);
             for (var i = 0; i < tabs.length; i++) {
+                var elem = document.getElementById(tabs[i]);
                 if (tabsEnabled[tabs[i]]) {
-                    var elem = document.getElementById(tabs[i]);
                     elem.childNodes[1].style.backgroundColor = "darkred";
                     elem.childNodes[1].innerHTML = "Disable";
                 } else {
-                    document.getElementById(tabs[i]).childNodes[1].style.backgroundColor = "green";
+                    elem.childNodes[1].style.backgroundColor = "green";
                 }
             }
 
