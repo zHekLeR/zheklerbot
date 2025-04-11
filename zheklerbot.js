@@ -4517,12 +4517,12 @@ app.post('/eventsub', async (req, res) => {
       if (idArray.includes(req.get(TWITCH_MESSAGE_ID))) {
 
         console.log("Duplicate event message.");
-        res.send(201);
+        res.sendStatus(201);
 
       } else if (new Date(TWITCH_MESSAGE_TIMESTAMP).getTime() + 10*60*1000 < Date.now()) {
 
         console.log("Expired event message.");
-        res.send(202);
+        res.sendStatus(202);
 
       } else {
 
@@ -4668,7 +4668,8 @@ app.post('/eventsub', async (req, res) => {
       res.setHeader('Content-Type', 'text/html').sendStatus(403);
     }
   } catch (err) {
-    helper.dumpError(err, "Event subscriptions.");
+    helper.dumpError(err + '/n' + req, "Event subscriptions.");
+    res.sendStatus(201);
   }
 })
 
