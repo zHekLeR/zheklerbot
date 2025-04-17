@@ -719,14 +719,18 @@ bot.on('chat', async (channel, tags, message) => {
           
           if (!rows.time) throw new Error('Unknown time in bigvanish: ' + rows.time);
 
-          timeout(channel.substring(1), tags["username"] || '', rows.twitch_id?rows.twitch_id:'', 'bigvanish', rows.time, `You were timed out for ${numberWithCommas(rows.time)}! Your record high is ${numberWithCommas(rows.person.vanish)} seconds and low is ${numberWithCommas(rows.person.lowest)} seconds.`);
+          if (!bot.isMod(channel.substring(1), tags["username"] || '')) {
+            timeout(channel.substring(1), tags["username"] || '', rows.twitch_id?rows.twitch_id:'', 'bigvanish', rows.time, `You were timed out for ${numberWithCommas(rows.time)}! Your record high is ${numberWithCommas(rows.person.vanish)} seconds and low is ${numberWithCommas(rows.person.lowest)} seconds.`);
+          }
           say(channel.substring(1), `Big Vanish: ${rows.person.user_id} | ${numberWithCommas(rows.time)} seconds`, bot);
 
           rrcd[tags["username"] || ''] = Date.now() + 15000;
 
-          setTimeout(function() { 
-            untimeout(channel.substring(1), tags["username"] || '', rows.twitch_id?rows.twitch_id:'');
-          }, 3000);
+          if (!bot.isMod(channel.substring(1), tags["username"] || '')) {
+            setTimeout(function() { 
+              untimeout(channel.substring(1), tags["username"] || '', rows.twitch_id?rows.twitch_id:'');
+            }, 3000);
+          }
         }
         break;
 
