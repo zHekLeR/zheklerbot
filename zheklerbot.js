@@ -4668,7 +4668,7 @@ app.post('/eventsub', async (req, res) => {
       res.setHeader('Content-Type', 'text/html').sendStatus(403);
     }
   } catch (err) {
-    helper.dumpError(err + '/n' + req, "Event subscriptions.");
+    helper.dumpError(`${err} \n ${req.headers} \n ${req.body}`, "Event subscriptions.");
     res.sendStatus(201);
   }
 })
