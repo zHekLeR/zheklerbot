@@ -3558,34 +3558,6 @@ app.get('/wins/:user', async (request, response) => {
 });
 
 
-// API endpoint to format ban statements for accounts in BrookeAB's chat which were created and followed within 6 hours. (for Adz)
-app.get('/brookescribers', async (request, response) => {
-  try {
-    var time = Math.round(Date.now() / 1000) - 10800;
-
-    // Pull accounts from database.
-    var rows = await helper.dbQueryPromise(`SELECT * FROM brookescribers ORDER BY followed_at DESC;`);
-
-    if (rows.length > 100) {
-      rows = await helper.dbQueryPromise(`SELECT * FROM brookescribers WHERE followed_at > ${time} ORDER BY followed_at DESC;`);
-    }
-
-    // Format string of ban statements.
-    var str = '';
-    for (var i = 0; i < rows.length; i++) {
-      str += `${rows[i].user_id} <br/>`;
-    }
-
-    // Return response.
-    response.send(`${str===''?'None':str}`);
-
-  } catch (err) {
-    helper.dumpError(err, `Brookescribers web.`);
-    response.send(`/w zHekLeR Error during brookescribers @ ${Date.now()}`);
-  }
-});
-
-
 // Get user's stats.
 app.get('/stats/:id', async (req, response) => {
   try {
@@ -4672,7 +4644,7 @@ app.post('/eventsub', async (req, res) => {
       res.setHeader('Content-Type', 'text/html').sendStatus(403);
     }
   } catch (err) {
-    helper.dumpError(`${err} \n ${req.headers} \n ${req.body}`, "Event subscriptions.");
+    helper.dumpError(`${err} \n ${JSON.stringify(req.headers)} \n ${JSON.stringify(req.body)}`, "Event subscriptions.");
     res.sendStatus(201);
   }
 })
@@ -4706,20 +4678,11 @@ var intervals = [];
 async function authenticate() {
   try {
     await symAxios.get('https://id.twitch.tv/oauth2/validate')
-    .then(res => {
-        intervals.push(setInterval(() => brookescribers(), 120000));
-        console.log("Brookescribers");
-    })
+    .then(res => {})
     .catch(err => {
       helper.dumpError(err, `Twitch Authenticate.`);
       if (JSON.stringify(err).includes('40')) {
         regenerate();
-
-        if (intervals["brooke"]) {
-          clearInterval(intervals["brooke"]);
-        }
-    
-        intervals["brooke"] = setInterval(() => brookescribers(), 300000);
       }
     })
   } catch (err) {
@@ -4769,73 +4732,6 @@ function regenerate() {
     helper.dumpError(err, "Regenerate overall.");
   });
 }
-
-
-// Function to get accounts which created and followed BrookeAB within 6 hours ago.
-async function brookescribers() {
-  try {
-
-    // Get Unix timestamp from 6 hours ago.
-    
-    var sixAgo = DateTime.now().setZone('America/Denver').minus({hours:6}).toMillis()/1000;
-
-      // Get BrookeAB's last 20 followers.
-      await symAxios.get('https://api.twitch.tv/helix/channels/followers?to_id=214560121')
-      .then(async resp => {
-        try {
-          // Pull most recent follower from database.
-          helper.dbQuery(`DELETE FROM brookescribers WHERE created_at < ${sixAgo};`);
-          var fRes = await helper.dbQueryPromise(`SELECT user_id FROM brookescribers;`);
-          var fLast = []
-          for (var i = 0; i < fRes.length; i++) fLast.push(fRes[i].user_id);
-
-          // Set up temp storage.
-          var temp = resp.data.data;
-          var them = [];
-          
-          // Iterate through recent followers.
-          for (var i = 0; i < temp.length; i++) {
-
-            // If follower is more recent than those in the database and followed within six hours, check it's creation date.
-            var followed = (new Date(temp[i].followed_at)).getTime()/1000;
-            if (followed > sixAgo) {
-              await symAxios.get(`https://api.twitch.tv/helix/users?id=${temp[i].from_id}`)
-              .then(res2 => {
-                if (res2.data.data[0]) {
-                  var created = (new Date(res2.data.data[0].created_at)).getTime()/1000;
-                  if (created > sixAgo && !fLast.includes(res2.data.data[0].login)) {
-                    them.push(`('${res2.data.data[0].login}', ${followed}, ${created})`);
-                  }
-                } else {
-                  console.log(`${temp[i].from_id}: ${res2.data}`);
-                }
-              })
-              .catch(err => {
-                helper.dumpError(err, "Brookescribers creation age.");
-              });
-            }
-            
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          }
-          
-          // Add new followers to database.
-          if (them.length) {
-            helper.dbQuery(`INSERT INTO brookescribers (user_id, followed_at, created_at) VALUES ${them.join(', ')};`);
-          }
-
-          console.log("Updated Brookescribers.");
-        } catch (err) {
-          helper.dumpError(err, `Brookescribers user.`);
-        }
-      })
-      .catch(err => {
-        if (err.toString().includes('401')) regenerate();
-        helper.dumpError(err, `Brookescribers get user.`);
-      });
-  } catch (err) {
-    helper.dumpError(err, `Brookescribers overall.`);
-  }
-};
 
 
 // Start 'er up
