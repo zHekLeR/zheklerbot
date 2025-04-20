@@ -4799,10 +4799,9 @@ function regenerate() {
     var userdata = []; 
     for (var i = 0; i < temp.length; i++) {
       userIds[temp[i].user_id] = temp[i];
-      if (temp[i].broadcaster_id !== null) {
+      if (temp[i].broadcaster_id !== '') {
         // @ts-ignore
         userids[i] = temp[i].broadcaster_id;
-        console.log('userids length: ' + userids.length);
 
         if (temp[i].twitch) gcd[temp[i].user_id] = { };
 
