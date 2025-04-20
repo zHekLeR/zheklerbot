@@ -4820,6 +4820,13 @@ function regenerate() {
     await bot.connect()
     .then(async () => {
       for (let i = 0; i < userdata.length; i++) {
+        if (!userIds[userdata[i].login] || userIds[userdata[i].login].broadcaster_id !== userdata[i].id) {
+          console.log(`Updating users: ${userdata[i].login} for ${userdata[i].id}`);
+          helper.dbQuery(`UPDATE allusers SET user_id = '${userdata[i].login}', twitch = false WHERE broadcaster_id = '${userdata[i].broadcaster_id}';`);
+          updateUsers = true;
+          continue;
+        }
+
         await new Promise(resolve => setTimeout(resolve, 1000));
         await bot.join(userdata[i].login)
         .then(() => {
@@ -4828,12 +4835,6 @@ function regenerate() {
         .catch((err) => {
           helper.dumpError(err, `Error joining channel: ${userdata[i].login}.`);
         });
-
-        if (!userIds[userdata[i].login] || userIds[userdata[i].login].broadcaster_id !== userdata[i].id) {
-          console.log(`Updating users: ${userdata[i].login} for ${userdata[i].id}`);
-          //helper.dbQuery(`UPDATE allusers SET user_id = '${userdata[i].login}' WHERE broadcaster_id = '${userdata[i].broadcaster_id}';`);
-          updateUsers = true;
-        }
       }
     })
     .catch(err => {
