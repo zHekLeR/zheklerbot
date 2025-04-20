@@ -4829,9 +4829,9 @@ function regenerate() {
           helper.dumpError(err, `Error joining channel: ${userdata[i].login}.`);
         });
 
-        if (!userIds[userdata[i].login] || userIds[userdata[i].login].broadcaster_id !== userdata[i].broadcaster_id) {
-          console.log(`Updating users: ${userdata[i].login} for ${userdata[i].broadcaster_id}`);
-          helper.dbQuery(`UPDATE allusers SET user_id = '${userdata[i].login}' WHERE broadcaster_id = '${userdata[i].broadcaster_id}';`);
+        if (!userIds[userdata[i].login] || userIds[userdata[i].login].broadcaster_id !== userdata[i].id) {
+          console.log(`Updating users: ${userdata[i].login} for ${userdata[i].id}`);
+          //helper.dbQuery(`UPDATE allusers SET user_id = '${userdata[i].login}' WHERE broadcaster_id = '${userdata[i].broadcaster_id}';`);
           updateUsers = true;
         }
       }
