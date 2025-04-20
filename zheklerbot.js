@@ -304,6 +304,8 @@ console.log('userids: ' + users);
         }
       }
     ).then(res => {
+      console.log(res.data.data);
+      console.log(`${JSON.stringify(res.data.data)}`);
       return res.data.data;
     }).catch(err => {
       helper.dumpError(err, "Get users: " + users);
@@ -4821,18 +4823,18 @@ function regenerate() {
     await bot.connect()
     .then(async () => {
       for (let i = 0; i < userdata.length; i++) {
-        await bot.join(userdata[i].login)
-        .then(() => {
-          console.log(`Joined channel: ${userdata[i].login}.`);
-        })
-        .catch((err) => {
-          helper.dumpError(err, `Error joining channel: ${userdata[i].login}.`);
-        });
+        // await bot.join(userdata[i].login)
+        // .then(() => {
+        //   console.log(`Joined channel: ${userdata[i].login}.`);
+        // })
+        // .catch((err) => {
+        //   helper.dumpError(err, `Error joining channel: ${userdata[i].login}.`);
+        // });
 
-        if (!userIds[userdata[i].login] || userIds[userdata[i].login].broadcaster_id !== userdata[i].broadcaster_id) {
-          helper.dbQuery(`UPDATE allusers SET user_id = '${userdata[i].login}' WHERE broadcaster_id = '${userdata[i].broadcaster_id}';`);
-          updateUsers = true;
-        }
+        // if (!userIds[userdata[i].login] || userIds[userdata[i].login].broadcaster_id !== userdata[i].broadcaster_id) {
+        //   helper.dbQuery(`UPDATE allusers SET user_id = '${userdata[i].login}' WHERE broadcaster_id = '${userdata[i].broadcaster_id}';`);
+        //   updateUsers = true;
+        // }
       }
     })
     .catch(err => {
