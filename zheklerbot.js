@@ -304,8 +304,6 @@ console.log('userids: ' + users);
         }
       }
     ).then(res => {
-      console.log(res.data.data);
-      console.log(`${JSON.stringify(res.data.data)}`);
       return res.data.data;
     }).catch(err => {
       helper.dumpError(err, "Get users: " + users);
@@ -4807,8 +4805,8 @@ function regenerate() {
 
         if ((users.length >= 100) || (i + 1 === temp.length)) {
           let tempusers = await getUsers(users.join('&id='));
-          console.log(JSON.stringify(tempusers));
-          userdata.push(tempusers);
+          console.log(tempusers);
+          userdata = userdata.concat(tempusers);
           users = [];
         }
       }
