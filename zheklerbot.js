@@ -4804,11 +4804,14 @@ function regenerate() {
         if (temp[i].twitch) gcd[temp[i].user_id] = { };
 
         if (userids.length >= 100) {
+          console.log('Calling getUsers.');
           userdata.concat(await getUsers(userids));
           userids = [];
         }
       }
     };
+
+    console.log('Userdata length: ' + userdata.length);
 
     setInterval(function() { duelExpiration(); }, 5000);
     
