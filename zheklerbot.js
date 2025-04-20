@@ -4814,7 +4814,7 @@ function regenerate() {
         }
       }
     };
-    // userdata.concat(await getUsers(userids));
+    userdata.concat(await getUsers(users));
 
     console.log('Userdata length: ' + userdata.length);
 
