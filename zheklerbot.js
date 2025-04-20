@@ -4798,9 +4798,10 @@ function regenerate() {
     var userdata = []; 
     for (var i = 0; i < temp.length; i++) {
       userIds[temp[i].user_id] = temp[i];
-      if (temp[i].broadcaster_id) {
+      if (temp[i].broadcaster_id !== null) {
         // @ts-ignore
         userids.push[temp[i].broadcaster_id];
+        console.log('Added to userids.');
         if (temp[i].twitch) gcd[temp[i].user_id] = { };
 
         if (userids.length >= 100) {
