@@ -4799,7 +4799,9 @@ function regenerate() {
     var userdata = []; 
     for (var i = 0; i < temp.length; i++) {
       userIds[temp[i].user_id] = temp[i];
-      if (temp[i].broadcaster_id?.length > 0) {
+
+      if (temp[i].broadcaster_id) {
+        console.log(temp[i].broadcaster_id);
         // @ts-ignore
         users[i] = temp[i].broadcaster_id;
 
@@ -4809,6 +4811,7 @@ function regenerate() {
           console.log('Calling getUsers with: ' + users.join(', '));
           // userdata.concat(await getUsers(userids));
           users = [];
+          users.length = 0;
         }
       }
     };
@@ -4831,7 +4834,7 @@ function regenerate() {
           helper.dumpError(err, `Error joining channel: ${userdata[i].login}.`);
         });
 
-        if (!userids[userdata[i].login] || userids[userdata[i].login].broadcaster_id !== userdata[i].broadcaster_id) {
+        if (!userIds[userdata[i].login] || userIds[userdata[i].login].broadcaster_id !== userdata[i].broadcaster_id) {
           helper.dbQuery(`UPDATE allusers SET user_id = '${userdata[i].login}' WHERE broadcaster_id = '${userdata[i].broadcaster_id}';`);
           updateUsers = true;
         }
