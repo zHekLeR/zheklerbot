@@ -4801,15 +4801,15 @@ function regenerate() {
       userIds[temp[i].user_id] = temp[i];
       if (temp[i].broadcaster_id) {
         // @ts-ignore
-        userids.push[temp[i].broadcaster_id];
+        userids[i] = temp[i].broadcaster_id;
         console.log('userids length: ' + userids.length);
 
         if (temp[i].twitch) gcd[temp[i].user_id] = { };
 
         if ((userids.length >= 100) || (i + 1 === temp.length)) {
           console.log('Calling getUsers with: ' + userids.join(', '));
-          // let tempusers = await getUsers(userids);
-          // userdata.concat(tempusers);
+          let tempusers = await getUsers(userids);
+          userdata.concat(tempusers);
           userids = [];
         }
       }
