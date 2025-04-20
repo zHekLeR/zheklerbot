@@ -4806,7 +4806,7 @@ function regenerate() {
         if (temp[i].twitch) gcd[temp[i].user_id] = { };
 
         if ((userids.length >= 100) || (i + 1 === temp.length)) {
-          console.log('Calling getUsers.');
+          console.log('Calling getUsers with: ' + userids.join(', '));
           let tempusers = await getUsers(userids);
           userdata.concat(tempusers);
           userids = [];
