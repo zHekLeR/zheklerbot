@@ -294,6 +294,7 @@ async function getUser(username) {
  */
 async function getUsers(users) {
   try {
+    let data = [];
     let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = 'zhekler' AND scope = 'app_access';`);
     
     await axios.get(`https://api.twitch.tv/helix/users?id=${users}`,
@@ -304,12 +305,12 @@ async function getUsers(users) {
         }
       }
     ).then(res => {
-      console.log("response data length: " + res.data.data.length);
-      return res.data.data;
+      data = res.data.data;
     }).catch(err => {
       helper.dumpError(err, "Get users: " + users);
-      return [];
     });
+
+    return data;
     
   } catch (err) {
     helper.dumpError(err, "Get users overall: " + users);
