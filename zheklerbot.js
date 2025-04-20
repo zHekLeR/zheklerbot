@@ -4807,12 +4807,12 @@ function regenerate() {
         if (temp[i].twitch) gcd[temp[i].user_id] = { };
 
         if ((users.length >= 100) || (i + 1 === temp.length)) {
-          userdata.concat(await getUsers(users.join('&id=')));
+          let tempusers = await getUsers(users.join('&id='));
+          userdata.push(tempusers);
           users = [];
         }
       }
     };
-    userdata.concat(await getUsers(users.join('&id=')));
 
     console.log('Userdata length: ' + userdata.length);
 
