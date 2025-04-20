@@ -4822,7 +4822,7 @@ function regenerate() {
       for (let i = 0; i < userdata.length; i++) {
         if (!userIds[userdata[i].login] || userIds[userdata[i].login].broadcaster_id !== userdata[i].id) {
           console.log(`Updating users: ${userdata[i].login} for ${userdata[i].id}`);
-          helper.dbQuery(`UPDATE allusers SET user_id = '${userdata[i].login}', twitch = false WHERE broadcaster_id = '${userdata[i].broadcaster_id}';`);
+          helper.dbQuery(`UPDATE allusers SET user_id = '${userdata[i].login}', twitch = false WHERE broadcaster_id = '${userdata[i].id}';`);
           updateUsers = true;
           continue;
         }
