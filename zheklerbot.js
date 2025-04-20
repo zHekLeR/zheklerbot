@@ -306,6 +306,7 @@ async function getUsers(useridArray) {
       }
     ).then(res => {
       data = res.data.data;
+      console.log('Array length from getUsers: ' + data.length);
     }).catch(err => {
       helper.dumpError(err, "Get users: " + useridArray.join(', '));
     });
@@ -4801,13 +4802,12 @@ function regenerate() {
       if (temp[i].broadcaster_id !== null) {
         // @ts-ignore
         userids.push[temp[i].broadcaster_id];
-        console.log('Added to userids.');
+
         if (temp[i].twitch) gcd[temp[i].user_id] = { };
 
-        if (userids.length >= 100) {
+        if ((userids.length >= 100) || (i + 1 === temp.length)) {
           console.log('Calling getUsers.');
-          var tempusers = await getUsers(userids);
-          userdata.concat(tempusers);
+          userdata.concat(await getUsers(userids));
           userids = [];
         }
       }
