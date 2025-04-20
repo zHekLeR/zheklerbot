@@ -4827,6 +4827,8 @@ function regenerate() {
           continue;
         }
 
+        if (!userIds[userdata[i]].twitch) continue;
+
         await new Promise(resolve => setTimeout(resolve, 500));
         await bot.join(userdata[i].login)
         .then(() => {
