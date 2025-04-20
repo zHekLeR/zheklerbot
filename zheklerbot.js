@@ -4801,7 +4801,6 @@ function regenerate() {
       userIds[temp[i].user_id] = temp[i];
 
       if (temp[i].broadcaster_id) {
-        console.log(temp[i].broadcaster_id);
         // @ts-ignore
         users.push(temp[i].broadcaster_id);
 
