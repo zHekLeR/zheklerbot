@@ -4820,6 +4820,7 @@ function regenerate() {
     await bot.connect()
     .then(async () => {
       for (let i = 0; i < userdata.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
         await bot.join(userdata[i].login)
         .then(() => {
           console.log(`Joined channel: ${userdata[i].login}.`);
