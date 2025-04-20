@@ -296,7 +296,7 @@ async function getUsers(useridArray) {
   try {
     let data = [];
     let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = 'zhekler' AND scope = 'app_access';`);
-
+console.log(useridArray.join('&id='));
     await axios.get(`https://api.twitch.tv/helix/users?id=${useridArray.join('&id=')}`,
       {
         headers: {
