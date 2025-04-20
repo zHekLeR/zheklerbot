@@ -4806,7 +4806,8 @@ function regenerate() {
 
         if (userids.length >= 100) {
           console.log('Calling getUsers.');
-          userdata.concat(await getUsers(userids));
+          var tempusers = await getUsers(userids);
+          userdata.concat(tempusers);
           userids = [];
         }
       }
