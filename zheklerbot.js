@@ -4809,7 +4809,7 @@ function regenerate() {
 
         if ((users.length >= 100) || (i + 1 === temp.length)) {
           console.log('Calling getUsers with: ' + users.join(', '));
-          // userdata.concat(await getUsers(userids));
+          userdata.concat(await getUsers(users));
           users = [];
         }
       }
