@@ -290,14 +290,14 @@ async function getUser(username) {
 
 
 /**
- * @param {string[]} useridArray
+ * @param {string} users
  */
-async function getUsers(useridArray) {
+async function getUsers(users) {
   try {
     let data = [];
     let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = 'zhekler' AND scope = 'app_access';`);
-console.log('Useridarray: ' + useridArray.join('&id='));
-    await axios.get(`https://api.twitch.tv/helix/users?id=${useridArray.join('&id=')}`,
+console.log('userids: ' + users);
+    await axios.get(`https://api.twitch.tv/helix/users?id=${users}`,
       {
         headers: {
           "Authorization": `Bearer ${rows[0].access_token}`,
@@ -308,14 +308,14 @@ console.log('Useridarray: ' + useridArray.join('&id='));
       data = res.data.data;
       console.log('Array length from getUsers: ' + data.length);
     }).catch(err => {
-      helper.dumpError(err, "Get users: " + useridArray.join(', '));
+      helper.dumpError(err, "Get users: " + users);
     });
 
     return data;
     
   } catch (err) {
-    helper.dumpError(err, "Get users overall: " + useridArray.join(', '));
-    return '';
+    helper.dumpError(err, "Get users overall: " + users);
+    return [];
   }
 }
 
@@ -4807,13 +4807,12 @@ function regenerate() {
         if (temp[i].twitch) gcd[temp[i].user_id] = { };
 
         if ((users.length >= 100) || (i + 1 === temp.length)) {
-          console.log('Calling getUsers with: ' + users.join(', '));
-          userdata.concat(await getUsers(users));
+          userdata.concat(await getUsers(users.join('&id=')));
           users = [];
         }
       }
     };
-    userdata.concat(await getUsers(users));
+    userdata.concat(await getUsers(users.join('&id=')));
 
     console.log('Userdata length: ' + userdata.length);
 
