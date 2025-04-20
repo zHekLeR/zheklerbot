@@ -4803,7 +4803,7 @@ function regenerate() {
       if (temp[i].broadcaster_id) {
         console.log(temp[i].broadcaster_id);
         // @ts-ignore
-        users[i] = temp[i].broadcaster_id;
+        users.push(temp[i].broadcaster_id);
 
         if (temp[i].twitch) gcd[temp[i].user_id] = { };
 
@@ -4811,7 +4811,6 @@ function regenerate() {
           console.log('Calling getUsers with: ' + users.join(', '));
           // userdata.concat(await getUsers(userids));
           users = [];
-          users.length = 0;
         }
       }
     };
