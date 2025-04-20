@@ -4807,14 +4807,11 @@ function regenerate() {
 
         if ((users.length >= 100) || (i + 1 === temp.length)) {
           let tempusers = await getUsers(users.join('&id='));
-          console.log(tempusers);
           userdata.push.apply(userdata, tempusers);
           users = [];
         }
       }
     };
-
-    console.log('Userdata length: ' + userdata.length);
 
     setInterval(function() { duelExpiration(); }, 5000);
     
@@ -4823,18 +4820,19 @@ function regenerate() {
     await bot.connect()
     .then(async () => {
       for (let i = 0; i < userdata.length; i++) {
-        // await bot.join(userdata[i].login)
-        // .then(() => {
-        //   console.log(`Joined channel: ${userdata[i].login}.`);
-        // })
-        // .catch((err) => {
-        //   helper.dumpError(err, `Error joining channel: ${userdata[i].login}.`);
-        // });
+        await bot.join(userdata[i].login)
+        .then(() => {
+          console.log(`Joined channel: ${userdata[i].login}.`);
+        })
+        .catch((err) => {
+          helper.dumpError(err, `Error joining channel: ${userdata[i].login}.`);
+        });
 
-        // if (!userIds[userdata[i].login] || userIds[userdata[i].login].broadcaster_id !== userdata[i].broadcaster_id) {
-        //   helper.dbQuery(`UPDATE allusers SET user_id = '${userdata[i].login}' WHERE broadcaster_id = '${userdata[i].broadcaster_id}';`);
-        //   updateUsers = true;
-        // }
+        if (!userIds[userdata[i].login] || userIds[userdata[i].login].broadcaster_id !== userdata[i].broadcaster_id) {
+          console.log(`Updating users: ${userdata[i].login} for ${userdata[i].broadcaster_id}`);
+          helper.dbQuery(`UPDATE allusers SET user_id = '${userdata[i].login}' WHERE broadcaster_id = '${userdata[i].broadcaster_id}';`);
+          updateUsers = true;
+        }
       }
     })
     .catch(err => {
