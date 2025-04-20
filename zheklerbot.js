@@ -289,6 +289,36 @@ async function getUser(username) {
 }
 
 
+/**
+ * @param {string[]} useridArray
+ */
+async function getUsers(useridArray) {
+  try {
+    let data = [];
+    let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = 'zhekler' AND scope = 'app_access';`);
+
+    await axios.get(`https://api.twitch.tv/helix/users?id=${useridArray.join('&id=')}`,
+      {
+        headers: {
+          "Authorization": `Bearer ${rows[0].access_token}`,
+          "Client-Id": process.env.CLIENT_ID + ''
+        }
+      }
+    ).then(res => {
+      data = res.data.data;
+    }).catch(err => {
+      helper.dumpError(err, "Get users: " + useridArray.join(', '));
+    });
+
+    return data;
+    
+  } catch (err) {
+    helper.dumpError(err, "Get users overall: " + useridArray.join(', '));
+    return '';
+  }
+}
+
+
 async function revokeToken(token) {
   try {
     await axios.post(`https://id.twitch.tv/oauth2/revoke`, 
@@ -4704,7 +4734,6 @@ function regenerate() {
       account_config[k] = resp.data[k];
     }
 
-
     symAxios.defaults.headers["Authorization"] = "Bearer " + resp.data.access_token;
     console.log(symAxios.defaults);
 
@@ -4743,24 +4772,76 @@ function regenerate() {
       console.log("Server is listening.");
     });
 
+    let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
+    if (!rows || !rows.length) helper.dumpError(rows, `No timeout perms.`);
+
+    let newToken = await refreshToken(rows[0].access_token, rows[0].refresh_token);
+    helper.dbQuery(`UPDATE access_tokens SET access_token = '${newToken}' WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
+
+    intervals["tokenRefresh"] = setInterval(function () { refreshToken(rows[0].access_token, rows[0].refresh_token); }, 1000*60*60*3);
+
+    // Refresh app access token.
+    axios.post('https://id.twitch.tv/oauth2/token', `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&grant_type=client_credentials`, {
+      headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    }).then(res => {
+        console.log(res.data);
+        helper.dbQuery(`UPDATE access_tokens SET access_token = '${res.data.access_token}' WHERE userid = 'zhekler' AND scope = 'app_access';`);
+    }).catch(err => {
+        console.log(err.response);
+    })
+
     // Populate match cache and initialize userIds map.
     var temp = await helper.dbQueryPromise(`SELECT * FROM allusers;`);
+    var userids = [];
+    var userdata = []; 
     for (var i = 0; i < temp.length; i++) {
       userIds[temp[i].user_id] = temp[i];
-      if (temp[i].twitch) {
+      if (temp[i].broadcaster_id) {
         // @ts-ignore
-        bot.channels.push(temp[i].user_id);
-        gcd[temp[i].user_id] = { };
+        userids.push[temp[i].broadcaster_id];
+        if (temp[i].twitch) gcd[temp[i].user_id] = { };
+
+        if (userids.length >= 100) {
+          userdata.concat(await getUsers(userids));
+          userids = [];
+        }
       }
     };
 
     setInterval(function() { duelExpiration(); }, 5000);
     
     // Connect to Twitch channels.
+    var updateUsers = false;
     await bot.connect()
+    .then(async () => {
+      for (let i = 0; i < userdata.length; i++) {
+        await bot.join(userdata[i].login)
+        .then(() => {
+          console.log(`Joined channel: ${userdata[i].login}.`);
+        })
+        .catch((err) => {
+          helper.dumpError(err, `Error joining channel: ${userdata[i].login}.`);
+        });
+
+        if (!userids[userdata[i].login] || userids[userdata[i].login].broadcaster_id !== userdata[i].broadcaster_id) {
+          helper.dbQuery(`UPDATE allusers SET user_id = '${userdata[i].login}' WHERE broadcaster_id = '${userdata[i].broadcaster_id}';`);
+          updateUsers = true;
+        }
+      }
+    })
     .catch(err => {
       helper.dumpError(err, "Twitch enable.");
     });
+
+    if (updateUsers) {
+      userIds = [];
+      var temp = await helper.dbQueryPromise(`SELECT * FROM allusers;`);
+      for (var i = 0; i < temp.length; i++) {
+        userIds[temp[i].user_id] = temp[i];
+      }
+    }
 
     // Authenticate with Twitch API and set 2 minute interval for BrookeAB's followers.
     // await authenticate();
@@ -4784,7 +4865,7 @@ function regenerate() {
     //   });
     // }, 60*60*1000);
 
-    intervals["scoreBots"] = setInterval(byeBots, 60*15*1000);
+    // intervals["scoreBots"] = setInterval(byeBots, 60*15*1000);
 
     // Log into the COD API.
     // await loginWithSSO(process.env.COD_SSO);
@@ -4798,26 +4879,6 @@ function regenerate() {
     //   }
     // }, 300000);
     
-    let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
-    if (!rows || !rows.length) throw new Error(`No timeout perms.`);
-
-    let newToken = await refreshToken(rows[0].access_token, rows[0].refresh_token);
-    helper.dbQuery(`UPDATE access_tokens SET access_token = '${newToken}' WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
-
-    intervals["tokenRefresh"] = setInterval(function () { refreshToken(rows[0].access_token, rows[0].refresh_token); }, 1000*60*60*3);
-
-    // Refresh app access token.
-    axios.post('https://id.twitch.tv/oauth2/token', `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&grant_type=client_credentials`, {
-      headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    }).then(res => {
-        console.log(res.data);
-        helper.dbQuery(`UPDATE access_tokens SET access_token = '${res.data.access_token}' WHERE userid = 'zhekler' AND scope = 'app_access';`);
-    }).catch(err => {
-        console.log(err.response);
-    })
-
   } catch (err) {
 
     // Clear intervals.
