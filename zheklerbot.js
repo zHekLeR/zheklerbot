@@ -140,14 +140,6 @@ async function timeout(channel, user, user_id, game, duration, reason) {
     let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
     if (!rows || !rows[0].access_token) throw new Error("No access token for timeout.");
 
-    console.log(`{
-      "data": {
-        "user_id":"${user_id}"
-        ${duration?',"duration":'+duration:''}
-        ${reason?',"reason":"' + reason + '"':''}
-      }
-    }`);
-
     await axios.post(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140`, 
     `{
       "data": {
@@ -391,16 +383,10 @@ bot.on('logon', () => {
   console.log("Twitch bot logged on.");
 });
 
-// Free trial up.
-var pause = {};
-
-// Tourney commands.
-var tourneyComs = ["!mc", "!prize", "!status", "!bracket", "!banned", "!format"];
-
 // Check for commands and respond appropriately.
 bot.on('chat', async (channel, tags, message) => {
   try {
-
+    
     // Spam filter.
     if (channel.substring(1) === 'huskerrs' && message.match(/[\u2800-\u28FF]/g)) {
       timeout(channel.substring(1), tags["username"] || '', '', '',  1, 'Spam?');
@@ -409,7 +395,6 @@ bot.on('chat', async (channel, tags, message) => {
 
     // Return if not a command.
     if (message.charAt(0) !== '!') return;
-    if (pause[channel.substring(1)] && tags["username"] !== 'zhekler') return;
 
     // Get command.
     var splits = message.split(' ');
@@ -430,6 +415,9 @@ bot.on('chat', async (channel, tags, message) => {
     // Disabled commands.
     var coms = userIds[channel.substring(1)].disabled?userIds[channel.substring(1)].disabled.split(','):[];
     if (coms.includes(short)) return;
+
+    // Momentary logging to try determining how tmijs handles Shared Chat.
+    console.log(tags);
 
     // Switch on given command.
     switch (short) {
@@ -462,43 +450,9 @@ bot.on('chat', async (channel, tags, message) => {
         break;
 
 
-      // Start timer.
-      case '!starttimer':
-        if (tags['username'] !== 'zhekler') break;
-        if (!intArray[channel.substring(1)]) intArray[channel.substring(1)] = {};
-        if (intArray[channel.substring(1)][splits[1]]) break;
-        var time = parseInt(splits[2]);
-        intArray[channel.substring(1)][splits[1]] = setInterval(function () {
-          say(channel.substring(1), splits.slice(3).join(' '), bot);
-        }, time);
-        break;
-
-      // Stop timer.
-      case '!stoptimer':
-        if (tags['username'] !== 'zhekler') break;
-        if (!intArray[channel.substring(1)] || !intArray[channel.substring(1)][splits[1]]) break;
-        clearInterval(intArray[channel.substring(1)][splits[1]]);
-        delete intArray[channel.substring(1)][splits[1]];
-        break;
-
-
       case '!sql':
-	if (tags["username"] !== 'zhekler') break;
-	helper.dbQuery(splits.splice(1).join(' '));
-	break;
-		    
-
-      // Pause this shit.
-      case '!pause':
-        if (tags["username"] !== 'zhekler' || pause[channel.substring(1)]) break;
-        pause[channel.substring(1)] = true;
-        say(channel, 'The free trial for zHekBot has expired #payzhekler', bot);
-        break;
-
-      // Unpause.
-      case '!unpause':
-        if (tags["username"] !== 'zhekler' || !pause[channel.substring(1)]) break;
-        pause[channel.substring(1)] = false;
+        if (tags["username"] !== 'zhekler') break;
+        helper.dbQuery(splits.splice(1).join(' '));
         break;
 
 
@@ -1120,19 +1074,7 @@ bot.on('chat', async (channel, tags, message) => {
         userIds[channel.substring(1)]["two_v_two"] = false;
         delete tvtUpdate[channel.substring(1)];
         break;      
-
-      // Check the stats of a user.
-      case '!check':
-        if (!tags['mod'] && !vips.includes(tags['username'] || '') && channel.substring(1) !== tags["username"]) break;
-        say(channel, await stats(message.substring(message.indexOf(' ') + 1), 'uno'), bot);
-        break;
-
-      // Check the stats of a user, Battlenet.
-      case '!checkbattle': 
-        if (!tags['mod'] && !vips.includes(tags['username'] || '') && channel.substring(1) !== tags["username"]) break;
-        say(channel, await stats(message.substring(message.indexOf(' ') + 1), 'battle'), bot);
-        break;
-
+        
 
       /*####################################################################################################################
         Thank for subscribers or not.
@@ -1309,20 +1251,8 @@ bot.on('chat', async (channel, tags, message) => {
 
 
       /*####################################################################################################################
-        Couple commands which aren't publicly available.
+        Commands which aren't publicly available.
       ####################################################################################################################*/
-
-      // Set all of the tourney commands after match is done.
-      case '!tourneyend':
-        if (channel.substring(1) !== 'huskerrs') break; 
-        if (!tags["mod"] && tags["username"] !== channel.substring(1)) break;
-        say(channel.substring(1), `!editcom !time It’s currently $(time America/Phoenix "h:mm A") for HusKerrs.`, bot);
-        for (var i = 0; i < tourneyComs.length; i++) {
-          await new Promise(resolve => setTimeout(resolve, 2000));
-          say(channel.substring(1), `!edit ${tourneyComs[i]} Tourney's over! See !results for more`, bot);
-        }
-        break;
-
 
       // Refresh the userIds cache.
       case '!refresh':
@@ -1337,6 +1267,7 @@ bot.on('chat', async (channel, tags, message) => {
       /*####################################################################################################################
         OpenAI API.
       ####################################################################################################################*/
+
       case '!chatgpt': 
         if (channel.substring(1) !== "huskerrs" || (!tags["mod"] && tags["username"] !== channel.substring(1))) break;
         if (splits.length <= 1) break;
