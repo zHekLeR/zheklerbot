@@ -416,8 +416,8 @@ bot.on('chat', async (channel, tags, message) => {
     var coms = userIds[channel.substring(1)].disabled?userIds[channel.substring(1)].disabled.split(','):[];
     if (coms.includes(short)) return;
 
-    // Momentary logging to try determining how tmijs handles Shared Chat.
-    console.log(tags);
+    // If Shared Chat is enabled, return if we are not in the source room.
+    if (tags["source-room-id"] && tags["source-room-id"] !== tags["room-id"]) return;
 
     // Switch on given command.
     switch (short) {
