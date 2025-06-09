@@ -3,25 +3,25 @@
 'use strict';
 import 'dotenv/config';
 import * as helper from "./helper.js";
- 
+
 // Loadout command for Discord.
 const prefix = "!loadout";
 helper.discord.on("messageCreate", (message) => {
   if (message.channel.id === "775090169417826326") {
     if (message.content.startsWith(prefix)) {
-      message.author.send("HusKerrs' Loadouts (favorite guns at the top): https://www.kittr.gg/channel/HusKerrs/warzone\n"+
-      "If you're having trouble accessing the loadout site, please DM @zHekLeR on Twitch or Discord.")
-      .catch(err => {
-        helper.dumpError(err, "Discord setUsername.");
-      });
+      message.author.send("HusKerrs' Loadouts (favorite guns at the top): https://www.kittr.gg/channel/HusKerrs/warzone\n" +
+        "If you're having trouble accessing the loadout site, please DM @zHekLeR on Twitch or Discord.")
+        .catch(err => {
+          helper.dumpError(err, "Discord setUsername.");
+        });
     }
-    } else if (message.channel.id === "860699279017639936") {
-      if (message.content.indexOf('/ban ') >= 0) {
-        var temp = message.content.substring(message.content.indexOf('/ban ') + 5).split(' '); 
-        console.log(temp.join(' '));
-        timeout('huskerrs', temp.splice(0, 1).toString(), '', '', 0, temp.join(' ') + ' | Global ban');
-      } 
+  } else if (message.channel.id === "860699279017639936") {
+    if (message.content.indexOf('/ban ') >= 0) {
+      var temp = message.content.substring(message.content.indexOf('/ban ') + 5).split(' ');
+      console.log(temp.join(' '));
+      timeout('huskerrs', temp.splice(0, 1).toString(), '', '', 0, temp.join(' ') + ' | Global ban');
     }
+  }
 });
 
 // COD API stuff.
@@ -51,7 +51,7 @@ import { DateTime } from 'luxon';
 var rrcd = [], rpscd = [], cfcd = [], bvcd = [], dcd = [];
 
 // Global cooldowns.
-var gcd = { };
+var gcd = {};
 
 // Active elements for each user.
 var userIds = [], online = {};
@@ -67,8 +67,8 @@ const account_config = {
   "access_token": process.env.ACCESS_TOKEN,
   "refresh_token": process.env.REFRESH_TOKEN,
   "scope": [
-      "channel:manage:redemptions",
-      "channel:read:redemptions"
+    "channel:manage:redemptions",
+    "channel:read:redemptions"
   ],
   "token_type": "bearer"
 };
@@ -79,15 +79,15 @@ const vips = 'davidtheslayerrr, thunderclap60, neosog, guppii, lululuvely, offic
 
 // Create the Twitch bot.
 const bot = new tmi.Client({
-	connection: {
-		reconnect: true,
-		secure: true
-	},
-	identity: {
-		username: 'zhekler',
-		password: process.env.TWITCH_BOT
-	},
-  channels: [ ]
+  connection: {
+    reconnect: true,
+    secure: true
+  },
+  identity: {
+    username: 'zhekler',
+    password: process.env.TWITCH_BOT
+  },
+  channels: []
 });
 
 // Twitch bots for scorekeeping.
@@ -106,9 +106,9 @@ function say(channel, message, chatBot) {
     return;
   }
   chatBot.say(channel, message)
-  .catch(err => {
-    helper.dumpError(err, "Say: " + message);
-  });
+    .catch(err => {
+      helper.dumpError(err, "Say: " + message);
+    });
 };
 
 
@@ -127,7 +127,7 @@ async function timeout(channel, user, user_id, game, duration, reason) {
     if (!user_id) {
       if (user.indexOf('@') === 0) user = user.substring(1);
       user_id = await getUser(user);
-      
+
       if (!user_id) {
         return;
       } else if (game && game === 'duelduel') {
@@ -140,53 +140,53 @@ async function timeout(channel, user, user_id, game, duration, reason) {
     let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
     if (!rows || !rows[0].access_token) throw new Error("No access token for timeout.");
 
-    await axios.post(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140`, 
-    `{
+    await axios.post(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140`,
+      `{
       "data": {
         "user_id":"${user_id}"
-        ${duration?',"duration":'+duration:''}
-        ${reason?',"reason":"' + reason + '"':''}
+        ${duration ? ',"duration":' + duration : ''}
+        ${reason ? ',"reason":"' + reason + '"' : ''}
       }
-    }`, 
-    {
-      headers: {
-        "Client-Id": process.env.CLIENT_ID + '',
-        "Authorization": "Bearer " + rows[0].access_token,
-        "Content-Type": "application/json"
-      }
-    }).then(res => {
-      console.log(res.status, res.data);
-      if (res.status !== 200) throw new Error("Unknown status code: " + res.status);
-    }).catch(async err => {
-      if (err.toString().includes(401)) {
-        helper.dumpError(err, "First timeout.");
-        let retry = await refreshToken(rows[0].access_token, rows[0].refresh_token);
-        console.log(retry);
+    }`,
+      {
+        headers: {
+          "Client-Id": process.env.CLIENT_ID + '',
+          "Authorization": "Bearer " + rows[0].access_token,
+          "Content-Type": "application/json"
+        }
+      }).then(res => {
+        console.log(res.status, res.data);
+        if (res.status !== 200) throw new Error("Unknown status code: " + res.status);
+      }).catch(async err => {
+        if (err.toString().includes(401)) {
+          helper.dumpError(err, "First timeout.");
+          let retry = await refreshToken(rows[0].access_token, rows[0].refresh_token);
+          console.log(retry);
 
-        if (retry !== '') {
-          await axios.post(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140`, 
-          `{
+          if (retry !== '') {
+            await axios.post(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140`,
+              `{
             "data": {
               "user_id":"${user}"
-              ${duration?',"duration":'+duration:''}
-              ${reason?',"reason":"' + reason + '"':''}
+              ${duration ? ',"duration":' + duration : ''}
+              ${reason ? ',"reason":"' + reason + '"' : ''}
             }
-          }`, 
-          {
-            headers: {
-              "Client-Id": process.env.CLIENT_ID + '',
-              "Authorization": "Bearer " + retry,
-              "Content-Type": "application/json"
-            }
-          }).then(res => {
-            if (res.status !== 200) throw new Error("Unknown status code in timeout: " + res.status);
-          }).catch(err => {
-            helper.dumpError(err, "Retry timeout.");
-          });
-        }
-      } else if (err.toString().includes(400)) return;
-      helper.dumpError(err, `Twitch timeout: ${channel} ${user} ${duration} ${reason}`);
-    });
+          }`,
+              {
+                headers: {
+                  "Client-Id": process.env.CLIENT_ID + '',
+                  "Authorization": "Bearer " + retry,
+                  "Content-Type": "application/json"
+                }
+              }).then(res => {
+                if (res.status !== 200) throw new Error("Unknown status code in timeout: " + res.status);
+              }).catch(err => {
+                helper.dumpError(err, "Retry timeout.");
+              });
+          }
+        } else if (err.toString().includes(400)) return;
+        helper.dumpError(err, `Twitch timeout: ${channel} ${user} ${duration} ${reason}`);
+      });
   } catch (err) {
     helper.dumpError(err, `Twitch timeout: ${channel} ${user} ${duration} ${reason}`);
   }
@@ -205,46 +205,46 @@ async function untimeout(channel, user, user_id) {
     if (!user_id) {
       if (user.indexOf('@') === 0) user = user.substring(1);
       user_id = await getUser(user);
-      
+
       if (!user_id) {
         return;
-      } 
+      }
     }
 
     let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
     if (!rows || !rows[0].access_token) throw new Error("No access token for untimeout.");
 
-    await axios.delete(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140&user_id=${user_id}`, 
-    {
-      headers: {
-        'Authorization': 'Bearer ' + rows[0].access_token,
-        'Client-Id': process.env.CLIENT_ID + ''
-      }
-    }).then(res => {
-      console.log(res.status, res.data);
-      if (res.status !== 204) throw new Error("Unknown status code in untimeout: " + res.status);
-    }).catch(async err => {
-      if (err.toString().includes("401")) {
-        helper.dumpError(err, "First timeout.");
-        let retry = await refreshToken(rows[0].access_token, rows[0].refresh_token);
-        console.log(retry);
-
-        if (retry !== '') {
-          await axios.delete(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140&user_id=${user_id}`, 
-          {
-            headers: {
-              "Client-Id": process.env.CLIENT_ID + '',
-              "Authorization": "Bearer " + retry,
-            }
-          }).then(res => {
-            if (res.status !== 200) throw new Error("Unknown status code in untimeout: " + res.status);
-          }).catch(err => {
-            helper.dumpError(err, "Retry untimeout.");
-          });
+    await axios.delete(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140&user_id=${user_id}`,
+      {
+        headers: {
+          'Authorization': 'Bearer ' + rows[0].access_token,
+          'Client-Id': process.env.CLIENT_ID + ''
         }
-      }
-      helper.dumpError(err, `Twitch untimeout: ${channel} ${user}`);
-    });
+      }).then(res => {
+        console.log(res.status, res.data);
+        if (res.status !== 204) throw new Error("Unknown status code in untimeout: " + res.status);
+      }).catch(async err => {
+        if (err.toString().includes("401")) {
+          helper.dumpError(err, "First timeout.");
+          let retry = await refreshToken(rows[0].access_token, rows[0].refresh_token);
+          console.log(retry);
+
+          if (retry !== '') {
+            await axios.delete(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140&user_id=${user_id}`,
+              {
+                headers: {
+                  "Client-Id": process.env.CLIENT_ID + '',
+                  "Authorization": "Bearer " + retry,
+                }
+              }).then(res => {
+                if (res.status !== 200) throw new Error("Unknown status code in untimeout: " + res.status);
+              }).catch(err => {
+                helper.dumpError(err, "Retry untimeout.");
+              });
+          }
+        }
+        helper.dumpError(err, `Twitch untimeout: ${channel} ${user}`);
+      });
   } catch (err) {
     helper.dumpError(err, `Twitch untimeout: ${channel} ${user}`);
   }
@@ -272,7 +272,7 @@ async function getUser(username) {
     }).catch(err => {
       helper.dumpError(err, "Get User: " + username);
     });
-    
+
     return user_id;
   } catch (err) {
     helper.dumpError(err, "Get user overall: " + username);
@@ -288,7 +288,7 @@ async function getUsers(users) {
   try {
     let data = [];
     let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = 'zhekler' AND scope = 'app_access';`);
-    
+
     await axios.get(`https://api.twitch.tv/helix/users?id=${users}`,
       {
         headers: {
@@ -303,7 +303,7 @@ async function getUsers(users) {
     });
 
     return data;
-    
+
   } catch (err) {
     helper.dumpError(err, "Get users overall: " + users);
     return [];
@@ -313,21 +313,21 @@ async function getUsers(users) {
 
 async function revokeToken(token) {
   try {
-    await axios.post(`https://id.twitch.tv/oauth2/revoke`, 
-    `client_id=${process.env.CLIENT_ID}&token=${token}`, 
-    {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      }
-    })
-    .then(res => {
-      if (res.status !== 200) throw new Error("Unexpected status on revoke: " + res.status + " | " + token);
-    })
-    .catch(err => {
-      if (!err.toString().includes('400')) {
-        helper.dumpError(err, "Revoke token call: " + token);
-      }
-    })
+    await axios.post(`https://id.twitch.tv/oauth2/revoke`,
+      `client_id=${process.env.CLIENT_ID}&token=${token}`,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      })
+      .then(res => {
+        if (res.status !== 200) throw new Error("Unexpected status on revoke: " + res.status + " | " + token);
+      })
+      .catch(err => {
+        if (!err.toString().includes('400')) {
+          helper.dumpError(err, "Revoke token call: " + token);
+        }
+      })
   } catch (err) {
     helper.dumpError(err, "Revoke token: " + token);
   }
@@ -337,29 +337,29 @@ async function revokeToken(token) {
 async function refreshToken(aToken, rToken) {
   try {
     let newToken = '';
-    await axios.post('https://id.twitch.tv/oauth2/token', 
-    `grant_type=refresh_token&refresh_token=${rToken}&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}`,
-    {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      }
-    }).then(async res => {
-      await helper.dbQueryPromise(`UPDATE access_tokens SET access_token = '${res.data.access_token}' WHERE refresh_token = '${rToken}';`);
-      console.log(res.data);
+    await axios.post('https://id.twitch.tv/oauth2/token',
+      `grant_type=refresh_token&refresh_token=${rToken}&client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}`,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      }).then(async res => {
+        await helper.dbQueryPromise(`UPDATE access_tokens SET access_token = '${res.data.access_token}' WHERE refresh_token = '${rToken}';`);
+        console.log(res.data);
 
-      setTimeout(function () { revokeToken(aToken)}, 5000);
+        setTimeout(function () { revokeToken(aToken) }, 5000);
 
-      newToken = res.data.access_token;
-    })
-    .catch(err => {
-      helper.dumpError(err, "Refresh timeout inner: " + rToken);
-    });
+        newToken = res.data.access_token;
+      })
+      .catch(err => {
+        helper.dumpError(err, "Refresh timeout inner: " + rToken);
+      });
 
     return newToken;
   } catch (err) {
     helper.dumpError(err, "Refresh timeout token: " + rToken);
     return '';
-  } 
+  }
 }
 
 
@@ -386,10 +386,10 @@ bot.on('logon', () => {
 // Check for commands and respond appropriately.
 bot.on('chat', async (channel, tags, message) => {
   try {
-    
+
     // Spam filter.
     if (channel.substring(1) === 'huskerrs' && message.match(/[\u2800-\u28FF]/g)) {
-      timeout(channel.substring(1), tags["username"] || '', '', '',  1, 'Spam?');
+      timeout(channel.substring(1), tags["username"] || '', '', '', 1, 'Spam?');
       return;
     }
 
@@ -411,9 +411,9 @@ bot.on('chat', async (channel, tags, message) => {
 
     // Base values.
     var res = [], placement, kills, multis, score, str, rows;
-    
+
     // Disabled commands.
-    var coms = userIds[channel.substring(1)].disabled?userIds[channel.substring(1)].disabled.split(','):[];
+    var coms = userIds[channel.substring(1)].disabled ? userIds[channel.substring(1)].disabled.split(',') : [];
     if (coms.includes(short)) return;
 
     // If Shared Chat is enabled, return if we are not in the source room.
@@ -421,12 +421,12 @@ bot.on('chat', async (channel, tags, message) => {
 
     // Switch on given command.
     switch (short) {
-      
+
       /*####################################################################################################################
           Some run of the mill commands to set up zHekBot.
       ####################################################################################################################*/
       // Enable command.
-      case '!enablecom': 
+      case '!enablecom':
         if (tags['username'] !== channel.substring(1) && !tags['mod']) break;
         if (coms.indexOf(splits[1]) < 0) break;
         coms.splice(coms.indexOf(splits[1]), 1);
@@ -461,7 +461,7 @@ bot.on('chat', async (channel, tags, message) => {
       ####################################################################################################################*/
 
       // Enable Revolver Roulette.
-      case '!rron': 
+      case '!rron':
         if (userIds[channel.substring(1)].revolverroulette || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
         helper.dbQuery(`UPDATE allusers SET revolverroulette = true WHERE user_id = '${channel.substring(1)}';`);
         userIds[channel.substring(1)].revolverroulette = true;
@@ -469,7 +469,7 @@ bot.on('chat', async (channel, tags, message) => {
         break;
 
       // Disable Revolver Roulette.
-      case '!rroff': 
+      case '!rroff':
         if (!userIds[channel.substring(1)].revolverroulette || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
         helper.dbQuery(`UPDATE allusers SET revolverroulette = false WHERE user_id = '${channel.substring(1)}';`);
         userIds[channel.substring(1)].revolverroulette = false;
@@ -477,7 +477,7 @@ bot.on('chat', async (channel, tags, message) => {
         break;
 
       // Play Revolver Roulette.
-      case '!rr': 
+      case '!rr':
         if (!userIds[channel.substring(1)].revolverroulette) break;
 
         if (!bot.isMod(channel, 'zhekler')) {
@@ -490,13 +490,13 @@ bot.on('chat', async (channel, tags, message) => {
           rows = await revolverroulette.revolverroulette(tags["display-name"] || tags["username"] || '', channel);
           if (rows.error) {
             helper.dumpError(rows.error, "Revolver Roulette.");
-          } else  if (rows.first) {
+          } else if (rows.first) {
             say(channel.substring(1), `${tags["display-name"] || tags["username"]}: Revolver Roulette is a game where you have 1/3 chance to be timed out for 5 min. You have been warned.`, bot);
           } else if (rows.win) {
             say(channel, `${tags["display-name"] || tags["username"]} has survived RR! Their record is ${rows.user["survive"]} survivals and ${rows.user["die"]} deaths`, bot);
           } else {
             if (!tags["badges"]?.moderator) {
-              timeout(channel.substring(1), tags["username"] || '', rows.twitch_id?rows.twitch_id:'', 'revolverroulette', 300, `You lost RR! Your record is ${rows.user["survive"]} survivals and ${rows.user["die"]} deaths`)
+              timeout(channel.substring(1), tags["username"] || '', rows.twitch_id ? rows.twitch_id : '', 'revolverroulette', 300, `You lost RR! Your record is ${rows.user["survive"]} survivals and ${rows.user["die"]} deaths`)
               say(channel.substring(1), `${tags["username"]} lost Revolver Roulette!`, bot);
             } else {
               say(channel, `${rows.user.user_id} lost RR! L mod immunity. Their record is ${rows.user["survive"]} survivals and ${rows.user["die"]} deaths`, bot);
@@ -574,7 +574,7 @@ bot.on('chat', async (channel, tags, message) => {
       case '!coin':
         if (!userIds[channel.substring(1)].coinflip || splits.length < 2) break;
         if (!cfcd[tags["username"] || ''] || cfcd[tags["username"] || ''] < Date.now()) {
-          rows = await coinflip.coinflip(tags["display-name"]?tags["display-name"]:tags["username"], message.split(' ')[1], channel);
+          rows = await coinflip.coinflip(tags["display-name"] ? tags["display-name"] : tags["username"], message.split(' ')[1], channel);
           if (!rows.input) {
             say(channel.substring(1), `Proper input is: !rps [ rock, paper, scissors, r, p, s ]`, bot);
           } else if (rows.err) {
@@ -584,7 +584,7 @@ bot.on('chat', async (channel, tags, message) => {
               say(channel.substring(1), `${rows.user.user_id} guessed correctly! Their record is ${rows.user.correct} correct and ${rows.user.wrong} wrong.`, bot);
             } else {
               if (bot.isMod(channel, 'zhekler') && !bot.isMod(channel, tags["username"] || '')) {
-                timeout(channel.substring(1), tags["username"] || '', rows.twitch_id?rows.twitch_id:'', 'coinflip', userIds[channel.substring(1)].timeout, `You guessed wrong! Your record is ${rows.user.correct} correct and ${rows.user.wrong} wrong.`);
+                timeout(channel.substring(1), tags["username"] || '', rows.twitch_id ? rows.twitch_id : '', 'coinflip', userIds[channel.substring(1)].timeout, `You guessed wrong! Your record is ${rows.user.correct} correct and ${rows.user.wrong} wrong.`);
                 say(channel.substring(1), `${rows.user.user_id} lost Coinflip!`, bot);
               } else {
                 say(channel, `You guessed wrong! Your record is ${rows.user.correct} correct and ${rows.user.wrong} wrong.`, bot);
@@ -599,7 +599,7 @@ bot.on('chat', async (channel, tags, message) => {
       case '!coinscore':
       case '!coinstats':
         if (!userIds[channel.substring(1)].coinflip) break;
-        say(channel, await coinflip.coinflipScore(tags["display-name"]?tags["display-name"]:tags["username"], channel), bot);
+        say(channel, await coinflip.coinflipScore(tags["display-name"] ? tags["display-name"] : tags["username"], channel), bot);
         break;
 
       // Get the users with the most wins and the most losses in Coinflip. 
@@ -630,20 +630,20 @@ bot.on('chat', async (channel, tags, message) => {
         break;
 
       // Play Rock Paper Scissors.
-      case '!rps': 
+      case '!rps':
         if (!userIds[channel.substring(1)].rps || splits.length < 2) break;
         if (!rpscd[tags["username"] || ''] || rpscd[tags["username"] || ''] < Date.now()) {
-          rows = await rps.rps(tags["display-name"]?tags["display-name"]:tags["username"], splits[1], channel);
+          rows = await rps.rps(tags["display-name"] ? tags["display-name"] : tags["username"], splits[1], channel);
           if (rows.error) {
             helper.dumpError(rows.error, "Rock Paper Scissors.");
           } else if (!rows.input) {
             say(channel.substring(1), 'Proper input is !rps [ rock / paper / scissors / r / p / s ]', bot);
           } else {
             if (rows.result >= 0) {
-              say(channel.substring(1), `zHekBot got ${rows.me}. ${tags["display-name"] || tags["username"]} ${rows.result?"won":"tied"}!`, bot);
+              say(channel.substring(1), `zHekBot got ${rows.me}. ${tags["display-name"] || tags["username"]} ${rows.result ? "won" : "tied"}!`, bot);
             } else {
-              if (bot.isMod(channel, 'zhekler') && !bot.isMod(channel, tags["username"] ||'')) {
-                timeout(channel.substring(1), tags["username"] || '', rows.twitch_id?rows.twitch_id:'', 'rockpaperscissors', userIds[channel.substring(1)].timeout, `zHekBot got ${rows.me}. You lost!`);
+              if (bot.isMod(channel, 'zhekler') && !bot.isMod(channel, tags["username"] || '')) {
+                timeout(channel.substring(1), tags["username"] || '', rows.twitch_id ? rows.twitch_id : '', 'rockpaperscissors', userIds[channel.substring(1)].timeout, `zHekBot got ${rows.me}. You lost!`);
                 say(channel.substring(1), `${tags["display-name"] || tags["username"]} lost Rock Paper Scissors!`, bot);
               } else {
                 say(channel, `zHekBot got ${rows.me}. ${tags["display-name"] || tags["username"]} lost!`, bot);
@@ -655,10 +655,10 @@ bot.on('chat', async (channel, tags, message) => {
         break;
 
       // Get user's score in Rock Paper Scissors.
-      case '!rpsscore': 
+      case '!rpsscore':
       case '!rpsstats':
-      if (!userIds[channel.substring(1)].rps) break;
-        say(channel, await rps.rpsScore(tags["display-name"]?tags["display-name"]:tags["username"], channel), bot);
+        if (!userIds[channel.substring(1)].rps) break;
+        say(channel, await rps.rpsScore(tags["display-name"] ? tags["display-name"] : tags["username"], channel), bot);
         break;
 
       // Get the users with the most wins, most losses, and most ties in Rock Paper Scissors.
@@ -699,20 +699,20 @@ bot.on('chat', async (channel, tags, message) => {
         }
 
         if (!bvcd[tags["username"] || ''] || bvcd[tags["username"] || ''] < Date.now()) {
-          rows = await bigvanish.bigVanish(tags["display-name"]?tags["display-name"]:tags["username"], channel);
-          
+          rows = await bigvanish.bigVanish(tags["display-name"] ? tags["display-name"] : tags["username"], channel);
+
           if (!rows.time) throw new Error('Unknown time in bigvanish: ' + rows.time);
 
           if (!bot.isMod(channel.substring(1), tags["username"] || '')) {
-            timeout(channel.substring(1), tags["username"] || '', rows.twitch_id?rows.twitch_id:'', 'bigvanish', rows.time, `You were timed out for ${numberWithCommas(rows.time)}! Your record high is ${numberWithCommas(rows.person.vanish)} seconds and low is ${numberWithCommas(rows.person.lowest)} seconds.`);
+            timeout(channel.substring(1), tags["username"] || '', rows.twitch_id ? rows.twitch_id : '', 'bigvanish', rows.time, `You were timed out for ${numberWithCommas(rows.time)}! Your record high is ${numberWithCommas(rows.person.vanish)} seconds and low is ${numberWithCommas(rows.person.lowest)} seconds.`);
           }
           say(channel.substring(1), `Big Vanish: ${rows.person.user_id} | ${numberWithCommas(rows.time)} seconds`, bot);
 
           rrcd[tags["username"] || ''] = Date.now() + 15000;
 
           if (!bot.isMod(channel.substring(1), tags["username"] || '')) {
-            setTimeout(function() { 
-              untimeout(channel.substring(1), tags["username"] || '', rows.twitch_id?rows.twitch_id:'');
+            setTimeout(function () {
+              untimeout(channel.substring(1), tags["username"] || '', rows.twitch_id ? rows.twitch_id : '');
             }, 3000);
           }
         }
@@ -734,7 +734,7 @@ bot.on('chat', async (channel, tags, message) => {
       /*####################################################################################################################
         Commands for Custom Tourneys.
       ####################################################################################################################*/
-      
+
       // Enable customs scoring.
       case '!customon':
         if (userIds[channel.substring(1)].customs || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
@@ -766,7 +766,7 @@ bot.on('chat', async (channel, tags, message) => {
         break;
 
       // Set the number of maps.
-      case '!setmaps': 
+      case '!setmaps':
         if (!userIds[channel.substring(1)].customs || (!tags["mod"] && tags['username'] !== channel.substring(1)) || splits.length == 1) break;
         if (!parseInt(splits[1])) {
           say(channel, 'Map count must be an integer.', bot);
@@ -811,18 +811,18 @@ bot.on('chat', async (channel, tags, message) => {
         placement = parseInt(message.split(' ')[1]);
         kills = parseInt(message.split(' ')[2]);
         score = 0;
-        
+
         multis = res[0].multipliers.split(' ');
-        for (var i = multis.length/2; i >= 0; i--) {
-          if (placement >= parseInt(multis[2*i])) {
-            score = kills * parseFloat(multis[(2*i)+1]);
+        for (var i = multis.length / 2; i >= 0; i--) {
+          if (placement >= parseInt(multis[2 * i])) {
+            score = kills * parseFloat(multis[(2 * i) + 1]);
             break;
           }
         }
-        
+
         res[0].maps.placement.push(placement);
         res[0].maps.kills.push(kills);
-        
+
         helper.dbQuery(`UPDATE customs SET maps = '${JSON.stringify(res[0].maps)}'::json WHERE user_id = '${channel.substring(1)}';`);
         if (placement > 3 && placement < 21) {
           placement = `${placement}th`;
@@ -835,7 +835,7 @@ bot.on('chat', async (channel, tags, message) => {
         } else {
           placement = `${placement}th`;
         }
-        
+
         say(channel, `Team ${userIds[channel.substring(1)].pref_name} got ${placement} place with ${kills} kills for ${score.toFixed(2)} points!`, bot);
         break;
 
@@ -843,12 +843,12 @@ bot.on('chat', async (channel, tags, message) => {
       case '!removemap':
         if (!userIds[channel.substring(1)].customs || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
         res = await helper.dbQueryPromise(`SELECT * FROM customs WHERE user_id = '${channel.substring(1)}';`);
-        
-        res[0].maps.placement.length = res[0].maps.placement.length?res[0].maps.placement.length-1:0;
-        
-        res[0].maps.kills.length = res[0].maps.kills.length?res[0].maps.kills.length-1:0;
-        
-        helper.dbQuery(`UPDATE customs SET maps = '{"placement":${res[0].maps.placement.length?'['+res[0].maps.placement.join(',')+']':'[]'},"kills":${res[0].maps.kills.length ?'['+res[0].maps.kills.join(',')+']':'[]'}}'::json WHERE user_id = '${channel.substring(1)}';`);
+
+        res[0].maps.placement.length = res[0].maps.placement.length ? res[0].maps.placement.length - 1 : 0;
+
+        res[0].maps.kills.length = res[0].maps.kills.length ? res[0].maps.kills.length - 1 : 0;
+
+        helper.dbQuery(`UPDATE customs SET maps = '{"placement":${res[0].maps.placement.length ? '[' + res[0].maps.placement.join(',') + ']' : '[]'},"kills":${res[0].maps.kills.length ? '[' + res[0].maps.kills.join(',') + ']' : '[]'}}'::json WHERE user_id = '${channel.substring(1)}';`);
         say(channel, `Last map has been removed.`, bot);
         break;
 
@@ -856,7 +856,7 @@ bot.on('chat', async (channel, tags, message) => {
       case '!mc':
         if (!userIds[channel.substring(1)].customs) break;
         res = await helper.dbQueryPromise(`SELECT * FROM customs WHERE user_id = '${channel.substring(1)}';`);
-        
+
         if (res[0].maps.placement.length == res[0].map_count) {
           str = `All maps have been played.`;
         } else {
@@ -871,13 +871,13 @@ bot.on('chat', async (channel, tags, message) => {
         if (splits.length !== 2 || isNaN(parseInt(splits[1])) || parseInt(splits[1]) <= 0) {
           say(channel, 'This command requires one parameter that is a positive Integer.', bot);
           break;
-        } 
+        }
         res = await helper.dbQueryPromise(`SELECT * FROM customs WHERE user_id = '${channel.substring(1)}';`);
 
         if (parseInt(splits[1]) > res[0].map_count) {
           say(channel, 'This value cannot be higher than the map count.', bot);
           break;
-        } 
+        }
 
         helper.dbQuery(`UPDATE customs SET count = ${parseInt(splits[1])} WHERE user_id = '${channel.substring(1)}';`);
         say(channel, `Best of ${splits[1]} | ${res[0].map_count} maps total`, bot);
@@ -893,17 +893,17 @@ bot.on('chat', async (channel, tags, message) => {
           var total = 0;
           var lowest = [];
           str = '';
-          
+
           multis = res[0].multipliers.split(' '), placement = 0;
-          
+
           for (var i = 0; i < res[0].maps.placement.length; i++) {
-            for (var j = multis.length/2; j >= 0; j--) {
-              if (parseInt(res[0].maps.placement[i]) >= parseInt(multis[2*j])) {
-                placement = parseFloat(multis[(2*j)+1]);
+            for (var j = multis.length / 2; j >= 0; j--) {
+              if (parseInt(res[0].maps.placement[i]) >= parseInt(multis[2 * j])) {
+                placement = parseFloat(multis[(2 * j) + 1]);
                 break;
               }
             }
-            
+
             score.push((res[0].maps.kills[i] * placement).toFixed(2));
           }
 
@@ -912,7 +912,7 @@ bot.on('chat', async (channel, tags, message) => {
             console.log(mapsbgone);
 
             var badmaps = [...score];
-            badmaps.sort(function(a, b) { return parseFloat(a) - parseFloat(b);}).splice(mapsbgone);
+            badmaps.sort(function (a, b) { return parseFloat(a) - parseFloat(b); }).splice(mapsbgone);
             lowest = badmaps;
             console.log(badmaps);
           }
@@ -927,15 +927,15 @@ bot.on('chat', async (channel, tags, message) => {
             total += parseFloat(score[i]);
           }
           console.log(total);
-          
-          if (score.length < res[0].count) { str += score.length?`Map ${score.length + 1}: TBD | `:`Map 1: TBD | `; }
-          str += `Total: ${total.toFixed(2)} pts` + (score.length > res[0].count?` | Best of ${res[0].count}`:'');
+
+          if (score.length < res[0].count) { str += score.length ? `Map ${score.length + 1}: TBD | ` : `Map 1: TBD | `; }
+          str += `Total: ${total.toFixed(2)} pts` + (score.length > res[0].count ? ` | Best of ${res[0].count}` : '');
           say(channel, str, bot);
         } else if (userIds[channel.substring(1)]["two_v_two"]) {
           await tvtscores(channel.substring(1), [])
-          .catch(err => {
-            helper.dumpError(err, `Twitch tvtscores: ${message}`);
-          });
+            .catch(err => {
+              helper.dumpError(err, `Twitch tvtscores: ${message}`);
+            });
         }
         break;
 
@@ -997,8 +997,8 @@ bot.on('chat', async (channel, tags, message) => {
         break;
 
       // Get the daily wins.
-      case '!wins': 
-      if (!userIds[channel.substring(1)].matches) break;
+      case '!wins':
+        if (!userIds[channel.substring(1)].matches) break;
         say(channel, await wins(channel.substring(1)), bot);
         break;
 
@@ -1034,7 +1034,7 @@ bot.on('chat', async (channel, tags, message) => {
         if (!userIds[channel.substring(1)].matches) break;
         say(channel, await gamemodes(userIds[channel.substring(1)].acti_id), bot);
         break;
-      
+
       // Get win streak.
       case '!streak':
       case '!winstreak':
@@ -1042,7 +1042,7 @@ bot.on('chat', async (channel, tags, message) => {
         say(channel, await streak(channel.substring(1)), bot);
         break;
 
-        
+
       /*####################################################################################################################
         Commands for 2v2 scorekeeping. Preferably used through the website but here in case.
       ####################################################################################################################*/
@@ -1073,8 +1073,8 @@ bot.on('chat', async (channel, tags, message) => {
         helper.dbQuery(`UPDATE allusers SET two_v_two = false WHERE user_id = '${channel.substring(1)}';`);
         userIds[channel.substring(1)]["two_v_two"] = false;
         delete tvtUpdate[channel.substring(1)];
-        break;      
-        
+        break;
+
 
       /*####################################################################################################################
         Thank for subscribers or not.
@@ -1104,7 +1104,7 @@ bot.on('chat', async (channel, tags, message) => {
         if (channel.substring(1) !== 'huskerrs' || (!tags["mod"] && !vips.includes(tags['username'] || ''))) break;
         if (splits.length < 3 || Number.isNaN(parseInt(splits[2]))) break;
         if (!bot.isMod(channel.substring(1), splits[1])) {
-          timeout(channel.substring(1), splits[1], '', '', parseInt(splits[2]), splits[3]?splits.splice(2).join(' '):'' )
+          timeout(channel.substring(1), splits[1], '', '', parseInt(splits[2]), splits[3] ? splits.splice(2).join(' ') : '')
         }
         break;
 
@@ -1118,7 +1118,7 @@ bot.on('chat', async (channel, tags, message) => {
       case '!ban':
         if (channel.substring(1) !== 'huskerrs' || (!tags["mod"] && !vips.includes(tags['username'] || ''))) break;
         if (!bot.isMod(channel.substring(1), splits[1])) {
-          timeout(channel.substring(1), splits[1], '', '', 0, splits[2]?' | ' + splits.splice(2).join(' '):"");
+          timeout(channel.substring(1), splits[1], '', '', 0, splits[2] ? ' | ' + splits.splice(2).join(' ') : "");
         }
         break;
 
@@ -1132,7 +1132,7 @@ bot.on('chat', async (channel, tags, message) => {
       /*####################################################################################################################
         Commands for Duels.
       ####################################################################################################################*/
-      
+
       // Enable dueling.
       case '!duelon':
         if (userIds[channel.substring(1)].duel || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
@@ -1148,9 +1148,9 @@ bot.on('chat', async (channel, tags, message) => {
         userIds[channel.substring(1)].duel = false;
         say(channel, 'Duels are now disabled.', bot);
         break;
-      
+
       // Challenge another user to a duel.
-      case '!duel': 
+      case '!duel':
         if (!userIds[channel.substring(1)].duel || splits.length == 1) break;
         if (dcd[tags["username"] || ''] && dcd[tags["username"] || ''] > Date.now()) break;
         if (tags["username"]?.toLowerCase() === splits[1].toLowerCase()) {
@@ -1182,27 +1182,27 @@ bot.on('chat', async (channel, tags, message) => {
         break;
 
       // Cancel a duel challenge.
-      case '!cancel': 
+      case '!cancel':
         if (!userIds[channel.substring(1)].duel) break;
         str = await duel.cancel(tags["username"], channel.substring(1));
         if (str) say(channel.substring(1), str, bot);
         break;
 
       // Reject another user's challenge.
-      case '!coward': 
+      case '!coward':
         if (!userIds[channel.substring(1)].duel) break;
         str = await duel.coward(tags["username"], channel.substring(1));
         if (str) say(channel.substring(1), str, bot);
         break;
 
       // Accept another user's challenge.
-      case '!accept': 
+      case '!accept':
         if (!userIds[channel.substring(1)].duel) break;
         rows = await duel.accept(tags["username"], channel.substring(1));
         if (rows) {
           say(channel.substring(1), `${rows.winner} has won the duel against ${rows.loser} and is now on a ${rows.streak} win streak!`, bot);
           if (!bot.isMod(channel.substring(1), rows.loser)) {
-            timeout(channel.substring(1), rows.loser, rows.twitch_id?rows.twitch_id:'', 'duelduel', userIds[channel.substring(1)].timeout, `You lost the duel to ${rows.winner}. Hold this L`);
+            timeout(channel.substring(1), rows.loser, rows.twitch_id ? rows.twitch_id : '', 'duelduel', userIds[channel.substring(1)].timeout, `You lost the duel to ${rows.winner}. Hold this L`);
           }
         }
         break;
@@ -1243,7 +1243,7 @@ bot.on('chat', async (channel, tags, message) => {
         break;
 
       // Get the user with the current longest streak and overall longest streak.
-      case '!duellbstreak': 
+      case '!duellbstreak':
         if (!userIds[channel.substring(1)].duel) break;
         str = await duel.duelLbStreak(channel.substring(1));
         if (str) say(channel.substring(1), str, bot);
@@ -1268,7 +1268,7 @@ bot.on('chat', async (channel, tags, message) => {
         OpenAI API.
       ####################################################################################################################*/
 
-      case '!chatgpt': 
+      case '!chatgpt':
         if (channel.substring(1) !== "huskerrs" || (!tags["mod"] && tags["username"] !== channel.substring(1))) break;
         if (splits.length <= 1) break;
         var query = await openai.chat.completions.create({
@@ -1300,7 +1300,7 @@ bot.on('chat', async (channel, tags, message) => {
       /*####################################################################################################################
         Goodbye channel peepoBye
       ####################################################################################################################*/
-      
+
       // Exit the channel.
       case '!zhekleave':
         if (tags["username"] !== channel.substring(1) && tags["username"] !== "zhekler") break;
@@ -1308,9 +1308,9 @@ bot.on('chat', async (channel, tags, message) => {
         helper.dbQuery(`UPDATE allusers SET twitch = false WHERE user_id = '${channel.substring(1)}';`);
         say(channel, 'peepoLeave', bot);
         bot.part(channel)
-        .catch(err => {
-          helper.dumpError(err, 'Leaving.');
-        });
+          .catch(err => {
+            helper.dumpError(err, 'Leaving.');
+          });
         break;
 
     }
@@ -1332,8 +1332,8 @@ async function tvtscores(channel, bearer) {
       var res = await helper.dbQueryPromise(`SELECT * FROM twovtwo WHERE userid = '${channel}';`);
       var us = res[0].hkills + res[0].tkills;
       var opp = res[0].o1kills + res[0].o2kills;
-      var str = `${us} - ${opp}${(us==6 && opp==9)?` Nice`:``} | ${us + res[0].mapreset > opp?("Up "+ (us + res[0].mapreset - opp)):(us + res[0].mapreset < opp)?("Down " + (opp - us - res[0].mapreset)):"Tied"}      
-        ${res[0].mapreset != 0?(res[0].mapreset > 0?' (Up ':' (Down ') + Math.abs(res[0].mapreset) + ' after reset)':''}`;
+      var str = `${us} - ${opp}${(us == 6 && opp == 9) ? ` Nice` : ``} | ${us + res[0].mapreset > opp ? ("Up " + (us + res[0].mapreset - opp)) : (us + res[0].mapreset < opp) ? ("Down " + (opp - us - res[0].mapreset)) : "Tied"}      
+        ${res[0].mapreset != 0 ? (res[0].mapreset > 0 ? ' (Up ' : ' (Down ') + Math.abs(res[0].mapreset) + ' after reset)' : ''}`;
 
       if (tracing["tvtscores"]) console.log(`res: ${res}`, `us: ${us}`, `opp: ${opp}`, `str: ${str}`);
 
@@ -1348,12 +1348,12 @@ async function tvtscores(channel, bearer) {
   } catch (err) {
     helper.dumpError(err, `tvtscores function.`);
   }
-} 
+}
 
 
 // Remove expired challenges.
 async function duelExpiration() {
-  helper.dbQuery(`UPDATE duelduel SET oppid = ' ', expiration = 2147483647 WHERE expiration < ${Date.now()/1000};`);
+  helper.dbQuery(`UPDATE duelduel SET oppid = ' ', expiration = 2147483647 WHERE expiration < ${Date.now() / 1000};`);
 }
 
 
@@ -1383,7 +1383,7 @@ bot.on('subgift', (channel, username, months, recipient, userstate, methods) => 
   if (subs[username]) {
     subs[username] -= 1;
   } else {
-    say(channel, `@${username} Thank you for the ${userstate["msg-param-sender-count"] > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs!':'gifted sub to ' + recipient}! huskHype huskLove`, bot);
+    say(channel, `@${username} Thank you for the ${userstate["msg-param-sender-count"] > 1 ? '' + userstate["msg-param-sender-count"] + 'gifted subs!' : 'gifted sub to ' + recipient}! huskHype huskLove`, bot);
   }
 
   console.log('subgift ' + username);
@@ -1397,7 +1397,7 @@ bot.on('anonsubgift', (channel, months, recipient, userstate, methods) => {
   if (subs["anon"]) {
     subs["anon"] -= 1;
   } else {
-    say(channel, `Anonymous, thank you for the ${userstate["msg-param-sender-count"] > 1?''+ userstate["msg-param-sender-count"] + 'gifted subs':'gifted sub to ' + recipient}! huskHype huskLove`, bot);
+    say(channel, `Anonymous, thank you for the ${userstate["msg-param-sender-count"] > 1 ? '' + userstate["msg-param-sender-count"] + 'gifted subs' : 'gifted sub to ' + recipient}! huskHype huskLove`, bot);
   }
 
   console.log('anonsubgift');
@@ -1411,7 +1411,7 @@ bot.on('submysterygift', (channel, username, numbOfSubs, userstate, methods) => 
   subs[username] = numbOfSubs;
 
   console.log('submysterygift ' + username + ' ' + numbOfSubs);
-  say(channel, `${username} Thank you for the ${numbOfSubs > 1?''+ numbOfSubs + ' gifted subs':'gifted sub'}! huskHype huskLove`, bot);
+  say(channel, `${username} Thank you for the ${numbOfSubs > 1 ? '' + numbOfSubs + ' gifted subs' : 'gifted sub'}! huskHype huskLove`, bot);
 });
 
 
@@ -1422,7 +1422,7 @@ bot.on('anonsubmysterygift', (channel, numbOfSubs, userstate, methods) => {
   subs["anon"] = numbOfSubs;
 
   console.log('submysterygift ' + numbOfSubs);
-  say(channel, `Anonymous, thank you for the ${numbOfSubs > 1?''+ numbOfSubs + ' gifted subs':'gifted sub'}! huskHype huskLove`, bot);
+  say(channel, `Anonymous, thank you for the ${numbOfSubs > 1 ? '' + numbOfSubs + ' gifted subs' : 'gifted sub'}! huskHype huskLove`, bot);
 });
 
 
@@ -1541,41 +1541,41 @@ console.log("Created apiAxios.");
 // Handle errors from the COD API.
 function apiErrorHandling(error) {
   if (!!error) {
-      var response = error.response;
-      if (!!response) {
-          switch (response.status) {
-              case 200:
-                  const apiErrorMessage = (response.data !== undefined && response.data.data !== undefined && response.data.data.message !== undefined) ? response.data.data.message : (response.message !== undefined) ? response.message : 'No error returned from API.';
-                  switch (apiErrorMessage) {
-                      case 'Not permitted: user not found':
-                          return '404 - Not found. Incorrect username or platform? Misconfigured privacy settings?';
-                      case 'Not permitted: rate limit exceeded':
-                          return '429 - Too many requests. Try again in a few minutes.';
-                      case 'Not permitted: not allowed':
-                          return apiErrorMessage;
-                      case 'Error from datastore':
-                          return '500 - Internal server error. Request failed, try again.';
-                      default:
-                          return apiErrorMessage;
-                  }  
-              case 401:
-                  return '401 - Unauthorized. Incorrect username or password.';
-              case 403:
-                  return '403 - Forbidden. You may have been IP banned. Try again in a few minutes.';
-              case 404:
-                  return 'Account is set to private.';
-              case 500:
-                  return '500 - Internal server error. Request failed, try again.';
-              case 502:
-                  return '502 - Bad gateway. Request failed, try again.';
-              default:
-                  return `We Could not get a valid reason for a failure. Status: ${response.status}`;
+    var response = error.response;
+    if (!!response) {
+      switch (response.status) {
+        case 200:
+          const apiErrorMessage = (response.data !== undefined && response.data.data !== undefined && response.data.data.message !== undefined) ? response.data.data.message : (response.message !== undefined) ? response.message : 'No error returned from API.';
+          switch (apiErrorMessage) {
+            case 'Not permitted: user not found':
+              return '404 - Not found. Incorrect username or platform? Misconfigured privacy settings?';
+            case 'Not permitted: rate limit exceeded':
+              return '429 - Too many requests. Try again in a few minutes.';
+            case 'Not permitted: not allowed':
+              return apiErrorMessage;
+            case 'Error from datastore':
+              return '500 - Internal server error. Request failed, try again.';
+            default:
+              return apiErrorMessage;
           }
-      } else {
-          return `We Could not get a valid reason for a failure. Status: ${error}`;
+        case 401:
+          return '401 - Unauthorized. Incorrect username or password.';
+        case 403:
+          return '403 - Forbidden. You may have been IP banned. Try again in a few minutes.';
+        case 404:
+          return 'Account is set to private.';
+        case 500:
+          return '500 - Internal server error. Request failed, try again.';
+        case 502:
+          return '502 - Bad gateway. Request failed, try again.';
+        default:
+          return `We Could not get a valid reason for a failure. Status: ${response.status}`;
       }
+    } else {
+      return `We Could not get a valid reason for a failure. Status: ${error}`;
+    }
   } else {
-      return `We Could not get a valid reason for a failure.`;
+    return `We Could not get a valid reason for a failure.`;
   }
 };
 
@@ -1583,11 +1583,11 @@ function apiErrorHandling(error) {
 // Post request for COD API.
 function postReq(url, data) {
   return new Promise((resolve, reject) => {
-      loginAxios.post(url, data).then(response => {
-          resolve(response.data);
-      }).catch((error) => {
-          reject(apiErrorHandling(error));
-      });
+    loginAxios.post(url, data).then(response => {
+      resolve(response.data);
+    }).catch((error) => {
+      reject(apiErrorHandling(error));
+    });
   });
 };
 
@@ -1595,47 +1595,47 @@ function postReq(url, data) {
 // Get request for COD API.
 function sendRequest(url) {
   return new Promise((resolve, reject) => {
-      if (!loggedIn) reject("Not Logged In.");
-      apiAxios.get(url).then(response => {
+    if (!loggedIn) reject("Not Logged In.");
+    apiAxios.get(url).then(response => {
 
-          if (response.data.status !== undefined && response.data.status === 'success') {
-              resolve(response.data.data);
-          } else {
-              reject(apiErrorHandling({
-                  response: response
-              }));
-          }
-      }).catch((error) => {
-          reject(apiErrorHandling(error));
-      });
+      if (response.data.status !== undefined && response.data.status === 'success') {
+        resolve(response.data.data);
+      } else {
+        reject(apiErrorHandling({
+          response: response
+        }));
+      }
+    }).catch((error) => {
+      reject(apiErrorHandling(error));
+    });
   });
 };
 
 
 // Login to COD API with SSO.
-function loginWithSSO (sso) {
+function loginWithSSO(sso) {
   return new Promise(async (resolve, reject) => {
-      if (typeof sso === "undefined" || sso.length <= 0) reject("SSO token is invalid.");
-      var loginURL = "https://profile.callofduty.com/cod/mapp/";
-      var randomId = uniqid();
-      var md5sum = crypto.createHash('md5');
-      var deviceId = md5sum.update(randomId).digest('hex');
-      postReq(`${loginURL}registerDevice`, {
-          'deviceId': deviceId
-      }).then((response) => {
-          console.log(response);
-          var fakeXSRF = "68e8b62e-1d9d-4ce1-b93f-cbe5ff31a041";
-          apiAxios.defaults.headers.common.x_cod_device_id = `${deviceId}`;
-          apiAxios.defaults.headers.common["X-XSRF-TOKEN"] = fakeXSRF;
-          apiAxios.defaults.headers.common["X-CSRF-TOKEN"] = fakeXSRF;
-          apiAxios.defaults.headers.common["Acti-Auth"] = `Bearer ${sso}`;
-          apiAxios.defaults.headers.common["cookie"] = baseCookie + `${baseCookie}ACT_SSO_COOKIE=${sso};XSRF-TOKEN=${fakeXSRF};API_CSRF_TOKEN=${fakeXSRF};`;;
-          loggedIn = true;
-          resolve("200 - Logged in with SSO.");
-      }).catch((err) => {
-          if (typeof err === "string") reject(err);
-          reject(err.message);
-      });
+    if (typeof sso === "undefined" || sso.length <= 0) reject("SSO token is invalid.");
+    var loginURL = "https://profile.callofduty.com/cod/mapp/";
+    var randomId = uniqid();
+    var md5sum = crypto.createHash('md5');
+    var deviceId = md5sum.update(randomId).digest('hex');
+    postReq(`${loginURL}registerDevice`, {
+      'deviceId': deviceId
+    }).then((response) => {
+      console.log(response);
+      var fakeXSRF = "68e8b62e-1d9d-4ce1-b93f-cbe5ff31a041";
+      apiAxios.defaults.headers.common.x_cod_device_id = `${deviceId}`;
+      apiAxios.defaults.headers.common["X-XSRF-TOKEN"] = fakeXSRF;
+      apiAxios.defaults.headers.common["X-CSRF-TOKEN"] = fakeXSRF;
+      apiAxios.defaults.headers.common["Acti-Auth"] = `Bearer ${sso}`;
+      apiAxios.defaults.headers.common["cookie"] = baseCookie + `${baseCookie}ACT_SSO_COOKIE=${sso};XSRF-TOKEN=${fakeXSRF};API_CSRF_TOKEN=${fakeXSRF};`;;
+      loggedIn = true;
+      resolve("200 - Logged in with SSO.");
+    }).catch((err) => {
+      if (typeof err === "string") reject(err);
+      reject(err.message);
+    });
   });
 };
 
@@ -1643,15 +1643,15 @@ function loginWithSSO (sso) {
 // Pull last 20 matches for a player.
 function last20(gamertag, platform) {
   return new Promise((resolve, reject) => {
-      var urlInput = defaultBaseURL + `crm/cod/v2/title/mw/platform/${platform}/gamer/${gamertag}/matches/wz/start/0/end/0/details`;
-      sendRequest(urlInput).then(data => resolve(data)).catch(e => reject(e));
+    var urlInput = defaultBaseURL + `crm/cod/v2/title/mw/platform/${platform}/gamer/${gamertag}/matches/wz/start/0/end/0/details`;
+    sendRequest(urlInput).then(data => resolve(data)).catch(e => reject(e));
   });
 };
 
 // 20 matches from date.
 function date20(gamertag, platform, date) {
   return new Promise((resolve, reject) => {
-    var urlInput = defaultBaseURL + `crm/cod/v2/title/mw/platform/${platform}/gamer/${gamertag}/matches/wz/start/0/end/${date*1000}/details`;
+    var urlInput = defaultBaseURL + `crm/cod/v2/title/mw/platform/${platform}/gamer/${gamertag}/matches/wz/start/0/end/${date * 1000}/details`;
     sendRequest(urlInput).then(data => resolve(data)).catch(e => reject(e));
   })
 }
@@ -1660,8 +1660,8 @@ function date20(gamertag, platform, date) {
 // @ts-ignore
 function matchInfo(matchID) {
   return new Promise((resolve, reject) => {
-      var urlInput = defaultBaseURL + `crm/cod/v2/title/mw/platform/acti/fullMatch/wz/${matchID}/en`;
-      sendRequest(urlInput).then(data => resolve(data)).catch(e => reject(e));
+    var urlInput = defaultBaseURL + `crm/cod/v2/title/mw/platform/acti/fullMatch/wz/${matchID}/en`;
+    sendRequest(urlInput).then(data => resolve(data)).catch(e => reject(e));
   });
 };
 
@@ -1737,12 +1737,12 @@ app.get('/', async (request, response) => {
           page = page.replace(/#permissions#/g, `href="/permissions/${rows[1].userid}"`);
           page = page.replace(/#pref_name#/g, userIds[rows[1].userid].pref_name);
           page = page.replace(/#channel#/g, rows[1].userid);
-          page = page.replace(/#checked#/g, userIds[rows[1].userid].twitch?'checked':'');
+          page = page.replace(/#checked#/g, userIds[rows[1].userid].twitch ? 'checked' : '');
           page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
           page = page.replace('Login to Twitch', 'Logout of Twitch');
           if (userIds[rows[1].userid].twitch) page = page.replace('var enabled = false', 'var enabled = true');
 
-          response.send(page); 
+          response.send(page);
         } else {
 
           // Unexpected status; clear cookie and refresh;
@@ -1779,8 +1779,8 @@ app.get('/', async (request, response) => {
       // User is not logged in; send page with no user-specific information.
       page = fs.readFileSync('./html/not_enabled.html').toString('utf-8');
       page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
-    
-      response.send(page); 
+
+      response.send(page);
     }
   } catch (err) {
 
@@ -1820,7 +1820,7 @@ app.get('/', async (request, response) => {
 //       response.sendStatus(500)
 //       return;
 //     }
-    
+
 //     states[state] = cookies['auth'];
 //     response.sendStatus(201);
 
@@ -1828,7 +1828,7 @@ app.get('/', async (request, response) => {
 //       if (states.indexOf(state) > -1) delete states[state];
 //     }, 30000);
 
-    
+
 //   } catch (err) {
 //     helper.dumpError(err, 'Enabling timeouts.');
 //     response.sendStatus(500);
@@ -1888,7 +1888,7 @@ app.get('/enable/:channel', async (request, response) => {
       response.sendStatus(404);
       return;
     }
-    
+
     var cookies = request.cookies;
     if (cookies["auth"]) {
       let bearer = await helper.checkBearer(cookies["auth"]);
@@ -1910,14 +1910,14 @@ app.get('/enable/:channel', async (request, response) => {
     // Join/leave Twitch channel.
     if (userIds[request.params.channel].twitch) {
       bot.join(request.params.channel)
-      .catch(err => {
-        helper.dumpError(err, "Twitch enable.");
-      });
+        .catch(err => {
+          helper.dumpError(err, "Twitch enable.");
+        });
     } else {
       bot.part(request.params.channel)
-      .catch(err => {
-        helper.dumpError(err, "Twitch enable.");
-      });;
+        .catch(err => {
+          helper.dumpError(err, "Twitch enable.");
+        });;
     }
 
     response.sendStatus(200);
@@ -1932,7 +1932,7 @@ app.get('/enable/:channel', async (request, response) => {
 // Page for other user.
 app.get('/edit/:channel', async (request, response) => {
   try {
-    
+
     // Check if user has permission to use this path.
     request.params.channel = request.params.channel.toLowerCase();
     if (!userIds[request.params.channel]) {
@@ -1940,7 +1940,7 @@ app.get('/edit/:channel', async (request, response) => {
       response.redirect('/');
       return;
     }
-    
+
     var cookies = request.cookies, rows;
     if (cookies["auth"]) {
       rows = await helper.checkBearer(cookies["auth"]);
@@ -1970,7 +1970,7 @@ app.get('/edit/:channel', async (request, response) => {
           page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
           page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
           page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
-          page = page.replace(/#checked#/g, userIds[request.params.channel.toLowerCase()].twitch?'checked':'');
+          page = page.replace(/#checked#/g, userIds[request.params.channel.toLowerCase()].twitch ? 'checked' : '');
           page = page.replace(/Login to Twitch/g, 'Logout of Twitch');
           if (userIds[request.params.channel].twitch) page = page.replace('var enabled = false', 'var enabled = true');
 
@@ -2029,7 +2029,7 @@ app.get('/commands/:channel', async (request, response) => {
         page = page.replace('Login to Twitch', 'Logout of Twitch');
 
         try {
-          if (bearer[0] && ((bearer[1].userid === request.params.channel.toLowerCase()) || (bearer[1].perms & (bearer[1].perms === request.params.channel.toLowerCase() || bearer[1].perms?.split(',')?bearer[1].perms.split(',').includes(request.params.channel):false)))) {
+          if (bearer[0] && ((bearer[1].userid === request.params.channel.toLowerCase()) || (bearer[1].perms & (bearer[1].perms === request.params.channel.toLowerCase() || bearer[1].perms?.split(',') ? bearer[1].perms.split(',').includes(request.params.channel) : false)))) {
             page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
             page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
             page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
@@ -2063,7 +2063,7 @@ app.get('/commands/:channel', async (request, response) => {
         page = page.replace(/#channel#/g, 'zhekler');
         page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
       }
-  
+
       response.send(page);
     } else {
       response.status(404);
@@ -2074,7 +2074,7 @@ app.get('/commands/:channel', async (request, response) => {
   } catch (err) {
     helper.dumpError(err, "Commands page.");
     response.sendStatus(500);
-  } 
+  }
 });
 
 
@@ -2082,7 +2082,7 @@ app.get('/commands/:channel', async (request, response) => {
 app.get('/leaderboards/:channel', async (request, response) => {
   var page = '';
   try {
-    
+
     // Check whether this channel is in the local cache.
     if (Object.keys(userIds).includes(request.params.channel.toLowerCase())) {
       page = fs.readFileSync("./html/leaderboards.html").toString('utf-8');
@@ -2097,7 +2097,7 @@ app.get('/leaderboards/:channel', async (request, response) => {
         page = page.replace('Login to Twitch', 'Logout of Twitch');
 
         try {
-          if (bearer[0] && ((bearer[1].userid === request.params.channel.toLowerCase()) || (bearer[1].perms & (bearer[1].perms === request.params.channel || bearer[1].perms.split(',')?bearer[1].perms.split(',').includes(request.params.channel):false)))) {
+          if (bearer[0] && ((bearer[1].userid === request.params.channel.toLowerCase()) || (bearer[1].perms & (bearer[1].perms === request.params.channel || bearer[1].perms.split(',') ? bearer[1].perms.split(',').includes(request.params.channel) : false)))) {
             page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
             page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
             page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
@@ -2112,7 +2112,7 @@ app.get('/leaderboards/:channel', async (request, response) => {
           page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
           page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
         }
-        
+
         page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
 
         if (bearer[0] && bearer[1].userid === request.params.channel) {
@@ -2131,7 +2131,7 @@ app.get('/leaderboards/:channel', async (request, response) => {
         page = page.replace(/#channel#/g, request.params.channel);
         page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
       }
-  
+
       response.send(page);
     } else {
       response.status(404);
@@ -2142,7 +2142,7 @@ app.get('/leaderboards/:channel', async (request, response) => {
   } catch (err) {
     helper.dumpError(err, "Commands page.");
     response.sendStatus(500);
-  } 
+  }
 });
 
 
@@ -2163,7 +2163,7 @@ app.get('/leaderboards/:channel/duels', async (request, response) => {
     // Fill the JSON object.
     stats["wins"]["stream"] = await helper.dbQueryPromise(`SELECT userid, wins FROM duelduel WHERE stream = '${request.params.channel}' ORDER BY wins DESC LIMIT 10;`);
     stats["wins"]["all-time"] = await helper.dbQueryPromise(`SELECT userid, SUM(wins) as wins FROM duelduel GROUP BY userid ORDER BY wins DESC LIMIT 10;`);
-  
+
     stats["losses"]["stream"] = await helper.dbQueryPromise(`SELECT userid, losses FROM duelduel WHERE stream = '${request.params.channel}' ORDER BY losses DESC LIMIT 10;`);
     stats["losses"]["all-time"] = await helper.dbQueryPromise(`SELECT userid, SUM(losses) as losses FROM duelduel GROUP BY userid ORDER BY losses DESC LIMIT 10;`);
 
@@ -2172,7 +2172,7 @@ app.get('/leaderboards/:channel/duels', async (request, response) => {
 
     stats["best_ratio"]["stream"] = await helper.dbQueryPromise(`SELECT userid, wins, losses, ROUND(wins * 100.0 / (wins + losses), 2) AS percent FROM (SELECT * FROM duelduel WHERE wins + losses >= 10 AND stream = '${request.params.channel}') AS duels ORDER BY percent DESC LIMIT 10;`);
     stats["best_ratio"]["all-time"] = await helper.dbQueryPromise(`SELECT userid, tot_wins as wins, tot_losses as losses, ROUND(tot_wins * 100.0 / (tot_wins + tot_losses), 2) as percent FROM (SELECT userid, SUM(wins) as tot_wins, SUM(losses) as tot_losses FROM duelduel GROUP BY userid) AS duels WHERE tot_wins + tot_losses >= 10 ORDER BY percent DESC LIMIT 10;`);
-    
+
     stats["worst_ratio"]["stream"] = await helper.dbQueryPromise(`SELECT userid, wins, losses, ROUND(wins * 100.0 / (wins + losses), 2) AS percent FROM (SELECT * FROM duelduel WHERE wins + losses >= 10 AND stream = '${request.params.channel}') AS duels ORDER BY percent ASC LIMIT 10;`);
     stats["worst_ratio"]["all-time"] = await helper.dbQueryPromise(`SELECT userid, tot_wins as wins, tot_losses as losses, ROUND(tot_wins * 100.0 / (tot_wins + tot_losses), 2) AS percent FROM (SELECT userid, SUM(wins) as tot_wins, SUM(losses) as tot_losses FROM duelduel GROUP BY userid) as duels WHERE tot_wins + tot_losses >= 10 ORDER BY percent ASC LIMIT 10;`);
 
@@ -2316,7 +2316,7 @@ app.get('/editors/:channel', async (request, response) => {
       response.redirect('/not-found');
       return;
     }
-    
+
     // Check permissions. Only channel owner has access to this page.
     var cookies = request.cookies;
     if (cookies["auth"]) {
@@ -2367,7 +2367,7 @@ app.get('/addeditor/:channel', async (request, response) => {
       response.redirect('/not-found');
       return;
     }
-    
+
     // Check permissions. Only channel owner can use this path.
     var cookies = request.cookies;
     if (cookies["auth"]) {
@@ -2412,7 +2412,7 @@ app.get('/removeeditor/:channel', async (request, response) => {
       response.redirect('/not-found');
       return;
     }
-    
+
     // Check permissions. Only the channel owner can use this path.
     var cookies = request.cookies;
     if (cookies["auth"]) {
@@ -2436,7 +2436,7 @@ app.get('/removeeditor/:channel', async (request, response) => {
 
     // Remove editor from DB.
     var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE userid = '${request.get('editor')}';`);
-    var perms = rows[0].perms?rows[0].perms.split(','):"";
+    var perms = rows[0].perms ? rows[0].perms.split(',') : "";
     perms.splice(rows[0].perms.indexOf(request.params.channel), 1);
     helper.dbQuery(`UPDATE permissions SET perms = '${perms.join(',')}' WHERE userid = '${request.get('editor')}';`);
 
@@ -2459,7 +2459,7 @@ app.get('/permissions/:channel', async (request, response) => {
       response.redirect('/not-found');
       return;
     }
-    
+
     // Check permissions. Only channel owner can use this page.
     var cookies = request.cookies;
     var rows;
@@ -2480,8 +2480,8 @@ app.get('/permissions/:channel', async (request, response) => {
     var page = fs.readFileSync('./html/permissions.html').toString('utf-8');
     page = page.replace(/Login to Twitch/g, "Logout of Twitch");
     page = page.replace(/#channel#/g, rows[1].userid);
-    
-    var perms = rows[1].perms?rows[1].perms.split(','):'';
+
+    var perms = rows[1].perms ? rows[1].perms.split(',') : '';
     if (!perms.length) {
       page = page.replace(/#permission#/g, 'You do not have permissions to any channels.');
     } else {
@@ -2511,7 +2511,7 @@ app.get('/modules/:channel', async (request, response) => {
       response.redirect('/not-found');
       return;
     }
-    
+
     // Check permissions. Editors and channel owner can use this page.
     var cookies = request.cookies;
     var bearer;
@@ -2541,7 +2541,7 @@ app.get('/modules/:channel', async (request, response) => {
       'Two vs Two': ${userIds[request.params.channel.toLowerCase()]["two_v_two"]},
       'Duels': ${userIds[request.params.channel.toLowerCase()].duel}
     };`);
-    page = page.replace(/#acti#/g, userIds[request.params.channel.toLowerCase()] && userIds[request.params.channel.toLowerCase()].acti_id?`value="${userIds[request.params.channel.toLowerCase()].acti_id}"`:'placeholder="Activision ID"'); 
+    page = page.replace(/#acti#/g, userIds[request.params.channel.toLowerCase()] && userIds[request.params.channel.toLowerCase()].acti_id ? `value="${userIds[request.params.channel.toLowerCase()].acti_id}"` : 'placeholder="Activision ID"');
     page = page.replace(/#pref_name#/g, userIds[request.params.channel.toLowerCase()].pref_name || '');
 
     // Editors can't access the editors and permissions for this channel.
@@ -2572,7 +2572,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
       response.redirect('/not-found');
       return;
     }
-    
+
     // Check permissions. Editors and channel owner can use this path.
     var cookies = request.cookies;
     if (cookies["auth"]) {
@@ -2594,8 +2594,8 @@ app.get('/modules/:channel/:module', async (request, response) => {
 
       // Check the Activision ID.
       var acti_id = request.get('Acti') || '';
-      if (!userIds[request.params.channel].matches && 
-          (!userIds[request.params.channel].acti_id || userIds[request.params.channel].acti_id === '' || userIds[request.params.channel].acti_id !== decodeURIComponent(acti_id))) {
+      if (!userIds[request.params.channel].matches &&
+        (!userIds[request.params.channel].acti_id || userIds[request.params.channel].acti_id === '' || userIds[request.params.channel].acti_id !== decodeURIComponent(acti_id))) {
         if (acti_id === '') throw new Error('Blank Acti ID.');
         if (profanity.isProfane(acti_id || '')) throw new Error('No profanity allowed.');
         str += `, acti_id = '${decodeURIComponent(acti_id || '')}'`;
@@ -2606,138 +2606,138 @@ app.get('/modules/:channel/:module', async (request, response) => {
 
       // Set up Twitch Event Subscription to be notified when this channel goes online.
       await axios.get(`https://api.twitch.tv/helix/users?login=${request.params.channel}`,
-      {
-        headers: {
-          "Client-Id": "" + process.env.CLIENT_ID,
-          "Authorization": "Bearer " + process.env.ACCESS_TOKEN
-        }
-      }).then(async resp => {
-        if (!userIds[request.params.channel].matches && !userIds[request.params.channel].event_sub) {
-          if (!userIds[request.params.channel].online_sub_id) setTimeout(function() {
-            axios.post('https://api.twitch.tv/helix/eventsub/subscriptions',
-            {
-              "type": "stream.online", 
-              "version": "1", 
-              "condition": { 
-                "broadcaster_user_id": resp.data.data[0].id
-              },
-              "transport": {
-                "method": "webhook",
-                "callback": "https://www.zhekbot.com/eventsub",
-                "secret": process.env.SECRET
-              }
-            },
-            {
-              headers: {
-                "Client-Id": "" + process.env.CLIENT_ID,
-                "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
-                "Content-Type": "application/json"
-              }
-            }).then(resp => {
-              helper.dbQuery(`UPDATE allusers SET online_sub_id = '${resp.data.data[0].id}' WHERE user_id = '${request.params.channel}';`);
-              userIds[request.params.channel].online_sub_id = resp.data.data[0].id;
-              console.log("Added stream.online event sub for " + request.params.channel);
-            }).catch(err => {
-              helper.dumpError(err, "Event Sub - Modules - Add stream.online.");
-            });
-          }, 2500);
+        {
+          headers: {
+            "Client-Id": "" + process.env.CLIENT_ID,
+            "Authorization": "Bearer " + process.env.ACCESS_TOKEN
+          }
+        }).then(async resp => {
+          if (!userIds[request.params.channel].matches && !userIds[request.params.channel].event_sub) {
+            if (!userIds[request.params.channel].online_sub_id) setTimeout(function () {
+              axios.post('https://api.twitch.tv/helix/eventsub/subscriptions',
+                {
+                  "type": "stream.online",
+                  "version": "1",
+                  "condition": {
+                    "broadcaster_user_id": resp.data.data[0].id
+                  },
+                  "transport": {
+                    "method": "webhook",
+                    "callback": "https://www.zhekbot.com/eventsub",
+                    "secret": process.env.SECRET
+                  }
+                },
+                {
+                  headers: {
+                    "Client-Id": "" + process.env.CLIENT_ID,
+                    "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
+                    "Content-Type": "application/json"
+                  }
+                }).then(resp => {
+                  helper.dbQuery(`UPDATE allusers SET online_sub_id = '${resp.data.data[0].id}' WHERE user_id = '${request.params.channel}';`);
+                  userIds[request.params.channel].online_sub_id = resp.data.data[0].id;
+                  console.log("Added stream.online event sub for " + request.params.channel);
+                }).catch(err => {
+                  helper.dumpError(err, "Event Sub - Modules - Add stream.online.");
+                });
+            }, 2500);
 
-          // Set up Twitch Event Subscription to be notified when this channel goes offline.
-          if (!userIds[request.params.channel].offline_sub_id) setTimeout(function () { 
-            axios.post('https://api.twitch.tv/helix/eventsub/subscriptions',
-            {
-              "type": "stream.offline", 
-              "version": "1", 
-              "condition": { 
-                "broadcaster_user_id": resp.data.data[0].id
-              },
-              "transport": {
-                "method": "webhook",
-                "callback": "https://www.zhekbot.com/eventsub",
-                "secret": process.env.SECRET
-              }
-            },
-            {
-              headers: {
-                "Client-Id": "" + process.env.CLIENT_ID,
-                "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
-                "Content-Type": "application/json"
-              }
-            }).then(resp => {
-              helper.dbQuery(`UPDATE allusers SET offline_sub_id = '${resp.data.data[0].id}' WHERE user_id = '${request.params.channel}';`);
-              userIds[request.params.channel].offline_sub_id = resp.data.data[0].id;
-              console.log("Added stream.offline event sub for " + request.params.channel);
-            }).catch(err => {
-              helper.dumpError(err, "Event Sub - Modules - Add stream.offline.");
-            });
-          }, 5000);
-          
-          // Set values in local cache and DB.
-          helper.dbQuery(`UPDATE allusers SET event_sub = true::bool WHERE user_id = '${request.params.channel}';`);
-          userIds[request.params.channel].event_sub = true;
+            // Set up Twitch Event Subscription to be notified when this channel goes offline.
+            if (!userIds[request.params.channel].offline_sub_id) setTimeout(function () {
+              axios.post('https://api.twitch.tv/helix/eventsub/subscriptions',
+                {
+                  "type": "stream.offline",
+                  "version": "1",
+                  "condition": {
+                    "broadcaster_user_id": resp.data.data[0].id
+                  },
+                  "transport": {
+                    "method": "webhook",
+                    "callback": "https://www.zhekbot.com/eventsub",
+                    "secret": process.env.SECRET
+                  }
+                },
+                {
+                  headers: {
+                    "Client-Id": "" + process.env.CLIENT_ID,
+                    "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
+                    "Content-Type": "application/json"
+                  }
+                }).then(resp => {
+                  helper.dbQuery(`UPDATE allusers SET offline_sub_id = '${resp.data.data[0].id}' WHERE user_id = '${request.params.channel}';`);
+                  userIds[request.params.channel].offline_sub_id = resp.data.data[0].id;
+                  console.log("Added stream.offline event sub for " + request.params.channel);
+                }).catch(err => {
+                  helper.dumpError(err, "Event Sub - Modules - Add stream.offline.");
+                });
+            }, 5000);
 
-          // If this user has no matches in the database, query COD API for matches within the last week.
-          var mCache = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${request.params.channel}';`);
-          if (!mCache || !mCache.length) weekMatches(request.params.channel);
+            // Set values in local cache and DB.
+            helper.dbQuery(`UPDATE allusers SET event_sub = true::bool WHERE user_id = '${request.params.channel}';`);
+            userIds[request.params.channel].event_sub = true;
 
-        } else if (userIds[request.params.channel].matches && userIds[request.params.channel].event_sub) {
+            // If this user has no matches in the database, query COD API for matches within the last week.
+            var mCache = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${request.params.channel}';`);
+            if (!mCache || !mCache.length) weekMatches(request.params.channel);
 
-          // Disable Twitch Event Subscription to be notified when this channel goes live.
-          if (userIds[request.params.channel].online_sub_id) setTimeout(function() {
-            axios.delete(`https://api.twitch.tv/helix/eventsub/subscriptions?id=${userIds[request.params.channel].online_sub_id}`,
-            {
-              headers: {
-                "Client-Id": "" + process.env.CLIENT_ID,
-                "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
-              }
-            // @ts-ignore
-            }).then(resp => {
-              helper.dbQuery(`UPDATE allusers SET online_sub_id = NULL WHERE user_id = '${request.params.channel}';`);
-              delete userIds[request.params.channel].online_sub_id;
-              console.log("Removed stream.online event sub for " + request.params.channel);
-            }).catch(err => {
-              helper.dumpError(err, "Event Sub - Modules - Remove stream.online.");
-            });
-          }, 2500);
+          } else if (userIds[request.params.channel].matches && userIds[request.params.channel].event_sub) {
 
-          // Disable Twitch Event Subscription to be notified when this channel goes offline.
-          if (userIds[request.params.channel].online_sub_id) setTimeout(function () { 
-            axios.delete(`https://api.twitch.tv/helix/eventsub/subscriptions?id=${userIds[request.params.channel].offline_sub_id}`,
-            {
-              headers: {
-                "Client-Id": "" + process.env.CLIENT_ID,
-                "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
-              }
-            // @ts-ignore
-            }).then(resp => {
-              helper.dbQuery(`UPDATE allusers SET offline_sub_id = NULL WHERE user_id = '${request.params.channel}';`);
-              delete userIds[request.params.channel].offline_sub_id;
-              console.log("Removed stream.offline event sub for " + request.params.channel);
-            }).catch(err => {
-              helper.dumpError(err, "Event Sub - Modules - Remove stream.offline.");
-            });
-          }, 5000);
+            // Disable Twitch Event Subscription to be notified when this channel goes live.
+            if (userIds[request.params.channel].online_sub_id) setTimeout(function () {
+              axios.delete(`https://api.twitch.tv/helix/eventsub/subscriptions?id=${userIds[request.params.channel].online_sub_id}`,
+                {
+                  headers: {
+                    "Client-Id": "" + process.env.CLIENT_ID,
+                    "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
+                  }
+                  // @ts-ignore
+                }).then(resp => {
+                  helper.dbQuery(`UPDATE allusers SET online_sub_id = NULL WHERE user_id = '${request.params.channel}';`);
+                  delete userIds[request.params.channel].online_sub_id;
+                  console.log("Removed stream.online event sub for " + request.params.channel);
+                }).catch(err => {
+                  helper.dumpError(err, "Event Sub - Modules - Remove stream.online.");
+                });
+            }, 2500);
 
-          // Set values in local cache and DB.
-          helper.dbQuery(`UPDATE allusers SET event_sub = false::bool WHERE user_id = '${request.params.channel}';`);
-          userIds[request.params.channel].event_sub = false;
-        }
-        
-      })
-      .catch(err => {
-        helper.dumpError(err, "Event Sub - Modules.");
-      })
+            // Disable Twitch Event Subscription to be notified when this channel goes offline.
+            if (userIds[request.params.channel].online_sub_id) setTimeout(function () {
+              axios.delete(`https://api.twitch.tv/helix/eventsub/subscriptions?id=${userIds[request.params.channel].offline_sub_id}`,
+                {
+                  headers: {
+                    "Client-Id": "" + process.env.CLIENT_ID,
+                    "Authorization": "Bearer " + process.env.ACCESS_TOKEN,
+                  }
+                  // @ts-ignore
+                }).then(resp => {
+                  helper.dbQuery(`UPDATE allusers SET offline_sub_id = NULL WHERE user_id = '${request.params.channel}';`);
+                  delete userIds[request.params.channel].offline_sub_id;
+                  console.log("Removed stream.offline event sub for " + request.params.channel);
+                }).catch(err => {
+                  helper.dumpError(err, "Event Sub - Modules - Remove stream.offline.");
+                });
+            }, 5000);
+
+            // Set values in local cache and DB.
+            helper.dbQuery(`UPDATE allusers SET event_sub = false::bool WHERE user_id = '${request.params.channel}';`);
+            userIds[request.params.channel].event_sub = false;
+          }
+
+        })
+        .catch(err => {
+          helper.dumpError(err, "Event Sub - Modules.");
+        })
     } else if (request.params.module === 'customs') {
       helper.dbQuery(`INSERT INTO customs(maps, map_count, multipliers, user_id) VALUES ('{"placement":[],"kills":[]}'::json, 8, '1 1', '${request.params.channel}') ON CONFLICT (user_id) DO NOTHING;`);
     }
 
     userIds[request.params.channel][request.params.module] = !userIds[request.params.channel][request.params.module];
     helper.dbQuery(`UPDATE allusers SET ${request.params.module} = ${userIds[request.params.channel][request.params.module]}${str} WHERE user_id = '${request.params.channel}';`);
-  
+
     response.sendStatus(200);
   } catch (err) {
     helper.dumpError(err, `Change module status: ${request.params.channel} | ${request.params.module}.`);
-    response.sendStatus(err.toString().includes('not allowed')?401:err.toString().includes('Not found')?404:500);
+    response.sendStatus(err.toString().includes('not allowed') ? 401 : err.toString().includes('Not found') ? 404 : 500);
   }
 });
 
@@ -2753,7 +2753,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
 //       response.redirect('/not-found');
 //       return;
 //     }
-    
+
 //     // Check permissions. Editors and channel owner may use this path.
 //     var cookies = request.cookies;
 //     if (cookies["auth"]) {
@@ -2774,7 +2774,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
 //     var wzType = decodeURIComponent(request.get('wzType') || '');
 
 //     if (profanity.isProfane(acti || '')) throw new Error('No profanity allowed.');
-  
+
 //     var data = await last20(acti, 'uno');
 //     var uno = data.matches[0].player.uno;
 
@@ -2799,7 +2799,7 @@ app.get('/newname/:channel', async (request, response) => {
       response.redirect('/not-found');
       return;
     }
-    
+
     // Check permissions. Editor and channel owner may use this path.
     var cookies = request.cookies;
     if (cookies["auth"]) {
@@ -2861,7 +2861,7 @@ app.get('/redirect', async (request, response) => {
     }
 
     response.send(page);
-  } catch(err) {
+  } catch (err) {
     helper.dumpError(err, "Redirect page.");
     response.sendStatus(500);
   }
@@ -2875,7 +2875,7 @@ app.get('/login', async (request, response) => {
     // Check whether this user is already logged in.
     var cookies = request.cookies;
     if (!cookies["auth"]) {
-      
+
       // Get state that was passed and put a 30 second timer on it.
       var state = request.get("state") || '';
       if (!state || state.length != 20) {
@@ -2883,11 +2883,11 @@ app.get('/login', async (request, response) => {
         response.sendStatus(500)
         return;
       }
-      
-      states[state] = '#login#';
-      response.sendStatus(200);
 
-      setTimeout(function() {
+      states[state] = '#login#';
+      response.status(200).send(`https://id.twitch.tv/oauth2/authorize?response_type=token&client_id=${process.env.CLIENT_ID}&force_verify=true&redirect_uri=https://www.zhekbot.com/redirect&scope=&state=${state}`)
+
+      setTimeout(function () {
         if (states.indexOf(state) > -1) delete states[state];
       }, 30000);
     } else {
@@ -2942,80 +2942,80 @@ app.get('/verify', (request, response) => {
       response.send("Access was denied.");
       return;
     }
-    
+
     // Check whether the state is still fresh.
     if (Object.keys(states).includes(request.get("state") || '')) {
-      axios.post('https://id.twitch.tv/oauth2/token', 
-        `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&grant_type=client_credentials`, 
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-      }).then(resp => {
-
-        // Get username.
-        axios.get('https://api.twitch.tv/helix/users?', {
+      axios.post('https://id.twitch.tv/oauth2/token',
+        `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&grant_type=client_credentials`,
+        {
           headers: {
-            'Authorization': `Bearer ${request.get("access_token")}`,
-            'Client-Id': process.env.CLIENT_ID || ''
-          }
-        }).then(async res => {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+        }).then(resp => {
 
-          // Make sure user is in DB.
-          var details = res.data.data;
-          var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE userid = '${details[0]["display_name"].toLowerCase()}';`);
-          
-          // @ts-ignore
-          if (rows.length && (rows[0].perms > 0 && rows[0].perms.split(',').includes(states[request.get("state")]) || details[0]["display_name"].toLowerCase() === states[request.get("state")] || states[request.get("state")] === "#login#")) {
-            helper.addBearer(details[0]["display_name"].toLowerCase(), resp.data["access_token"]);
-            response.cookie("auth", resp.data["access_token"], { maxAge: 1000*resp.data.expires_in, secure: true, httpOnly: true, domain: `.zhekbot.com` });
-            response.send("Success.");
-          } else {
-            
-            // @ts-ignore
-            if (details[0]["display_name"].toLowerCase() === states[request.get("state")] || states[request.get("state")] === '#login#') {
-              helper.addBearer(details[0]["display_name"].toLowerCase(), resp.data["access_token"]);
-              response.cookie("auth", resp.data["access_token"], { maxAge: 1000*resp.data.expires_in, secure: true, httpOnly: true, domain: `.zhekbot.com` });
-              response.send("Success.");
-            } else { 
-              response.send("Login request failed."); 
-              return;
+          // Get username.
+          axios.get('https://api.twitch.tv/helix/users?', {
+            headers: {
+              'Authorization': `Bearer ${request.get("access_token")}`,
+              'Client-Id': process.env.CLIENT_ID || ''
             }
-          }
+          }).then(async res => {
 
-          console.log(details[0]);
+            // Make sure user is in DB.
+            var details = res.data.data;
+            var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE userid = '${details[0]["display_name"].toLowerCase()}';`);
 
-          // Set up standard pieces.
-          if (!userIds[details[0]["display_name"].toLowerCase()]) {
-            userIds[details[0]["display_name"].toLowerCase()] = {
-              "user_id": details[0]["display_name"].toLowerCase(),
-              "uno_id": '',
-              "platform": "uno",
-              "customs": false,
-              "matches": false,
-              "revolverroulette": false,
-              "coinflip": false,
-              "rps": false,
-              "bigvanish": false,
-              "acti_id": '',
-              "subs": false,
-              "two_v_two": false,
-              "twitch": false,
-              "duel": false,
-              "pref_name": details[0]["display_name"],
-              "broadcaster_id": details[0]["id"]
-            };
-            helper.dbQuery(`INSERT INTO allusers(user_id, pref_name, broadcaster_id) VALUES ('${details[0]["display_name"].toLowerCase()}', '${details[0]["display_name"]}', '${details[0]["id"]}');`);
-          }
+            // @ts-ignore
+            if (rows.length && (rows[0].perms > 0 && rows[0].perms.split(',').includes(states[request.get("state")]) || details[0]["display_name"].toLowerCase() === states[request.get("state")] || states[request.get("state")] === "#login#")) {
+              helper.addBearer(details[0]["display_name"].toLowerCase(), resp.data["access_token"]);
+              response.cookie("auth", resp.data["access_token"], { maxAge: 1000 * resp.data.expires_in, secure: true, httpOnly: true, domain: `.zhekbot.com` });
+              response.send("Success.");
+            } else {
 
+              // @ts-ignore
+              if (details[0]["display_name"].toLowerCase() === states[request.get("state")] || states[request.get("state")] === '#login#') {
+                helper.addBearer(details[0]["display_name"].toLowerCase(), resp.data["access_token"]);
+                response.cookie("auth", resp.data["access_token"], { maxAge: 1000 * resp.data.expires_in, secure: true, httpOnly: true, domain: `.zhekbot.com` });
+                response.send("Success.");
+              } else {
+                response.send("Login request failed.");
+                return;
+              }
+            }
+
+            console.log(details[0]);
+
+            // Set up standard pieces.
+            if (!userIds[details[0]["display_name"].toLowerCase()]) {
+              userIds[details[0]["display_name"].toLowerCase()] = {
+                "user_id": details[0]["display_name"].toLowerCase(),
+                "uno_id": '',
+                "platform": "uno",
+                "customs": false,
+                "matches": false,
+                "revolverroulette": false,
+                "coinflip": false,
+                "rps": false,
+                "bigvanish": false,
+                "acti_id": '',
+                "subs": false,
+                "two_v_two": false,
+                "twitch": false,
+                "duel": false,
+                "pref_name": details[0]["display_name"],
+                "broadcaster_id": details[0]["id"]
+              };
+              helper.dbQuery(`INSERT INTO allusers(user_id, pref_name, broadcaster_id) VALUES ('${details[0]["display_name"].toLowerCase()}', '${details[0]["display_name"]}', '${details[0]["id"]}');`);
+            }
+
+          }).catch(err => {
+            helper.dumpError(err, `Verify users.`);
+            response.send(err);
+          });
         }).catch(err => {
-          helper.dumpError(err, `Verify users.`);
+          helper.dumpError(err, `Verify token.`);
           response.send(err);
         });
-      }).catch(err => {
-        helper.dumpError(err, `Verify token.`);
-        response.send(err);
-      });
     } else {
       console.log("Invalid state.");
       response.send("The request has expired, please try again.");
@@ -3043,10 +3043,10 @@ app.get('/authorizethis', async (request, response) => {
       return;
     }
 
-    var state =  '';
+    var state = '';
     var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var charactersLength = characters.length;
-    for ( var i = 0; i < 20; i++ ) {
+    for (var i = 0; i < 20; i++) {
       state += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
 
@@ -3071,7 +3071,7 @@ app.get('/twovtwo/:channel', async (request, response) => {
       response.redirect('/not-found');
       return;
     }
-    
+
     // Check permissions. Editors and channel owner may use this page.
     var cookies = request.cookies;
     var bearer;
@@ -3204,7 +3204,7 @@ app.get('/twovtwo/:channel', async (request, response) => {
 
 
 // Get 2v2 scores.
-app.get ('/twovtwoscores/:channel', async (request, response) => {
+app.get('/twovtwoscores/:channel', async (request, response) => {
   try {
     request.params.channel = request.params.channel.toLowerCase();
 
@@ -3214,7 +3214,7 @@ app.get ('/twovtwoscores/:channel', async (request, response) => {
       response.redirect('/not-found');
       return;
     }
-    
+
     // Check permissions. Editors and channel owner can use this path.
     var cookies = request.cookies, rows;
     if (cookies["auth"]) {
@@ -3233,7 +3233,7 @@ app.get ('/twovtwoscores/:channel', async (request, response) => {
     // Get 2v2 values in DB for this channel.
     var res = await helper.dbQueryPromise(`SELECT * FROM twovtwo WHERE userid = '${request.params.channel}';`);
     if (!res.length) {
-      res = [{ 
+      res = [{
         hkills: 0,
         tkills: 0,
         o1kills: 0,
@@ -3265,7 +3265,7 @@ app.get('/post/:channel/reset', async (request, response) => {
       response.redirect('/not-found');
       return;
     }
-    
+
     // Check permissions. Editors and channel owner can use this path.
     var cookies = request.cookies, rows;
     if (cookies["auth"]) {
@@ -3319,7 +3319,7 @@ app.get('/post/:channel/enable', jsonParser, async (request, response) => {
       response.redirect('/not-found');
       return;
     }
-    
+
     // Check permissions. Editors and channel owner may use this path.
     var cookies = request.cookies, rows;
     if (cookies["auth"]) {
@@ -3339,7 +3339,7 @@ app.get('/post/:channel/enable', jsonParser, async (request, response) => {
     if (request.get('enabled') === userIds[request.params.channel].two_v_two) {
       response.sendStatus(201);
     } else {
-      
+
       helper.dbQuery(`UPDATE allusers SET two_v_two = ${!userIds[request.params.channel].two_v_two}::bool WHERE user_id = '${request.params.channel}';`);
 
       userIds[request.params.channel].two_v_two = !userIds[request.params.channel].two_v_two;
@@ -3347,10 +3347,10 @@ app.get('/post/:channel/enable', jsonParser, async (request, response) => {
       if (duelOff[request.params.channel]) {
         clearTimeout(duelOff[request.params.channel]);
       }
-      duelOff[request.params.channel] = setTimeout(function() { 
+      duelOff[request.params.channel] = setTimeout(function () {
         userIds[request.params.channel].two_v_two = false;
         helper.dbQuery(`UPDATE allusers SET two_v_two = false::bool WHERE user_id = '${request.params.channel}';`);
-      }, 60*15*1000);
+      }, 60 * 15 * 1000);
 
       response.sendStatus(200);
     }
@@ -3399,21 +3399,21 @@ app.get('/send/:channel/:hKills/:tKills/:o1Kills/:o2Kills', async (request, resp
     }
     // @ts-ignore
     if (request.get('o1status') === 'true' && userIds[request.get('o1name')] && userIds[request.get('o1name')]["two_v_two"] && rows[1].perms.split(',').includes(request.get('o1name'))) {
-      await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.o1Kills}, tkills = ${request.params.o2Kills}, o1kills = ${request.params.hKills}, o2kills = ${request.params.tKills}, mapreset = ${-1*parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.get('o1name')}';`)
+      await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.o1Kills}, tkills = ${request.params.o2Kills}, o1kills = ${request.params.hKills}, o2kills = ${request.params.tKills}, mapreset = ${-1 * parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.get('o1name')}';`)
       await tvtscores('' + request.get('o1name'), rows);
     }
     // @ts-ignore
     if (request.get('o2status') === 'true' && userIds[request.get('o2name')] && userIds[request.get('o2name')]["two_v_two"] && rows[1].perms.split(',').includes(request.get('o2name'))) {
-      await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.o2Kills}, tkills = ${request.params.o1Kills}, o1kills = ${request.params.hKills}, o2kills = ${request.params.tKills}, mapreset = ${-1*parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.get('o2name')}';`)
+      await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.o2Kills}, tkills = ${request.params.o1Kills}, o1kills = ${request.params.hKills}, o2kills = ${request.params.tKills}, mapreset = ${-1 * parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.get('o2name')}';`)
       await tvtscores('' + request.get('o2name'), rows);
     }
 
     if (duelOff[request.params.channel]) {
       clearTimeout(duelOff[request.params.channel]);
-      duelOff[request.params.channel] = setTimeout(function() { 
+      duelOff[request.params.channel] = setTimeout(function () {
         userIds[request.params.channel].two_v_two = false;
         helper.dbQuery(`UPDATE allusers SET two_v_two = false::bool WHERE user_id = '${request.params.channel}';`);
-      }, 60*15*1000);
+      }, 60 * 15 * 1000);
     }
 
     response.sendStatus(200);
@@ -3450,7 +3450,7 @@ app.get('/twovtwo/:channel/mescore', async (request, response) => {
       response.redirect('/');
       return;
     }
-    
+
     states[cookies['auth']] = request.get('state');
 
     response.sendStatus(200);
@@ -3486,7 +3486,7 @@ app.get('/nomoscore', async (request, response) => {
     }
 
     response.sendStatus(200);
-  } catch(err) {
+  } catch (err) {
     helper.dumpError(err, "Nomoscore.");
     response.sendStatus(500);
   }
@@ -3534,7 +3534,7 @@ function addEnd(placement) {
 
 
 // Custom tourney page.
-app.get ('/customs/:channel', async (request, response) => {
+app.get('/customs/:channel', async (request, response) => {
   try {
     request.params.channel = request.params.channel.toLowerCase();
 
@@ -3544,7 +3544,7 @@ app.get ('/customs/:channel', async (request, response) => {
       response.redirect('/not-found');
       return;
     }
-    
+
     // Check permissions. Editors and channel owner can use this path.
     var cookies = request.cookies;
     if (cookies["auth"]) {
@@ -3582,14 +3582,14 @@ app.get ('/customs/:channel', async (request, response) => {
       multis.push('Multipliers not defined. Please use the !setmultipliers command in chat.');
     } else {
       var raw = rows[0].multipliers.split(' ');
-      for (var i = 0; i < raw.length/2; i++) {
+      for (var i = 0; i < raw.length / 2; i++) {
         var temp = '';
-        if (i + 1 >= raw.length/2) {
-          temp = `${addEnd(raw[2*i])}+ : ${raw[2*i + 1]}x`;
-        } else if (parseInt(raw[2*i]) + 1 === parseInt(raw[2*i + 2])) {
-          temp = `${addEnd(raw[2*i])} : ${raw[2*i + 1]}x`;
+        if (i + 1 >= raw.length / 2) {
+          temp = `${addEnd(raw[2 * i])}+ : ${raw[2 * i + 1]}x`;
+        } else if (parseInt(raw[2 * i]) + 1 === parseInt(raw[2 * i + 2])) {
+          temp = `${addEnd(raw[2 * i])} : ${raw[2 * i + 1]}x`;
         } else {
-          temp = `${addEnd(raw[2*i])}-${addEnd(parseInt(raw[2*i + 2]) - 1)} : ${raw[2*i + 1]}x`;
+          temp = `${addEnd(raw[2 * i])}-${addEnd(parseInt(raw[2 * i + 2]) - 1)} : ${raw[2 * i + 1]}x`;
         }
         multis.push(temp);
       }
@@ -3609,7 +3609,7 @@ var customCd = {};
 
 
 // Custom tourney update.
-app.get ('/customs/update/:channel', async (request, response) => {
+app.get('/customs/update/:channel', async (request, response) => {
   try {
     request.params.channel = request.params.channel.toLowerCase();
 
@@ -3619,7 +3619,7 @@ app.get ('/customs/update/:channel', async (request, response) => {
       response.redirect('/not-found');
       return;
     }
-    
+
     // Check permissions. Editors and channel owner can use this path.
     var cookies = request.cookies;
     if (cookies["auth"]) {
@@ -3636,11 +3636,11 @@ app.get ('/customs/update/:channel', async (request, response) => {
     }
 
     // Check whether this has been used too  recently.
-    if (customCd[request.params.channel] && customCd[request.params.channel] > (Date.now()/1000)) {
+    if (customCd[request.params.channel] && customCd[request.params.channel] > (Date.now() / 1000)) {
       response.sendStatus(201);
       return;
     } else {
-      customCd[request.params.channel] = (Date.now()/1000) + 3;
+      customCd[request.params.channel] = (Date.now() / 1000) + 3;
     }
 
     // Update DB and format for chat.
@@ -3653,15 +3653,15 @@ app.get ('/customs/update/:channel', async (request, response) => {
     var kills = hKills + tKills + o1Kills + o2Kills;
 
     var multis = rows[0].multipliers.split(' '), place = request.get('place') || '', placement = 0;
-    for (var j = multis.length/2; j >= 0; j--) {
-      
-      if (parseInt(place) >= parseInt(multis[2*j])) {
-        placement = parseFloat(multis[(2*j)+1]);
+    for (var j = multis.length / 2; j >= 0; j--) {
+
+      if (parseInt(place) >= parseInt(multis[2 * j])) {
+        placement = parseFloat(multis[(2 * j) + 1]);
         break;
       }
 
     }
-    
+
     say(request.params.channel, `Current Map | Kills: ${kills} | Score: ${(kills * placement).toFixed(2)}`, bot);
 
     response.sendStatus(200);
@@ -3680,30 +3680,30 @@ async function stats(username, platform) {
 
     var rows = await helper.dbQueryPromise(`SELECT * FROM stats WHERE acti_id = '${username}';`);
 
-    if (!rows || !rows.length || rows[0].timeout < Date.now()/1000) {
+    if (!rows || !rows.length || rows[0].timeout < Date.now() / 1000) {
 
       // Get stats.
       var data = await lifetime(uriUser, platform);
 
       if (data === 'Not permitted: not allowed') {
         return 'Account is private.';
-      } 
+      }
 
       // Format stats.
-      time = (data.lifetime.mode.br.properties.timePlayed/3600).toFixed(2);
+      time = (data.lifetime.mode.br.properties.timePlayed / 3600).toFixed(2);
       lk = data.lifetime.mode.br.properties.kdRatio.toFixed(2);
-      wk = data.weekly.mode.br_all?data.weekly.mode.br_all.properties.kdRatio.toFixed(2):'-';
+      wk = data.weekly.mode.br_all ? data.weekly.mode.br_all.properties.kdRatio.toFixed(2) : '-';
       wins = data.lifetime.mode.br.properties.wins;
       kills = data.lifetime.mode.br.properties.kills;
 
       // Cache in database.
-      helper.dbQuery(`INSERT INTO stats(acti_id, time_played, life_kd, weekly_kd, wins, kills, timeout) VALUES ('${username}', ${time}, ${lk}, ${wk==='-'?0:wk}, ${wins}, ${kills}, ${(Date.now()/1000) + 3600})
-        ON CONFLICT (acti_id) DO UPDATE SET time_played = ${time}, life_kd = ${lk}, weekly_kd = ${wk==='-'?0:wk}, wins = ${wins}, kills = ${kills}, timeout = ${(Date.now()/1000) + 3600};`);
+      helper.dbQuery(`INSERT INTO stats(acti_id, time_played, life_kd, weekly_kd, wins, kills, timeout) VALUES ('${username}', ${time}, ${lk}, ${wk === '-' ? 0 : wk}, ${wins}, ${kills}, ${(Date.now() / 1000) + 3600})
+        ON CONFLICT (acti_id) DO UPDATE SET time_played = ${time}, life_kd = ${lk}, weekly_kd = ${wk === '-' ? 0 : wk}, wins = ${wins}, kills = ${kills}, timeout = ${(Date.now() / 1000) + 3600};`);
 
     } else {
       time = rows[0].time_played;
       lk = rows[0].life_kd;
-      wk = rows[0].weekly_kd?rows[0].weekly_kd:'-';
+      wk = rows[0].weekly_kd ? rows[0].weekly_kd : '-';
       wins = rows[0].wins;
       kills = rows[0].kills;
     }
@@ -3713,16 +3713,16 @@ async function stats(username, platform) {
 
   } catch (err) {
     helper.dumpError(err, `Stats.`);
-    return err.toString().includes('not allowed')?'Permissions issue.':err.toString().includes('found')?'Account not found.':'Error getting stats.';
+    return err.toString().includes('not allowed') ? 'Permissions issue.' : err.toString().includes('found') ? 'Account not found.' : 'Error getting stats.';
   }
 };
 
 
 // Get user's last match info.
-async function lastGame(username) { 
+async function lastGame(username) {
   try {
     var rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${userIds[username].acti_id}' ORDER BY timestamp DESC LIMIT 1;`);
-    
+
     // If rows are empty, return.
     if (!rows.length) {
       console.log('No matches found.')
@@ -3735,10 +3735,10 @@ async function lastGame(username) {
     // Format teammates, if any.
     var teammates = ' | Teammates: ';
     if (!match.teammates.length) teammates += '-';
-    for (var i = 0; i < match.teammates.length; i++) { teammates += (!i?'':' | ') + `${match.teammates[i].name} (${match.teammates[i].kills}K, ${match.teammates[i].deaths}D)`; }
-    
+    for (var i = 0; i < match.teammates.length; i++) { teammates += (!i ? '' : ' | ') + `${match.teammates[i].name} (${match.teammates[i].kills}K, ${match.teammates[i].deaths}D)`; }
+
     // Return response.
-    return `${match.game_mode} | Lobby KD: ${match.lobby_kd?match.lobby_kd.toFixed(2):'-'} | ${match.placement} place | ${userIds[username].pref_name} (${match.kills}K, ${match.deaths}D) | Gulag: ${match.gulag_kills?'Won':match.gulag_deaths?'Lost':'-'} ${teammates}`;
+    return `${match.game_mode} | Lobby KD: ${match.lobby_kd ? match.lobby_kd.toFixed(2) : '-'} | ${match.placement} place | ${userIds[username].pref_name} (${match.kills}K, ${match.deaths}D) | Gulag: ${match.gulag_kills ? 'Won' : match.gulag_deaths ? 'Lost' : '-'} ${teammates}`;
 
   } catch (err) {
     helper.dumpError(err, `Last game.`);
@@ -3766,16 +3766,16 @@ async function lastGames(username) {
     for (var i = 0; i < rows.length; i++) {
       kGame += rows[i].kills;
       dGame += rows[i].deaths;
-      wins += rows[i].placement === "1st"?1:0;
-      streak = rows[i].streak > streak?rows[i].streak:streak;
+      wins += rows[i].placement === "1st" ? 1 : 0;
+      streak = rows[i].streak > streak ? rows[i].streak : streak;
       gulag_kills += rows[i].gulag_kills;
       gulag_deaths += rows[i].gulag_deaths;
       lobby_kd += rows[i].lobby_kd;
-      total += rows[i].lobby_kd?1:0;
+      total += rows[i].lobby_kd ? 1 : 0;
     }
-    
+
     // Return response.
-    return `Weekly Stats | ${rows.length} Games | Avg Lobby KD: ${total?(lobby_kd/total).toFixed(2):'-'} | Kills/Game: ${rows.length?(kGame/rows.length).toFixed(2):'-'} | Deaths/Game: ${rows.length?(dGame/rows.length).toFixed(2):'-'} | K/D: ${dGame?(kGame/dGame).toFixed(2):'-'} | Wins: ${rows.length?wins:'-'} | Longest Kill Streak: ${rows.length?streak:'-'} | Gulag: ${rows.length?String(gulag_kills) + ' / ' + String(gulag_deaths):'-'}`;
+    return `Weekly Stats | ${rows.length} Games | Avg Lobby KD: ${total ? (lobby_kd / total).toFixed(2) : '-'} | Kills/Game: ${rows.length ? (kGame / rows.length).toFixed(2) : '-'} | Deaths/Game: ${rows.length ? (dGame / rows.length).toFixed(2) : '-'} | K/D: ${dGame ? (kGame / dGame).toFixed(2) : '-'} | Wins: ${rows.length ? wins : '-'} | Longest Kill Streak: ${rows.length ? streak : '-'} | Gulag: ${rows.length ? String(gulag_kills) + ' / ' + String(gulag_deaths) : '-'}`;
 
   } catch (err) {
     helper.dumpError(err, `Weekly.`);
@@ -3808,16 +3808,16 @@ async function daily(username) {
       dailyGames++;
       kGame += rows[i].kills;
       dGame += rows[i].deaths;
-      wins += rows[i].placement === "1st"?1:0;
-      streak = rows[i].streak > streak?rows[i].streak:streak;
+      wins += rows[i].placement === "1st" ? 1 : 0;
+      streak = rows[i].streak > streak ? rows[i].streak : streak;
       gulag_kills += rows[i].gulag_kills;
       gulag_deaths += rows[i].gulag_deaths;
       lobby_kd += rows[i].lobby_kd;
-      total += rows[i].lobby_kd?1:0;
+      total += rows[i].lobby_kd ? 1 : 0;
     }
 
     // Return response.
-    return `Daily Stats | Games: ${dailyGames} | Avg Lobby KD: ${total?(lobby_kd/total).toFixed(2):'-'} | Kills/Game: ${dailyGames?(kGame/dailyGames).toFixed(2):'-'} | Deaths/Game: ${dailyGames?(dGame/dailyGames).toFixed(2):'-'} | K/D: ${dGame?(kGame/dGame).toFixed(2):kGame?kGame:'-'} | Wins: ${wins} | Longest Kill Streak: ${streak} | Gulag: ${rows.length?String(gulag_kills) + ' / ' + String(gulag_deaths):'-'}`;
+    return `Daily Stats | Games: ${dailyGames} | Avg Lobby KD: ${total ? (lobby_kd / total).toFixed(2) : '-'} | Kills/Game: ${dailyGames ? (kGame / dailyGames).toFixed(2) : '-'} | Deaths/Game: ${dailyGames ? (dGame / dailyGames).toFixed(2) : '-'} | K/D: ${dGame ? (kGame / dGame).toFixed(2) : kGame ? kGame : '-'} | Wins: ${wins} | Longest Kill Streak: ${streak} | Gulag: ${rows.length ? String(gulag_kills) + ' / ' + String(gulag_deaths) : '-'}`;
 
   } catch (err) {
     helper.dumpError(err, `Daily.`);
@@ -3843,7 +3843,7 @@ async function bombs(username) {
     }
 
     // Return response.
-    return `${userIds[username].pref_name} has dropped ${bombs.length} bomb${bombs.length==1?'':'s'} (${userIds[username].bomb}+ kill games) today ${bombs.length?'('+bombs.join('K, ')+'K)':''}`;
+    return `${userIds[username].pref_name} has dropped ${bombs.length} bomb${bombs.length == 1 ? '' : 's'} (${userIds[username].bomb}+ kill games) today ${bombs.length ? '(' + bombs.join('K, ') + 'K)' : ''}`;
 
   } catch (err) {
     helper.dumpError(err, `Bombs.`);
@@ -3869,7 +3869,7 @@ async function wins(username) {
     }
 
     // Return response.
-    return `${userIds[username].pref_name} has won ${wins.length} game${wins.length==1?'':'s'} today ${wins.length?'(' + wins.join('K, ') + 'K)':''}`;
+    return `${userIds[username].pref_name} has won ${wins.length} game${wins.length == 1 ? '' : 's'} today ${wins.length ? '(' + wins.join('K, ') + 'K)' : ''}`;
 
   } catch (err) {
     helper.dumpError(err, `Wins.`);
@@ -3892,15 +3892,15 @@ async function gulag(username) {
 
     // Increment stats.
     for (var i = 0; i < rows.length; i++) {
-      if (rows[i].gulag_kills) { 
+      if (rows[i].gulag_kills) {
         gulag_kills++;
       } else if (rows[i].gulag_deaths) {
         gulag_deaths++;
-      } 
+      }
     }
 
     // Return response.
-    return `${userIds[username].pref_name} has ${gulag_kills} win${gulag_kills==1?'':'s'} and ${gulag_deaths} loss${gulag_deaths==1?'':'es'} in the gulag today.`;
+    return `${userIds[username].pref_name} has ${gulag_kills} win${gulag_kills == 1 ? '' : 's'} and ${gulag_deaths} loss${gulag_deaths == 1 ? '' : 'es'} in the gulag today.`;
 
   } catch (err) {
     helper.dumpError(err, `Gulag.`);
@@ -3922,17 +3922,17 @@ async function teammates(username) {
 
       for (var j = 0; j < team.length; j++) {
         var keyValue = teammates.get(team[j].name);
-        teammates.set(team[j].name, keyValue?keyValue + 1:1);
+        teammates.set(team[j].name, keyValue ? keyValue + 1 : 1);
       }
     }
-    
+
     var sorted = Array.from(teammates.keys()).sort((a, b) => teammates.get(b) - teammates.get(a));
-    
+
     var retStr = `Weekly Teammates | `;
-    for (var i = 0; i < (sorted.length < 5?sorted.length:5); i++) {
-      retStr += `${sorted[i]}: ${teammates.get(sorted[i])} games${i == 4 || i + 1 == sorted.length?'':' | '}`;
+    for (var i = 0; i < (sorted.length < 5 ? sorted.length : 5); i++) {
+      retStr += `${sorted[i]}: ${teammates.get(sorted[i])} games${i == 4 || i + 1 == sorted.length ? '' : ' | '}`;
     }
-    
+
     return retStr;
   } catch (err) {
     helper.dumpError(err, `Teammates.`);
@@ -3952,16 +3952,16 @@ async function gamemodes(username) {
       var mode = rows[i].game_mode;
 
       var keyValue = gamemodes.get(mode);
-      gamemodes.set(mode, keyValue?keyValue + 1:1);
+      gamemodes.set(mode, keyValue ? keyValue + 1 : 1);
     }
-    
+
     var sorted = Array.from(gamemodes.keys()).sort((a, b) => gamemodes.get(b) - gamemodes.get(a));
-    
+
     var retStr = `Weekly Game Modes | `;
-    for (var i = 0; i < (sorted.length < 5?sorted.length:5); i++) {
-      retStr += `${sorted[i]}: ${gamemodes.get(sorted[i])} games${i == 4 || i + 1 == sorted.length?'':' | '}`;
+    for (var i = 0; i < (sorted.length < 5 ? sorted.length : 5); i++) {
+      retStr += `${sorted[i]}: ${gamemodes.get(sorted[i])} games${i == 4 || i + 1 == sorted.length ? '' : ' | '}`;
     }
-    
+
     return retStr;
   } catch (err) {
     helper.dumpError(err, `Game modes.`);
@@ -4009,7 +4009,7 @@ function numberWithCommas(x) {
   x = x.toString();
   var pattern = /(-?\d+)(\d{3})/;
   while (pattern.test(x))
-      x = x.replace(pattern, "$1,$2");
+    x = x.replace(pattern, "$1,$2");
   return x;
 };
 
@@ -4107,58 +4107,58 @@ app.get('/twitch/redirect', async (req, response) => {
       var code = query["code"];
 
       await axios.post(`https://id.twitch.tv/oauth2/token`,
-      `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&code=${code}&grant_type=authorization_code&redirect_uri=https://www.zhekbot.com/redirect`,
-      {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      }).then(async resp => {
-        var data = resp.data;
-
-        await axios.get('https://id.twitch.tv/oauth2/validate',
+        `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&code=${code}&grant_type=authorization_code&redirect_uri=https://www.zhekbot.com/redirect`,
         {
           headers: {
-            'Authorization': 'OAuth ' + data.access_token
+            'Content-Type': 'application/x-www-form-urlencoded'
           }
-        }).then(async resp2 => {
-          var data2 = resp2.data;
+        }).then(async resp => {
+          var data = resp.data;
 
-          helper.dbQuery(`INSERT INTO access_tokens(userid, access_token, refresh_token, scope) 
+          await axios.get('https://id.twitch.tv/oauth2/validate',
+            {
+              headers: {
+                'Authorization': 'OAuth ' + data.access_token
+              }
+            }).then(async resp2 => {
+              var data2 = resp2.data;
+
+              helper.dbQuery(`INSERT INTO access_tokens(userid, access_token, refresh_token, scope) 
             VALUES ('${data2.login}', '${data.access_token}', '${data.refresh_token}', '${data2.scopes.join(', ')}')
             ON CONFLICT (userid, scope) DO UPDATE SET access_token = '${data.access_token}', refresh_token = '${data.refresh_token}', scope = '${data2.scopes.join(', ')}';`);
-          
-          if (data2.scopes.includes("chat:edit") || data2.scopes.includes("chat:read")) {
-            var user = await helper.dbQueryPromise(`UPDATE permissions SET tw_token = '${data.access_token}' WHERE userid = '${data2.login}' RETURNING *;`);
-            
-            if (!user || !user[0]) throw new Error("Update did not return row.");
 
-            if (!scoreBots[user[0].userid]) {
-              scoreBots[user[0].userid] = {
-                scoreBot: new tmi.client({
-                  connection: {
-                    reconnect: true,
-                    secure: true
-                  },
-                  identity: {
-                    username: user[0].userid,
-                    password: data.access_token
-                  },
-                  channels: [  ]
-                }),
-                timeout: DateTime.now().plus({ minutes: 30 }).toMillis,
-              };
-              await scoreBots[user[0].userid].scoreBot.connect();
-            }
-          } else if (data2.scopes.includes("moderator:manage:banned_users")) { 
-            helper.dbQuery(`UPDATE allusers SET time_perms = true::bool WHERE user_id = '${data2.login}';`);
-            userIds[data2.login].time_perms = true;
-          }
+              if (data2.scopes.includes("chat:edit") || data2.scopes.includes("chat:read")) {
+                var user = await helper.dbQueryPromise(`UPDATE permissions SET tw_token = '${data.access_token}' WHERE userid = '${data2.login}' RETURNING *;`);
+
+                if (!user || !user[0]) throw new Error("Update did not return row.");
+
+                if (!scoreBots[user[0].userid]) {
+                  scoreBots[user[0].userid] = {
+                    scoreBot: new tmi.client({
+                      connection: {
+                        reconnect: true,
+                        secure: true
+                      },
+                      identity: {
+                        username: user[0].userid,
+                        password: data.access_token
+                      },
+                      channels: []
+                    }),
+                    timeout: DateTime.now().plus({ minutes: 30 }).toMillis,
+                  };
+                  await scoreBots[user[0].userid].scoreBot.connect();
+                }
+              } else if (data2.scopes.includes("moderator:manage:banned_users")) {
+                helper.dbQuery(`UPDATE allusers SET time_perms = true::bool WHERE user_id = '${data2.login}';`);
+                userIds[data2.login].time_perms = true;
+              }
+            }).catch(err => {
+              helper.dumpError(err, "Twitch redirect validate.");
+            });
         }).catch(err => {
-          helper.dumpError(err, "Twitch redirect validate.");
+          helper.dumpError(err, "Twitch redirect token.");
         });
-      }).catch(err => {
-        helper.dumpError(err, "Twitch redirect token.");
-      });
     } else {
       throw new Error("States do not match.");
     }
@@ -4217,12 +4217,12 @@ async function weekMatches(userid) {
     var matches = [];
 
     var timestamp = parseInt((await helper.dbQueryPromise(`SELECT MIN(timestamp) FROM matches WHERE user_id = '${userIds[userid].acti_id}';`))[0].min) || DateTime.now().toSeconds();
-    var weekAgo = DateTime.now().minus({weeks:1}).toSeconds() + userIds[userid].time_offset || DateTime.now().minus({weeks:1}).toSeconds();
+    var weekAgo = DateTime.now().minus({ weeks: 1 }).toSeconds() + userIds[userid].time_offset || DateTime.now().minus({ weeks: 1 }).toSeconds();
 
     while (timestamp > weekAgo) {
       var data = (await date20(encodeURIComponent(userIds[userid].acti_id), userIds[userid].platform, timestamp)).matches;
       for (var i = 0; i < data.length; i++) {
-        timestamp = data[i].utcStartSeconds; 
+        timestamp = data[i].utcStartSeconds;
         if (timestamp < weekAgo) break;
 
         matches.push(data[i]);
@@ -4250,49 +4250,51 @@ async function updateMatches() {
           try {
             // Get time from a week ago and set base timestamp.
             console.log("Updating matches for " + onTwitch[i].acti_id);
-            
-            var weekAgo = (DateTime.now().minus({weeks:1}).toSeconds() + userIds[onTwitch[i].user_id].time_offset) || DateTime.now().minus({weeks:1}).toSeconds();
+
+            var weekAgo = (DateTime.now().minus({ weeks: 1 }).toSeconds() + userIds[onTwitch[i].user_id].time_offset) || DateTime.now().minus({ weeks: 1 }).toSeconds();
             var lastTimestamp = 0;
-            
+
             // Clear matches which are older than a week.
             helper.dbQuery(`DELETE FROM matches WHERE timestamp < ${weekAgo} AND user_id = '${onTwitch[i].acti_id}';`);
-            
+
             // If match cache for this user is empty, set it.
             var rows = await helper.dbQueryPromise(`SELECT * FROM matches WHERE user_id = '${userIds[onTwitch[i].user_id].acti_id}' ORDER BY timestamp DESC;`);
-            
+
             // Update timestamp of last match.
-            lastTimestamp = rows.length?rows[0].timestamp:lastTimestamp;
-            
+            lastTimestamp = rows.length ? rows[0].timestamp : lastTimestamp;
+
             // Fetch last 20 matches for user from COD API.
             var data;
-            try { 
-              data = await last20(encodeURIComponent(userIds[onTwitch[i].user_id].acti_id), userIds[onTwitch[i].user_id].platform); 
+            try {
+              data = await last20(encodeURIComponent(userIds[onTwitch[i].user_id].acti_id), userIds[onTwitch[i].user_id].platform);
               if (!data) throw new Error('Matches undefined.');
               await update(data.matches, userIds[onTwitch[i].user_id], lastTimestamp);
-              
+
               // Get stats for each match and push to database.
               console.log(`Updated matches for ${userIds[onTwitch[i].user_id].acti_id}.`);
             }
-            catch (err) { setTimeout(async () => { 
-              try { 
-                helper.dumpError(err, `Error: ${userIds[onTwitch[i].user_id].acti_id}, retrying.`); 
-                data = await last20(encodeURIComponent(userIds[onTwitch[i].user_id].acti_id), userIds[onTwitch[i].user_id].platform); 
-                await update(data.matches, userIds[onTwitch[i].user_id], lastTimestamp); 
+            catch (err) {
+              setTimeout(async () => {
+                try {
+                  helper.dumpError(err, `Error: ${userIds[onTwitch[i].user_id].acti_id}, retrying.`);
+                  data = await last20(encodeURIComponent(userIds[onTwitch[i].user_id].acti_id), userIds[onTwitch[i].user_id].platform);
+                  await update(data.matches, userIds[onTwitch[i].user_id], lastTimestamp);
 
-                // Get stats for each match and push to database.
-                console.log(`Updated matches for ${userIds[onTwitch[i].user_id].acti_id}.`);
-              } 
-              catch (err) { helper.dumpError(err, `Error during retry.`) } 
-            }, 20000); }
+                  // Get stats for each match and push to database.
+                  console.log(`Updated matches for ${userIds[onTwitch[i].user_id].acti_id}.`);
+                }
+                catch (err) { helper.dumpError(err, `Error during retry.`) }
+              }, 20000);
+            }
 
-          
+
           } catch (err) {
             helper.dumpError(err, `Updating matches: ${onTwitch[i]}`);
-            return; 
+            return;
           }
-        }, i*10000);
+        }, i * 10000);
         if (!userIds[onTwitch[i].user_id].online && (!online[onTwitch[i].user_id] || Date.now() > online[onTwitch[i].user_id])) {
-          online[onTwitch[i].user_id] = Date.now() + 1000*60*60;
+          online[onTwitch[i].user_id] = Date.now() + 1000 * 60 * 60;
         }
       }
     }
@@ -4318,34 +4320,34 @@ async function update(matches, user, lastTimestamp) {
     for (var i = 0; i < matches.length; i++) {
 
       var data = (await apiAxios.get(`https://app.wzstats.gg/v2/?matchId=${matches[i].matchID}`)).data;
-      lobby_kd = data.matchStatData.playerAverage?data.matchStatData.playerAverage:0;
+      lobby_kd = data.matchStatData.playerAverage ? data.matchStatData.playerAverage : 0;
 
       timestamp = matches[i].utcStartSeconds;
       if (timestamp <= lastTimestamp) continue;
-      
+
       // Get match ID.
       match_id = matches[i].matchID;
-            
+
       // Set placement.
       placement = String(matches[i].playerStats.teamPlacement) || '';
-      
+
       if (!placement) {
         placement = "-";
       } else {
         if (placement.length >= 2 && placement.charAt(placement.length - 2) === '1') {
           placement += 'th';
         } else {
-          placement += placement.charAt(placement.length - 1)==='1'?'st':placement.charAt(placement.length - 1)==='2'?'nd':placement.charAt(placement.length - 1)==='3'?'rd':'th';
+          placement += placement.charAt(placement.length - 1) === '1' ? 'st' : placement.charAt(placement.length - 1) === '2' ? 'nd' : placement.charAt(placement.length - 1) === '3' ? 'rd' : 'th';
         }
       }
       if (placement.includes('undefined')) placement = "-";
-      
+
       // Set kills and deaths.
       kills = matches[i].playerStats.kills;
       deaths = matches[i].playerStats.deaths;
-      
+
       // Set game mode.
-      game_mode = Object.keys(game_modes).includes(matches[i].mode)?game_modes[matches[i].mode]:matches[i].mode;
+      game_mode = Object.keys(game_modes).includes(matches[i].mode) ? game_modes[matches[i].mode] : matches[i].mode;
 
       // Set gulag stats.
       gulag_kills = 0;
@@ -4357,10 +4359,10 @@ async function update(matches, user, lastTimestamp) {
           gulag_deaths = 1;
         }
       }
-      
+
       // Get all players for this match.
       var players = data.data.players || [];
-      
+
       // Find user's team name.
       var teamName = '';
       for (var j = 0; j < players.length; j++) {
@@ -4369,15 +4371,15 @@ async function update(matches, user, lastTimestamp) {
           break;
         }
       }
-      
+
       // Teammates?
       var teammates = [];
       for (var j = 0; j < players.length; j++) {
         if (players[j].playerMatchStat.player.team === teamName && players[j].playerMatchStat.player.uno !== user.uno_id) {
-          var player = { 
-            name: players[j].playerMatchStat.player.username, 
-            kills: players[j].playerMatchStat.playerStats.kills, 
-            deaths: players[j].playerMatchStat.playerStats.deaths 
+          var player = {
+            name: players[j].playerMatchStat.player.username,
+            kills: players[j].playerMatchStat.playerStats.kills,
+            deaths: players[j].playerMatchStat.playerStats.deaths
           };
           teammates.push(player);
           if (teammates.length == 3) break;
@@ -4435,13 +4437,13 @@ app.post('/eventsub', async (req, res) => {
 
       // Get JSON object from body, so you can process the message.
       var notification = req.body;
-      
+
       if (idArray.includes(req.get(TWITCH_MESSAGE_ID))) {
 
         console.log("Duplicate event message.");
         res.sendStatus(201);
 
-      } else if (new Date(TWITCH_MESSAGE_TIMESTAMP).getTime() + 10*60*1000 < Date.now()) {
+      } else if (new Date(TWITCH_MESSAGE_TIMESTAMP).getTime() + 10 * 60 * 1000 < Date.now()) {
 
         console.log("Expired event message.");
         res.sendStatus(202);
@@ -4461,20 +4463,20 @@ app.post('/eventsub', async (req, res) => {
             // Post in chat for prediction beginning.
             case "channel.prediction.begin":
               pred = notification.event.title;
-              var time = ((new Date(notification.event.locks_at)).getTime() - (new Date(notification.event.started_at)).getTime())/1000;
+              var time = ((new Date(notification.event.locks_at)).getTime() - (new Date(notification.event.started_at)).getTime()) / 1000;
               say(notification.event.broadcaster_user_login.toLowerCase(), `NEW PREDICTION peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time} SECONDS peepoGamble DinkDonk 
                 NEW PREDICTION peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time} SECONDS`, bot);
               if (time >= 60) {
-                intArray[notification.event.broadcaster_user_login.toLowerCase()] = setTimeout(function () { 
-                  say(notification.event.broadcaster_user_login.toLowerCase(), `GET YOUR BETS IN peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time/2} SECONDS peepoGamble DinkDonk 
-                  GET YOUR BETS IN peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time/2} SECONDS`, bot); 
+                intArray[notification.event.broadcaster_user_login.toLowerCase()] = setTimeout(function () {
+                  say(notification.event.broadcaster_user_login.toLowerCase(), `GET YOUR BETS IN peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time / 2} SECONDS peepoGamble DinkDonk 
+                  GET YOUR BETS IN peepoGamble DinkDonk ${pred} peepoGamble DinkDonk ENDS IN ${time / 2} SECONDS`, bot);
                   delete intArray[notification.event.broadcaster_user_login.toLowerCase()];
-                }, time*1000/2);
+                }, time * 1000 / 2);
               }
               break;
 
             // Post in chat for prediction end.
-            case "channel.prediction.end": 
+            case "channel.prediction.end":
               var outcome;
               for (var i = 0; i < notification.event.outcomes.length; i++) {
                 if (notification.event.winning_outcome_id === notification.event.outcomes[i].id) {
@@ -4485,7 +4487,7 @@ app.post('/eventsub', async (req, res) => {
               if (outcome) {
                 var result = outcome.title;
                 var topBetter = outcome.top_predictors[0];
-                say(notification.event.broadcaster_user_login.toLowerCase(), `Prediction over! The result was '${result}'! ${topBetter.user_name?topBetter.user_name:topBetter.user_login} won ${numberWithCommas(topBetter.channel_points_won)} points!`, bot);
+                say(notification.event.broadcaster_user_login.toLowerCase(), `Prediction over! The result was '${result}'! ${topBetter.user_name ? topBetter.user_name : topBetter.user_login} won ${numberWithCommas(topBetter.channel_points_won)} points!`, bot);
               } else {
                 if (intArray[notification.event.broadcaster_user_login.toLowerCase()]) {
                   clearInterval(intArray[notification.event.broadcaster_user_login.toLowerCase()]);
@@ -4500,7 +4502,7 @@ app.post('/eventsub', async (req, res) => {
               pred = notification.event.title;
               var points = 0;
               for (var i = 0; i < notification.event.outcomes.length; i++) {
-                points += notification.event.outcomes[i].channel_points?notification.event.outcomes[i].channel_points:0;
+                points += notification.event.outcomes[i].channel_points ? notification.event.outcomes[i].channel_points : 0;
               }
               if (intArray[notification.event.broadcaster_user_login.toLowerCase()]) {
                 clearInterval(intArray[notification.event.broadcaster_user_login.toLowerCase()]);
@@ -4526,29 +4528,31 @@ app.post('/eventsub', async (req, res) => {
                     "Client-Id": process.env.CLIENT_ID + ''
                   }
                 })
-                .then(res => {
-                  let data = res.data.data;
-                  let twitchEmoji = helper.discord.emojis.cache.get("773987327130599464");
-                  let huskLogo = helper.discord.emojis.cache.get("764996106819862528");
-                  // @ts-ignore
-                  helper.discord.channels.cache.get('1016735961138335804').send(`${twitchEmoji?twitchEmoji:''} Hey @everyone the main man is LIVE!!! click on the link and don't miss out on those amazing moments. ${huskLogo?huskLogo:''}`);
-                  // @ts-ignore
-                  helper.discord.channels.cache.get('1016735961138335804').send({ embeds: [{
-                    color: 3447003,
-                    thumbnail: {
-                      url: "https://www.zhekbot.com/images/HusKerrs-logo.png"
-                    },
-                    image: {
-                      url: "https://www.zhekbot.com/images/HusKerrs-logo.png"
-                    },
-                    title: data[0].title,
-                    url: "https://twitch.tv/huskerrs",
-                    timestamp: new Date(),
-                  }]});
-                })
-                .catch(err => {
-                  helper.dumpError(err, "HusK notis.");
-                })
+                  .then(res => {
+                    let data = res.data.data;
+                    let twitchEmoji = helper.discord.emojis.cache.get("773987327130599464");
+                    let huskLogo = helper.discord.emojis.cache.get("764996106819862528");
+                    // @ts-ignore
+                    helper.discord.channels.cache.get('1016735961138335804').send(`${twitchEmoji ? twitchEmoji : ''} Hey @everyone the main man is LIVE!!! click on the link and don't miss out on those amazing moments. ${huskLogo ? huskLogo : ''}`);
+                    // @ts-ignore
+                    helper.discord.channels.cache.get('1016735961138335804').send({
+                      embeds: [{
+                        color: 3447003,
+                        thumbnail: {
+                          url: "https://www.zhekbot.com/images/HusKerrs-logo.png"
+                        },
+                        image: {
+                          url: "https://www.zhekbot.com/images/HusKerrs-logo.png"
+                        },
+                        title: data[0].title,
+                        url: "https://twitch.tv/huskerrs",
+                        timestamp: new Date(),
+                      }]
+                    });
+                  })
+                  .catch(err => {
+                    helper.dumpError(err, "HusK notis.");
+                  })
               }
               break;
 
@@ -4558,7 +4562,7 @@ app.post('/eventsub', async (req, res) => {
               helper.dbQuery(`UPDATE allusers SET online = false::bool WHERE user_id = '${notification.event.broadcaster_user_login.toLowerCase()}';`);
               break;
 
-            default: 
+            default:
               console.log(`Unknown event: ${notification.subscription.type}`);
               break;
           }
@@ -4580,7 +4584,7 @@ app.post('/eventsub', async (req, res) => {
 
           res.setHeader('Content-Type', 'text/html').sendStatus(204);
           console.log(`Unknown message type: ${req.headers[MESSAGE_TYPE]}`);
-          
+
         }
       }
     }
@@ -4623,9 +4627,9 @@ var intervals = [];
 // Start 'er up
 (async () => {
   try {
-    
+
     // Start server.
-    app.listen(process.env.PORT || 6969, function() {
+    app.listen(process.env.PORT || 6969, function () {
       console.log("Server is listening.");
     });
 
@@ -4635,24 +4639,24 @@ var intervals = [];
     let newToken = await refreshToken(rows[0].access_token, rows[0].refresh_token);
     helper.dbQuery(`UPDATE access_tokens SET access_token = '${newToken}' WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
 
-    intervals["tokenRefresh"] = setInterval(function () { refreshToken(rows[0].access_token, rows[0].refresh_token); }, 1000*60*60*3);
+    intervals["tokenRefresh"] = setInterval(function () { refreshToken(rows[0].access_token, rows[0].refresh_token); }, 1000 * 60 * 60 * 3);
 
     // Refresh app access token.
     axios.post('https://id.twitch.tv/oauth2/token', `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&grant_type=client_credentials`, {
       headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/x-www-form-urlencoded'
       }
     }).then(res => {
-        console.log(res.data);
-        helper.dbQuery(`UPDATE access_tokens SET access_token = '${res.data.access_token}' WHERE userid = 'zhekler' AND scope = 'app_access';`);
+      console.log(res.data);
+      helper.dbQuery(`UPDATE access_tokens SET access_token = '${res.data.access_token}' WHERE userid = 'zhekler' AND scope = 'app_access';`);
     }).catch(err => {
-        console.log(err.response);
+      console.log(err.response);
     })
 
     // Populate match cache and initialize userIds map.
     var temp = await helper.dbQueryPromise(`SELECT * FROM allusers;`);
     var users = [];
-    var userdata = []; 
+    var userdata = [];
     for (var i = 0; i < temp.length; i++) {
       userIds[temp[i].user_id] = temp[i];
 
@@ -4660,7 +4664,7 @@ var intervals = [];
         // @ts-ignore
         users.push(temp[i].broadcaster_id);
 
-        if (temp[i].twitch) gcd[temp[i].user_id] = { };
+        if (temp[i].twitch) gcd[temp[i].user_id] = {};
 
         if ((users.length >= 100) || (i + 1 === temp.length)) {
           let tempusers = await getUsers(users.join('&id='));
@@ -4670,35 +4674,35 @@ var intervals = [];
       }
     };
 
-    setInterval(function() { duelExpiration(); }, 5000);
-    
+    setInterval(function () { duelExpiration(); }, 5000);
+
     // Connect to Twitch channels.
     var updateUsers = false;
     await bot.connect()
-    .then(async () => {
-      for (let i = 0; i < userdata.length; i++) {
-        if (!userIds[userdata[i].login] || userIds[userdata[i].login].broadcaster_id !== userdata[i].id) {
-          console.log(`Updating users: ${userdata[i].login} for ${userdata[i].id}`);
-          helper.dbQuery(`UPDATE allusers SET user_id = '${userdata[i].login}', twitch = false WHERE broadcaster_id = '${userdata[i].id}';`);
-          updateUsers = true;
-          continue;
+      .then(async () => {
+        for (let i = 0; i < userdata.length; i++) {
+          if (!userIds[userdata[i].login] || userIds[userdata[i].login].broadcaster_id !== userdata[i].id) {
+            console.log(`Updating users: ${userdata[i].login} for ${userdata[i].id}`);
+            helper.dbQuery(`UPDATE allusers SET user_id = '${userdata[i].login}', twitch = false WHERE broadcaster_id = '${userdata[i].id}';`);
+            updateUsers = true;
+            continue;
+          }
+
+          if (!userIds[userdata[i].login]?.twitch) continue;
+
+          await new Promise(resolve => setTimeout(resolve, 500));
+          await bot.join(userdata[i].login)
+            .then(() => {
+              console.log(`Joined channel: ${userdata[i].login}.`);
+            })
+            .catch((err) => {
+              helper.dumpError(err, `Error joining channel: ${userdata[i].login}.`);
+            });
         }
-
-        if (!userIds[userdata[i].login]?.twitch) continue;
-
-        await new Promise(resolve => setTimeout(resolve, 500));
-        await bot.join(userdata[i].login)
-        .then(() => {
-          console.log(`Joined channel: ${userdata[i].login}.`);
-        })
-        .catch((err) => {
-          helper.dumpError(err, `Error joining channel: ${userdata[i].login}.`);
-        });
-      }
-    })
-    .catch(err => {
-      helper.dumpError(err, "Twitch enable.");
-    });
+      })
+      .catch(err => {
+        helper.dumpError(err, "Twitch enable.");
+      });
 
     if (updateUsers) {
       userIds = [];
@@ -4740,7 +4744,7 @@ var intervals = [];
     //     console.log(`Match intervals: ${err}`);
     //   }
     // }, 300000);
-    
+
   } catch (err) {
 
     // Clear intervals.
