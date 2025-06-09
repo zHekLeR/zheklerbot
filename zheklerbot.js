@@ -1538,21 +1538,6 @@ var defaultBaseURL = "https://my.callofduty.com/api/papi-client/";
 console.log("Created apiAxios.");
 
 
-// Axios for queries to Twitch.
-var symAxios = axios.create({
-  headers: {      
-      // @ts-ignore
-      'Client-ID': client_config.client_id,
-      'Authorization': 'Bearer ' + account_config.access_token,
-      'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-      'content-type': 'application/json',
-      'Connection': 'keep-alive'
-  },
-  withCredentials: true
-});
-console.log("Created symAxios.");
-
-
 // Handle errors from the COD API.
 function apiErrorHandling(error) {
   if (!!error) {
@@ -2620,7 +2605,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
       }
 
       // Set up Twitch Event Subscription to be notified when this channel goes online.
-      await symAxios.get(`https://api.twitch.tv/helix/users?login=${request.params.channel}`,
+      await axios.get(`https://api.twitch.tv/helix/users?login=${request.params.channel}`,
       {
         headers: {
           "Client-Id": "" + process.env.CLIENT_ID,
@@ -2629,7 +2614,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
       }).then(async resp => {
         if (!userIds[request.params.channel].matches && !userIds[request.params.channel].event_sub) {
           if (!userIds[request.params.channel].online_sub_id) setTimeout(function() {
-            symAxios.post('https://api.twitch.tv/helix/eventsub/subscriptions',
+            axios.post('https://api.twitch.tv/helix/eventsub/subscriptions',
             {
               "type": "stream.online", 
               "version": "1", 
@@ -2659,7 +2644,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
 
           // Set up Twitch Event Subscription to be notified when this channel goes offline.
           if (!userIds[request.params.channel].offline_sub_id) setTimeout(function () { 
-            symAxios.post('https://api.twitch.tv/helix/eventsub/subscriptions',
+            axios.post('https://api.twitch.tv/helix/eventsub/subscriptions',
             {
               "type": "stream.offline", 
               "version": "1", 
@@ -2699,7 +2684,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
 
           // Disable Twitch Event Subscription to be notified when this channel goes live.
           if (userIds[request.params.channel].online_sub_id) setTimeout(function() {
-            symAxios.delete(`https://api.twitch.tv/helix/eventsub/subscriptions?id=${userIds[request.params.channel].online_sub_id}`,
+            axios.delete(`https://api.twitch.tv/helix/eventsub/subscriptions?id=${userIds[request.params.channel].online_sub_id}`,
             {
               headers: {
                 "Client-Id": "" + process.env.CLIENT_ID,
@@ -2717,7 +2702,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
 
           // Disable Twitch Event Subscription to be notified when this channel goes offline.
           if (userIds[request.params.channel].online_sub_id) setTimeout(function () { 
-            symAxios.delete(`https://api.twitch.tv/helix/eventsub/subscriptions?id=${userIds[request.params.channel].offline_sub_id}`,
+            axios.delete(`https://api.twitch.tv/helix/eventsub/subscriptions?id=${userIds[request.params.channel].offline_sub_id}`,
             {
               headers: {
                 "Client-Id": "" + process.env.CLIENT_ID,
@@ -4635,65 +4620,6 @@ function verifyMessage(hmac, verifySignature) {
 var intervals = [];
 
 
-// Authenticate with Twitch API.
-async function authenticate() {
-  try {
-    await symAxios.get('https://id.twitch.tv/oauth2/validate')
-    .then(res => {})
-    .catch(err => {
-      helper.dumpError(err, `Twitch Authenticate.`);
-      if (JSON.stringify(err).includes('40')) {
-        regenerate();
-      }
-    })
-  } catch (err) {
-    helper.dumpError(err, `Overall Twitch Auth.`); 
-  }
-}
-
-
-// Regenerate Twitch API token.
-function regenerate() {
-  axios.post('https://id.twitch.tv/oauth2/token',
-    `grant_type=client_credentials&client_id=${client_config.client_id}&client_secret=${client_config.client_secret}`,
-    { 
-      headers: { responseType: 'json' }
-  })
-  .then(resp => {
-    console.log(resp.data);
-    for (var k in resp.data) {
-      account_config[k] = resp.data[k];
-    }
-
-    symAxios.defaults.headers["Authorization"] = "Bearer " + resp.data.access_token;
-    console.log(symAxios.defaults);
-
-    if (intervals["access_token"]) clearInterval(intervals["access_token"]);
-    intervals["access_token"] = setInterval(async function() {
-      await symAxios.get('https://id.twitch.tv/oauth2/validate', 
-      {
-        headers: {
-          "Client-Id": process.env.CLIENT_ID || '',
-          "Authorization": "Bearer " + resp.data.access_token,
-          "Content-Type": "application/x-www-form-urlencoded"
-        }
-      }).then(resp => {
-          if (resp.status && `${resp.status}`.includes('40')) {
-            regenerate();
-          }
-      }).catch(err => {
-          helper.dumpError(err, "Regenerate validate.");
-      });
-    }, 60*60*1000);
-
-    console.log("Access token refreshed.");
-  })
-  .catch(err => {
-    helper.dumpError(err, "Regenerate overall.");
-  });
-}
-
-
 // Start 'er up
 (async () => {
   try {
@@ -4782,12 +4708,9 @@ function regenerate() {
       }
     }
 
-    // Authenticate with Twitch API and set 2 minute interval for BrookeAB's followers.
-    // await authenticate();
-
     // Hourly call to verify access token.
     // intervals["access_token"] = setInterval(function() {
-    //   symAxios.get('https://id.twitch.tv/oauth2/validate', 
+    //   axios.get('https://id.twitch.tv/oauth2/validate', 
     //   {
     //     headers: {
     //       "Client-Id": process.env.CLIENT_ID || '',
