@@ -63,8 +63,9 @@
             })
                 .then(res => {
                     if (res.status === 200) {
-                        var url = res.text();
-                        window.location.href = url;
+                        var url = res.text().then(res => {
+                            window.location.href = url;
+                        });
                     } else if (res.status === 201) {
                         window.location.href = "/";
                     } else {
