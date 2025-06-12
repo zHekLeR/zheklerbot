@@ -1730,7 +1730,7 @@ app.get('/', async (request, response) => {
 
           // Set up the page for a logged in user.
           page = fs.readFileSync('./html/page.html').toString('utf-8');
-          page = page.replace(/#pref_name#/g, rows[1].pref_name);
+          page = page.replace(/#pref_name#/g, userIds[rows[1].userid].pref_name);
           page = page.replace(/#disabled#/g, ``);
           page = page.replace(/#channel#/g, rows[1].userid);
           if (userIds[rows[1].userid].twitch) page = page.replace('var enabled = false', 'var enabled = true');
