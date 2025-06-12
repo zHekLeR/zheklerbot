@@ -166,6 +166,9 @@
                   enabled = !enabled;
 
                   appendAlert('Fetch call in enable() has returned status code: ' + res.status, 'danger');
+               } else {
+                  btnLbl.innerHTML = enabled ? "Enabled" : "Disabled";
+                  btnLbl.className = btnLblClass + (enabled ? " text-success" : " text-danger");
                }
             })
             .catch(err => {
