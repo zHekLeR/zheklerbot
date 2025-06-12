@@ -1730,16 +1730,9 @@ app.get('/', async (request, response) => {
 
           // Set up the page for a logged in user.
           page = fs.readFileSync('./html/page.html').toString('utf-8');
-          page = page.replace(/#modules#/g, `href="/modules/${rows[1].userid}"`);
-          page = page.replace(/#twovtwo#/g, `href="/twovtwo/${rows[1].userid}"`);
-          page = page.replace(/#customs#/g, `href="/customs/${rows[1].userid}"`);
-          page = page.replace(/#editors#/g, `href="/editors/${rows[1].userid}"`);
-          page = page.replace(/#permissions#/g, `href="/permissions/${rows[1].userid}"`);
-          page = page.replace(/#pref_name#/g, userIds[rows[1].userid].pref_name);
+          page = page.replace(/#pref_name#/g, rows[1].pref_name);
+          page = page.replace(/#disabled#/g, ``);
           page = page.replace(/#channel#/g, rows[1].userid);
-          page = page.replace(/#checked#/g, userIds[rows[1].userid].twitch ? 'checked' : '');
-          page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
-          page = page.replace('Login to Twitch', 'Logout of Twitch');
           if (userIds[rows[1].userid].twitch) page = page.replace('var enabled = false', 'var enabled = true');
 
           response.send(page);
@@ -1778,7 +1771,6 @@ app.get('/', async (request, response) => {
 
       // User is not logged in; send page with no user-specific information.
       page = fs.readFileSync('./html/not_enabled.html').toString('utf-8');
-      page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
 
       response.send(page);
     }
@@ -1968,10 +1960,7 @@ app.get('/edit/:channel', async (request, response) => {
           var page = fs.readFileSync('./html/page.html').toString('utf-8');
           page = page.replace(/#pref_name#/g, userIds[request.params.channel.toLowerCase()].pref_name);
           page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
-          page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
-          page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
-          page = page.replace(/#checked#/g, userIds[request.params.channel.toLowerCase()].twitch ? 'checked' : '');
-          page = page.replace(/Login to Twitch/g, 'Logout of Twitch');
+          page = page.replace(/#disabled#/g, 'disabled');
           if (userIds[request.params.channel].twitch) page = page.replace('var enabled = false', 'var enabled = true');
 
           response.send(page);
@@ -2844,18 +2833,10 @@ app.get('/redirect', async (request, response) => {
       }
 
       page = page.replace('Login to Twitch', 'Logout of Twitch');
-      page = page.replace(/#modules#/g, `href="/modules/${rows[1].userid.toLowerCase()}"`);
-      page = page.replace(/#twovtwo#/g, `href="/twovtwo/${rows[1].userid.toLowerCase()}"`);
-      page = page.replace(/#customs#/g, `href="/customs/${rows[1].userid.toLowerCase()}"`);
-      page = page.replace(/#editors#/g, `href="/editors/${rows[1].userid.toLowerCase()}"`);
-      page = page.replace(/#permissions#/g, `href="/permissions/${rows[1].userid.toLowerCase()}"`);
+      page = page.replace(/#disabled#/g, '');
       page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
     } else {
-      page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
-      page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
-      page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
-      page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
-      page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#disabled#/g, 'disabled');
       page = page.replace(/#channel#/g, 'zhekler');
       page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
     }
@@ -3489,17 +3470,6 @@ app.get('/nomoscore', async (request, response) => {
   } catch (err) {
     helper.dumpError(err, "Nomoscore.");
     response.sendStatus(500);
-  }
-});
-
-
-// Wins for c_o_l_e
-app.get('/wins/:user', async (request, response) => {
-  try {
-    var data = await lifetime(encodeURIComponent(request.params.user), 'uno');
-    response.send(`I got ${data.lifetime.mode.br.properties.wins} dubskies!`);
-  } catch (err) {
-    helper.dumpError(err, `Wins web.`);
   }
 });
 
@@ -4189,20 +4159,11 @@ app.get("*", async (req, response) => {
       }
 
       page = page.replace('Login to Twitch', 'Logout of Twitch');
-      page = page.replace(/#modules#/g, `href="/modules/${rows[1].userid.toLowerCase()}"`);
-      page = page.replace(/#twovtwo#/g, `href="/twovtwo/${rows[1].userid.toLowerCase()}"`);
-      page = page.replace(/#customs#/g, `href="/customs/${rows[1].userid.toLowerCase()}"`);
-      page = page.replace(/#editors#/g, `href="/editors/${rows[1].userid.toLowerCase()}"`);
-      page = page.replace(/#permissions#/g, `href="/permissions/${rows[1].userid.toLowerCase()}"`);
+      page = page.replace(/#disabled#/g, '')
       page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
     } else {
-      page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
-      page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
-      page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
-      page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
-      page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#disabled#/g, 'disabled')
       page = page.replace(/#channel#/g, 'zhekler');
-      page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID || '');
     }
     response.send(page);
   } catch (err) {

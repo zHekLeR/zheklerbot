@@ -25,27 +25,94 @@
             <div class="collapse navbar-collapse mx-2" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
                     <a href="/" class="nav-item nav-link active" aria-current="page">Home</a>
-                    <a href="/commands/zhekler" class="nav-item nav-link">Commands</a>
-                    <a href="/modules/#channel#" class="nav-item nav-link disabled">Modules</a>
-                    <a href="/leaderboards/#channel#" class="nav-item nav-link disabled">Leaderboards</a>
-                    <a href="/twovtwo/#channel#" class="nav-item nav-link disabled">Two vs Two</a>
-                    <a href="/editors/#channel#" class="nav-item nav-link disabled">Editors</a>
-                    <a href="/permissions/#channel#" class="nav-item nav-link disabled">Permissions</a>
+                    <a href="/commands/#channel#" class="nav-item nav-link">Commands</a>
+                    <a href="/modules/#channel#" class="nav-item nav-link">Modules</a>
+                    <a href="/leaderboards/#channel#" class="nav-item nav-link">Leaderboards</a>
+                    <a href="/twovtwo/#channel#" class="nav-item nav-link">Two vs Two</a>
+                    <a href="/editors/#channel#" class="nav-item nav-link #disabled#">Editors</a>
+                    <a href="/permissions/#channel#" class="nav-item nav-link #disabled#">Permissions</a>
                 </div>
-                <button type="button" class="btn btn-success ms-auto me-2" id="twitch" onclick="twitch();"><i
-                        class="fa-brands fa-twitch"></i>Login to Twitch</button>
+                <button type="button" class="btn btn-success ms-auto me-2" id="twitch"><i
+                        class="fa-brands fa-twitch"></i>Logout of Twitch</button>
             </div>
         </nav>
     </header>
     <main>
-        <div class="container pt-2">
-            It looks like you haven't logged in through Twitch. You can do this with the button in the top right of the
-            screen.
-            That button will take you to the Twitch site to log in; you can note that this does not give the bot any
-            permissions to your channel, it's just to prove that the channel is yours and associate your web browser
-            with it.
-            If you would like to view the available commands, click the “Commands” tab in the top left (or on mobile,
-            click the hamburger in the top right, then click “Commands”).
+        <div class="container pt-3">
+            <div id="liveAlertPlaceholder"></div>
+            <h2 class="text-center">zHekBot</h2>
+            <div class="form-switch form-switch-lg text-center">
+                <input type="checkbox" class="form-check-input border-3" role="switch" id="enableBot">
+                <label class="form-check-label" for="enableBot" id="enableLabel">Disabled</label>
+            </div>
+        </div>
+        <div class="container pt-3 pt-md-5 pb-5">
+            <div class="row">
+                <div class="col-12">
+                    zHekBot started as a bot for tracking stats in Call of Duty Warzone. However, the API for
+                    Warzone is no longer public, so zHekBot has switched to be primarily a chatbot that provides a
+                    couple of games (with user statistics). The games are based around the loser being timed out, so it
+                    works best if "zHekLeR" is a mod in the channel.
+                </div>
+            </div>
+            <div class="row py-4">
+                <div class="col-12">
+                    Here is a brief explanation of each tab above.
+                </div>
+                <div class="col-3 col-md-2 fw-bold pt-2">
+                    Home
+                </div>
+                <div class="col-9 col-md-10 pt-2">
+                    This page.
+                </div>
+                <div class="col-3 col-md-2 fw-bold pt-2">
+                    Commands
+                </div>
+                <div class="col-9 col-md-10 pt-2">
+                    A list of the commands available for each module and a description of what they do.
+                </div>
+                <div class="col-3 col-md-2 fw-bold pt-2">
+                    Leaderboards
+                </div>
+                <div class="col-9 col-md-7 pt-2">
+                    The best (or worst) scores for each chat game in a channel. If you think of other statistics, let me
+                    know and I would be happy to implement them. You can also search for another user's leaderboard
+                    here.
+                </div>
+                <div class="col-0 col-md-2"></div>
+                <div class="col-3 col-md-2 fw-bold pt-2">
+                    Two vs Two
+                </div>
+                <div class="col-9 col-md-7 pt-2">
+                    A mechanism to keep track of scores in a two-vs-two Warzone tourney. This is not automatic; it is
+                    intended to make scorekeeping easier. So, you must have the streams open on your own screen, then
+                    you can + or - the scores and send them to chat.
+                </div>
+                <div class="col-0 col-md-2"></div>
+                <div class="col-3 col-md-2 fw-bold pt-2">
+                    Editors
+                </div>
+                <div class="col-9 col-md-10  pt-2">
+                    Add or remove people that can adjust your module settings and use the two-vs-two scorekeeping
+                    module.
+                </div>
+                <div class="col-3 col-md-2 fw-bold pt-2">
+                    Permissions
+                </div>
+                <div class="col-9 col-md-10 pt-2">
+                    See whose channels you are an editor for and go to their pages.
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    If you have any questions on the bot,
+                    recommendations, or issues, the easiest place to reach me is on <a
+                        href="https://discord.com/users/364876603097874433">Discord</a> or <a
+                        href="https://www.twitch.tv/zhekler">Twitch</a>. I have a <a
+                        href="https://x.com/zHekLeR_">Twitter (or X)</a>, too, but I don't use it as much, so a reply
+                    there may take a bit longer.
+                </div>
+            </div>
         </div>
     </main>
 
@@ -53,29 +120,85 @@
         integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
         crossorigin="anonymous"></script>
     <script>
+        const twitchBtn = document.getElementById("twitch");
+        if (twitchBtn) twitchBtn.addEventListener('click', () => { twitch(); });
+
+        const btn = document.getElementById("enableBot"), btnLbl = document.getElementById("enableLabel");
+        if (btn) btn.addEventListener('click', () => { enable(); });
+
+        var enabled = false, btnLblClass = btnLbl.className;
+        if (enabled) {
+            btn.setAttribute("checked", "");
+            btnLbl.innerHTML = "Enabled";
+            btnLbl.className = btnLblClass + " text-success";
+        } else {
+            btnLbl.className = btnLblClass + " text-danger";
+        }
+
+        const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
+        const appendAlert = (message, type) => {
+            const wrapper = document.createElement('div')
+            wrapper.innerHTML = [
+                `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+                `   <div>${message}</div>`,
+                '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+                '</div>'
+            ].join('')
+
+            alertPlaceholder.append(wrapper)
+        }
+
+        async function enable() {
+            enabled = !enabled;
+            btn.setAttribute("disabled", "");
+            setTimeout(function () { btn.removeAttribute("disabled"); }, 2000);
+
+            await fetch('/enable/#channel#')
+                .then(res => {
+                    if (res.status !== 200) {
+                        if (enabled) {
+                            btn.checked = false;
+                        } else {
+                            btn.checked = true;
+                        }
+                        btnLbl.innerHTML = enabled ? "Disabled" : "Enabled";
+                        btnLbl.className = btnLblClass + (enabled ? " text-danger" : " text-success");
+                        enabled = !enabled;
+
+                        appendAlert('Fetch call in enable() has returned status code: ' + res.status, 'danger');
+                    }
+                })
+                .catch(err => {
+                    if (enabled) {
+                        btn.checked = false;
+                    } else {
+                        btn.checked = true;
+                    }
+                    btnLbl.innerHTML = enabled ? "Disabled" : "Enabled";
+                    btnLbl.className = btnLblClass + (enabled ? " text-danger" : " text-success");
+                    enabled = !enabled;
+
+                    appendAlert('Fetch call in enable() has failed due to: ' + err, 'danger');
+                });
+        }
+
         async function twitch() {
-            var state = makeid(20);
             await fetch(`/login`, {
                 method: "GET",
-                headers: {
-                    "state": state
-                }
             })
                 .then(res => {
                     if (res.status === 200) {
                         res.text().then(res => {
-                            console.log(res);
                             window.location.href = res;
                         });
                     } else if (res.status === 201) {
                         window.location.href = "/";
                     } else {
-                        throw new Error("Unknown status code on /login: " + res.status);
+                        appendAlert('Fetch call in twitch() has returned status code: ' + res.status, 'danger');
                     }
                 })
                 .catch(err => {
-                    console.log(err);
-                    alert(err);
+                    appendAlert('Fetch call in twitch() has failed due to: ' + err, 'danger');
                 });
         };
 

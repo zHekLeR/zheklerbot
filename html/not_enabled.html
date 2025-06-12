@@ -32,12 +32,13 @@
                <a href="#" class="nav-item nav-link disabled">Editors</a>
                <a href="#" class="nav-item nav-link disabled">Permissions</a>
             </div>
-            <button type="button" class="btn btn-success ms-auto me-2" id="twitch" onclick="twitch();"><i
+            <button type="button" class="btn btn-success ms-auto me-2" id="twitch"><i
                   class="fa-brands fa-twitch"></i>Login to Twitch</button>
          </div>
       </nav>
    </header>
    <main>
+      <div id="liveAlertPlaceholder"></div>
       <div class="container pt-2">
          It looks like you haven't logged in through Twitch. You can do this with the button in the top right of the
          screen.
@@ -53,6 +54,22 @@
       integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
       crossorigin="anonymous"></script>
    <script>
+      const twitchBtn = document.getElementById("twitch");
+      if (twitchBtn) twitchBtn.addEventListener('click', () => { twitch(); });
+
+      const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
+      const appendAlert = (message, type) => {
+         const wrapper = document.createElement('div')
+         wrapper.innerHTML = [
+            `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+            `   <div>${message}</div>`,
+            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+            '</div>'
+         ].join('')
+
+         alertPlaceholder.append(wrapper)
+      }
+
       async function twitch() {
          var state = makeid(20);
          await fetch(`/login`, {
@@ -70,12 +87,11 @@
                } else if (res.status === 201) {
                   window.location.href = "/";
                } else {
-                  throw new Error("Unknown status code on /login: " + res.status);
+                  appendAlert('Fetch call in twitch() has returned status code: ' + res.status, 'danger');
                }
             })
             .catch(err => {
-               console.log(err);
-               alert(err);
+               appendAlert('Fetch call in twitch() has failed due to: ' + err, 'danger');
             });
       };
 

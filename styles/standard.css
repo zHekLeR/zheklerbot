@@ -5,3 +5,13 @@
 #twitch:hover {
     background-color: #9C67EB;
 }
+
+.form-switch-lg .form-check-input {
+    width: 3em;
+    height: 1.5em;
+}
+
+.form-switch-lg .form-check-label {
+    font-size: 1.25rem;
+    margin-left: 0.5rem;
+}
