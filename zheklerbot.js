@@ -2008,42 +2008,42 @@ app.get('/commands/:channel', async (request, response) => {
         page = page.replace(/#duels#/g, 'Disabled');
         page = page.replace(/#duelEnabled#/g, 'text-danger');
       }
-      if (userIds[request.params.channel.toLowerCase()].duel) {
+      if (userIds[request.params.channel.toLowerCase()].revolverroulette) {
         page = page.replace(/#rr#/g, 'Enabled');
         page = page.replace(/#rrEnabled#/g, 'text-success');
       } else {
         page = page.replace(/#rr#/g, 'Disabled');
         page = page.replace(/#rrEnabled#/g, 'text-danger');
       }
-      if (userIds[request.params.channel.toLowerCase()].duel) {
+      if (userIds[request.params.channel.toLowerCase()].rps) {
         page = page.replace(/#rps#/g, 'Enabled');
         page = page.replace(/#rpsEnabled#/g, 'text-success');
       } else {
         page = page.replace(/#rps#/g, 'Disabled');
         page = page.replace(/#rpsEnabled#/g, 'text-danger');
       }
-      if (userIds[request.params.channel.toLowerCase()].duel) {
+      if (userIds[request.params.channel.toLowerCase()].coinflip) {
         page = page.replace(/#coin#/g, 'Enabled');
         page = page.replace(/#coinEnabled#/g, 'text-success');
       } else {
         page = page.replace(/#coin#/g, 'Disabled');
         page = page.replace(/#coinEnabled#/g, 'text-danger');
       }
-      if (userIds[request.params.channel.toLowerCase()].duel) {
+      if (userIds[request.params.channel.toLowerCase()].bigvanish) {
         page = page.replace(/#bigvanish#/g, 'Enabled');
         page = page.replace(/#bigvanishEnabled#/g, 'text-success');
       } else {
         page = page.replace(/#bigvanish#/g, 'Disabled');
         page = page.replace(/#bigvanishEnabled#/g, 'text-danger');
       }
-      if (userIds[request.params.channel.toLowerCase()].duel) {
+      if (userIds[request.params.channel.toLowerCase()].two_v_two) {
         page = page.replace(/#twovtwo#/g, 'Enabled');
         page = page.replace(/#twovtwoEnabled#/g, 'text-success');
       } else {
         page = page.replace(/#twovtwo#/g, 'Disabled');
         page = page.replace(/#twovtwoEnabled#/g, 'text-danger');
       }
-      if (userIds[request.params.channel.toLowerCase()].duel) {
+      if (userIds[request.params.channel.toLowerCase()].customs) {
         page = page.replace(/#customs#/g, 'Enabled');
         page = page.replace(/#customsEnabled#/g, 'text-success');
       } else {
