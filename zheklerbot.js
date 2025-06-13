@@ -737,6 +737,7 @@ bot.on('chat', async (channel, tags, message) => {
 
       // Enable customs scoring.
       case '!customon':
+      case '!customson':
         if (userIds[channel.substring(1)].customs || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;
         if (channel.substring(1) === 'huskerrs') {
           say(channel, '!disable !score', bot);
@@ -754,6 +755,7 @@ bot.on('chat', async (channel, tags, message) => {
 
       // Disable customs scoring.
       case '!customoff':
+      case '!customsoff':
         if (!userIds[channel.substring(1)].customs || (!tags["mod"] && tags['username'] !== channel.substring(1))) break;;
         if (channel.substring(1) === 'huskerrs') {
           say(channel, '!enable !score', bot);
@@ -1997,18 +1999,57 @@ app.get('/commands/:channel', async (request, response) => {
 
       // They is. Set up page.
       page = fs.readFileSync("./html/commands.html").toString('utf-8');
-      page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
-
-      page = page.replace("var tabsEnabled = {}", `var tabsEnabled = {
-        'Warzone Stats / Matches': ${userIds[request.params.channel.toLowerCase()].matches},
-        'Revolver Roulette': ${userIds[request.params.channel.toLowerCase()].revolverroulette},
-        'Coinflip': ${userIds[request.params.channel.toLowerCase()].coinflip},
-        'Rock Paper Scissors': ${userIds[request.params.channel.toLowerCase()].rps},
-        'Big Vanish': ${userIds[request.params.channel.toLowerCase()].bigvanish},
-        'Custom Tourney': ${userIds[request.params.channel.toLowerCase()].customs},
-        'Two vs Two': ${userIds[request.params.channel.toLowerCase()]["two_v_two"]},
-        'Duel': ${userIds[request.params.channel.toLowerCase()].duel}
-      }`);
+      page = page.replace(/#pref_name#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
+      page = page.replace(/#channel#/g, `${request.params.channel.toLowerCase()}`);
+      if (userIds[request.params.channel.toLowerCase()].duel) {
+        page = page.replace(/#duels#/g, 'Enabled');
+        page = page.replace(/#duelEnabled#/g, 'text-success');
+      } else {
+        page = page.replace(/#duels#/g, 'Disabled');
+        page = page.replace(/#duelEnabled#/g, 'text-danger');
+      }
+      if (userIds[request.params.channel.toLowerCase()].duel) {
+        page = page.replace(/#rr#/g, 'Enabled');
+        page = page.replace(/#rrEnabled#/g, 'text-success');
+      } else {
+        page = page.replace(/#rr#/g, 'Disabled');
+        page = page.replace(/#rrEnabled#/g, 'text-danger');
+      }
+      if (userIds[request.params.channel.toLowerCase()].duel) {
+        page = page.replace(/#rps#/g, 'Enabled');
+        page = page.replace(/#rpsEnabled#/g, 'text-success');
+      } else {
+        page = page.replace(/#rps#/g, 'Disabled');
+        page = page.replace(/#rpsEnabled#/g, 'text-danger');
+      }
+      if (userIds[request.params.channel.toLowerCase()].duel) {
+        page = page.replace(/#coin#/g, 'Enabled');
+        page = page.replace(/#coinEnabled#/g, 'text-success');
+      } else {
+        page = page.replace(/#coin#/g, 'Disabled');
+        page = page.replace(/#coinEnabled#/g, 'text-danger');
+      }
+      if (userIds[request.params.channel.toLowerCase()].duel) {
+        page = page.replace(/#bigvanish#/g, 'Enabled');
+        page = page.replace(/#bigvanishEnabled#/g, 'text-success');
+      } else {
+        page = page.replace(/#bigvanish#/g, 'Disabled');
+        page = page.replace(/#bigvanishEnabled#/g, 'text-danger');
+      }
+      if (userIds[request.params.channel.toLowerCase()].duel) {
+        page = page.replace(/#twovtwo#/g, 'Enabled');
+        page = page.replace(/#twovtwoEnabled#/g, 'text-success');
+      } else {
+        page = page.replace(/#twovtwo#/g, 'Disabled');
+        page = page.replace(/#twovtwoEnabled#/g, 'text-danger');
+      }
+      if (userIds[request.params.channel.toLowerCase()].duel) {
+        page = page.replace(/#customs#/g, 'Enabled');
+        page = page.replace(/#customsEnabled#/g, 'text-success');
+      } else {
+        page = page.replace(/#customs#/g, 'Disabled');
+        page = page.replace(/#customsEnabled#/g, 'text-danger');
+      }
 
       // Check what permissions this user has and continue setting up the page.
       var cookies = await request.cookies;
@@ -2019,38 +2060,23 @@ app.get('/commands/:channel', async (request, response) => {
 
         try {
           if (bearer[0] && ((bearer[1].userid === request.params.channel.toLowerCase()) || (bearer[1].perms & (bearer[1].perms === request.params.channel.toLowerCase() || bearer[1].perms?.split(',') ? bearer[1].perms.split(',').includes(request.params.channel) : false)))) {
-            page = page.replace(/#modules#/g, `href="/modules/${request.params.channel.toLowerCase()}"`);
-            page = page.replace(/#twovtwo#/g, `href="/twovtwo/${request.params.channel.toLowerCase()}"`);
-            page = page.replace(/#customs#/g, `href="/customs/${request.params.channel.toLowerCase()}"`);
+            page = page.replace(/#disabled#/g, '');
           } else {
-            page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
-            page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
-            page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
+            page = page.replace(/#disabled#/g, 'disabled');
           }
         } catch (err) {
           helper.dumpError(err, "Bearer thing: " + bearer);
-          page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
-          page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
-          page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
+          page = page.replace(/#disabled#/g, 'disabled');
         }
-
-        page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
 
         if (bearer[0] && bearer[1].userid === request.params.channel) {
-          page = page.replace(/#editors#/g, `href="/editors/${request.params.channel}"`);
-          page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel}"`);
+          page = page.replace(/#ownerdisabled#/g, '');
         } else {
-          page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
-          page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
+          page = page.replace(/#ownerdisabled#/g, 'disabled');
         }
       } else {
-        page = page.replace(/#modules#/g, 'style="color: grey; pointer-events: none;"');
-        page = page.replace(/#twovtwo#/g, 'style="color: grey; pointer-events: none;"');
-        page = page.replace(/#customs#/g, 'style="color: grey; pointer-events: none;"');
-        page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
-        page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
-        page = page.replace(/#channel#/g, 'zhekler');
-        page = page.replace(/#CLIENT_ID#/g, process.env.CLIENT_ID + '');
+        page = page.replace(/#disabled#/g, 'disabled');
+        page = page.replace(/#ownerdisabled#/g, 'disabled');
       }
 
       response.send(page);

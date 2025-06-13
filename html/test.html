@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>zHekBot - Home</title>
+    <title>Commands - zHekBot</title>
     <script src="https://kit.fontawesome.com/439a9315b4.js" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
@@ -24,93 +24,635 @@
             </button>
             <div class="collapse navbar-collapse mx-2" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
-                    <a href="/" class="nav-item nav-link active" aria-current="page">Home</a>
-                    <a href="/commands/#channel#" class="nav-item nav-link">Commands</a>
-                    <a href="/modules/#channel#" class="nav-item nav-link">Modules</a>
-                    <a href="/leaderboards/#channel#" class="nav-item nav-link">Leaderboards</a>
-                    <a href="/twovtwo/#channel#" class="nav-item nav-link">Two vs Two</a>
-                    <a href="/editors/#channel#" class="nav-item nav-link #disabled#">Editors</a>
-                    <a href="/permissions/#channel#" class="nav-item nav-link #disabled#">Permissions</a>
+                    <a href="/" class="nav-item nav-link">Home</a>
+                    <a href="/commands/#channel#" class="nav-item nav-link active" aria-current="page">Commands</a>
+                    <a href="/modules/#channel#" class="nav-item nav-link #disabled#">Modules</a>
+                    <a href="/leaderboards/#channel#" class="nav-item nav-link #disabled#">Leaderboards</a>
+                    <a href="/twovtwo/#channel#" class="nav-item nav-link #disabled#">Two vs Two</a>
+                    <a href="/editors/#channel#" class="nav-item nav-link #ownerdisabled#">Editors</a>
+                    <a href="/permissions/#channel#" class="nav-item nav-link #ownerdisabled#">Permissions</a>
                 </div>
                 <button type="button" class="btn btn-success ms-auto me-2" id="twitch"><i
-                        class="fa-brands fa-twitch"></i>Logout of Twitch</button>
+                        class="fa-brands fa-twitch"></i>Login to Twitch</button>
             </div>
         </nav>
     </header>
     <main>
         <div class="container pt-3">
             <div id="liveAlertPlaceholder"></div>
-            <h2 class="text-center">zHekBot</h2>
-            <div class="form-switch form-switch-lg text-center">
-                <input type="checkbox" class="form-check-input border-3" role="switch" id="enableBot">
-                <label class="form-check-label" for="enableBot" id="enableLabel">Disabled</label>
-            </div>
-        </div>
-        <div class="container pt-3 pt-md-5 pb-5">
-            <div class="row">
-                <div class="col-12">
-                    zHekBot started as a bot for tracking stats in Call of Duty Warzone. However, the API for
-                    Warzone is no longer public, so zHekBot has switched to be primarily a chatbot that provides a
-                    couple of games (with user statistics). The games are based around the loser being timed out, so it
-                    works best if "zHekLeR" is a mod in the channel.
+            <h1 class="text-center pb-5">#pref_name#'s Commands</h1>
+            <div class="row align-items-center">
+                <div class="col-0 col-sm-1"></div>
+                <div class="col-6 col-sm-5 col-md-6 fs-4 fw-bold mb-2">
+                    Duels
                 </div>
-            </div>
-            <div class="row py-4">
-                <div class="col-12">
-                    Here is a brief explanation of each tab above.
+                <div class="col-3 col-md-2 fs-5 mb-2 text-end #duelEnabled#">
+                    #duels#
                 </div>
-                <div class="col-3 col-md-2 fw-bold pt-2">
-                    Home
+                <div class="col-3 col-md-3 mb-2">
+                    <button class="btn btn-success align-self-top" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#duelsCollapse" aria-expanded="false" aria-controls="duelsCollapse">
+                        Expand
+                    </button>
                 </div>
-                <div class="col-9 col-md-10 pt-2">
-                    This page.
+                <div class="container col-12 collapse mb-2" id="duelsCollapse">
+                    <div class="card card-body my-2">
+                        <div class="row py-1">
+                            <div class="col-4 col-md-3 fw-semibold">
+                                Command
+                            </div>
+                            <div class="col-8 col-md-9 fw-semibold">
+                                Description
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !duel [username]
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Challenge another user to a 50/50 duel. The loser will be timed out for 1 minute.<br>
+                                This has a 2 minute window for the other player to accept or deny.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !accept
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Accept another player's challenge.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !coward
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Reject another player's challenge.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !cancel
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Cancel your challenge to another user.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !duelscore
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Displays your wins, losses, and streaks.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !duelscoreother [username]
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Display another user's wins, losses, and streaks.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !duellb
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Displays the 3 users with the most wins.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !duellbratio
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Displays the 3 users with the best win / loss ratio.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !duellbratiolow
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Displays the 3 users with the worst win / loss ratio.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !duellbratiostreak
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Displays the user with the current longest streak and the user with the all-time longest
+                                streak.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !duelon
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Enable Duels.<br>
+                                <span class="fst-italic">*Moderator Only*</span>
+                            </div>
+                        </div>
+                        <div class="row py-1">
+                            <div class="col-4 col-md-3">
+                                !dueloff
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Disable Duels.<br>
+                                <span class="fst-italic">*Moderator Only*</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-3 col-md-2 fw-bold pt-2">
-                    Commands
+
+                <div class="col-0 col-sm-1"></div>
+                <div class="col-6 col-sm-5 col-md-6 fs-4 fw-bold mb-2">
+                    Revolver Roulette
                 </div>
-                <div class="col-9 col-md-10 pt-2">
-                    A list of the commands available for each module and a description of what they do.
+                <div class="col-3 col-md-2 fs-5 mb-2 text-end #rrEnabled#">
+                    #rr#
                 </div>
-                <div class="col-3 col-md-2 fw-bold pt-2">
-                    Leaderboards
+                <div class="col-3 col-md-3 mb-2">
+                    <button class="btn btn-success align-self-top" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#rrCollapse" aria-expanded="false" aria-controls="revolverRouletteCollapse">
+                        Expand
+                    </button>
                 </div>
-                <div class="col-9 col-md-7 pt-2">
-                    The best (or worst) scores for each chat game in a channel. If you think of other statistics, let me
-                    know and I would be happy to implement them. You can also search for another user's leaderboard
-                    here.
+                <div class="container col-12 collapse mb-2" id="rrCollapse">
+                    <div class="card card-body my-2">
+                        <div class="row py-1">
+                            <div class="col-4 col-md-3 fw-semibold">
+                                Command
+                            </div>
+                            <div class="col-8 col-md-9 fw-semibold">
+                                Description
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !rr
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Play a round of Revolver Roulette. You have 2/3 chance to survive and 1/3 chance to be
+                                timed out for 5 minutes.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !rrscore
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Check your score in Revolver Roulette.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !rrscoreother [username]
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Check someone else's score in Revolver Roulette.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !rrlb
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Shows the 3 users with the most survivals in Revolver Roulette.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !rrlbdie
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Shows the 3 users with the most deaths in Revolver Roulette.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !rrlbratio
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Shows the 3 users with the best win / loss ratio in Revolver Roulette.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !rrlbratiolow
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Shows the 3 users with the worst win / loss ratio in Revolver Roulette.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !rrtotals
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Show the total survivals and deaths for all users in Revolver Roulette.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !rron
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Enable Revolver Roulette.<br>
+                                <span class="fst-italic">*Moderator Only*</span>
+                            </div>
+                        </div>
+                        <div class="row py-1">
+                            <div class="col-4 col-md-3">
+                                !rroff
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Disable Revolver Roulette.<br>
+                                <span class="fst-italic">*Moderator Only*</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-0 col-md-2"></div>
-                <div class="col-3 col-md-2 fw-bold pt-2">
+
+                <div class="col-0 col-sm-1"></div>
+                <div class="col-6 col-sm-5 col-md-6 fs-4 fw-bold mb-2">
+                    Rock Paper Scissors
+                </div>
+                <div class="col-3 col-md-2 fs-5 mb-2 text-end #rpsEnabled#">
+                    #rps#
+                </div>
+                <div class="col-3 col-md-3 mb-2">
+                    <button class="btn btn-success align-self-top" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#rpsCollapse" aria-expanded="false" aria-controls="rockPaperScissorsCollapse">
+                        Expand
+                    </button>
+                </div>
+                <div class="container col-12 collapse mb-2" id="rpsCollapse">
+                    <div class="card card-body my-2">
+                        <div class="row py-1">
+                            <div class="col-4 col-md-3 fw-semibold">
+                                Command
+                            </div>
+                            <div class="col-8 col-md-9 fw-semibold">
+                                Description
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !rps [rock / paper / scissors]
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Play Rock Paper Scissors with the bot. If you lose, you will be timed out for 1 minute.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !rpsscore
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Check your score in Rock Paper Scissors.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !rpslb
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Show the user with the most wins and the user with the most losses.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !rpson
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Enable Rock Paper Scissors.<br>
+                                <span class="fst-italic">*Moderator Only*</span>
+                            </div>
+                        </div>
+                        <div class="row py-1">
+                            <div class="col-4 col-md-3">
+                                !rpsoff
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Disable Rock Paper Scissors.<br>
+                                <span class="fst-italic">*Moderator Only*</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-0 col-sm-1"></div>
+                <div class="col-6 col-sm-5 col-md-6 fs-4 fw-bold mb-2">
+                    Coinflip
+                </div>
+                <div class="col-3 col-md-2 fs-5 mb-2 text-end #coinEnabled#">
+                    #coin#
+                </div>
+                <div class="col-3 col-md-3 mb-2">
+                    <button class="btn btn-success align-self-top" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#coinCollapse" aria-expanded="false" aria-controls="coinflipCollapse">
+                        Expand
+                    </button>
+                </div>
+                <div class="container col-12 collapse mb-2" id="coinCollapse">
+                    <div class="card card-body my-2">
+                        <div class="row py-1">
+                            <div class="col-4 col-md-3 fw-semibold">
+                                Command
+                            </div>
+                            <div class="col-8 col-md-9 fw-semibold">
+                                Description
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !coin [heads / tails]
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Guess what side the coin is on. If you lose, you will be timed out for 1 minute.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !coinscore
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Check your score in Coinflip.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !coinlb
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Show the user with the most wins and the user with the most losses.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !coinon
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Enable Coinflip.<br>
+                                <span class="fst-italic">*Moderator Only*</span>
+                            </div>
+                        </div>
+                        <div class="row py-1">
+                            <div class="col-4 col-md-3">
+                                !coinoff
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Disable Coinflip.<br>
+                                <span class="fst-italic">*Moderator Only*</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-0 col-sm-1"></div>
+                <div class="col-6 col-sm-5 col-md-6 fs-4 fw-bold mb-2">
+                    Big Vanish
+                </div>
+                <div class="col-3 col-md-2 fs-5 mb-2 text-end #bigvanishEnabled#">
+                    #bigvanish#
+                </div>
+                <div class="col-3 col-md-3 mb-2">
+                    <button class="btn btn-success align-self-top" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#bigvanishCollapse" aria-expanded="false" aria-controls="bigVanishCollapse">
+                        Expand
+                    </button>
+                </div>
+                <div class="container col-12 collapse mb-2" id="bigvanishCollapse">
+                    <div class="card card-body my-2">
+                        <div class="row py-1">
+                            <div class="col-4 col-md-3 fw-semibold">
+                                Command
+                            </div>
+                            <div class="col-8 col-md-9 fw-semibold">
+                                Description
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !bigvanish
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Get randomly timed out between 100 and 1,000,000 seconds.
+                                The timeout will automatically be removed in 3 seconds.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !bigvanishlb
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Show the 3 users with the highest timeouts from Big Vanish.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !bigvanishlblow
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Show the 3 users with the lowest timeouts from Big Vanish.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !bigvanishon
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Enable Big Vanish.<br>
+                                <span class="fst-italic">*Moderator Only*</span>
+                            </div>
+                        </div>
+                        <div class="row py-1">
+                            <div class="col-4 col-md-3">
+                                !bigvanishoff
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Disable Big Vanish.<br>
+                                <span class="fst-italic">*Moderator Only*</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-0 col-sm-1"></div>
+                <div class="col-6 col-sm-5 col-md-6 fs-4 fw-bold mb-2">
                     Two vs Two
                 </div>
-                <div class="col-9 col-md-7 pt-2">
-                    A mechanism to keep track of scores in a two-vs-two Warzone tourney. This is not automatic; it is
-                    intended to make scorekeeping easier. So, you must have the streams open on your own screen, then
-                    you can + or - the scores and send them to chat.
+                <div class="col-3 col-md-2 fs-5 mb-2 text-end #twovtwoEnabled#">
+                    #twovtwo#
                 </div>
-                <div class="col-0 col-md-2"></div>
-                <div class="col-3 col-md-2 fw-bold pt-2">
-                    Editors
+                <div class="col-3 col-md-3 mb-2">
+                    <button class="btn btn-success align-self-top" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#twovtwoCollapse" aria-expanded="false" aria-controls="twovtwoCollapse">
+                        Expand
+                    </button>
                 </div>
-                <div class="col-9 col-md-10  pt-2">
-                    Add or remove people that can adjust your module settings and use the two-vs-two scorekeeping
-                    module.
+                <div class="container col-12 collapse mb-2" id="twovtwoCollapse">
+                    <div class="card card-body my-2">
+                        <div class="row py-1">
+                            <div class="col-4 col-md-3 fw-semibold">
+                                Command
+                            </div>
+                            <div class="col-8 col-md-9 fw-semibold">
+                                Description
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !score
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Displays the team scores in chat in the following format: 8 - 2 | Up 6<br>
+                                This is automatically sent to chat every 30 seconds if two vs twos are enabled and not
+                                currently paused
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !2v2on
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Enable Two vs Two scoring.<br>
+                                <span class="fst-italic">*Moderator Only*</span>
+                            </div>
+                        </div>
+                        <div class="row py-1">
+                            <div class="col-4 col-md-3">
+                                !2v2off
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Disable Two vs Two scoring.<br>
+                                <span class="fst-italic">*Moderator Only*</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-3 col-md-2 fw-bold pt-2">
-                    Permissions
+
+                <div class="col-0 col-sm-1"></div>
+                <div class="col-6 col-sm-5 col-md-6 fs-4 fw-bold mb-2">
+                    Custom Tourney
                 </div>
-                <div class="col-9 col-md-10 pt-2">
-                    See whose channels you are an editor for and go to their pages.
+                <div class="col-3 col-md-2 fs-5 mb-2 text-end #customsEnabled#">
+                    #customs#
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-12">
-                    If you have any questions on the bot,
-                    recommendations, or issues, the easiest place to reach me is on <a
-                        href="https://discord.com/users/364876603097874433">Discord</a> or <a
-                        href="https://www.twitch.tv/zhekler">Twitch</a>. I have a <a
-                        href="https://x.com/zHekLeR_">Twitter (or X)</a>, too, but I don't use it as much, so a reply
-                    there may take a bit longer.
+                <div class="col-3 col-md-3 mb-2">
+                    <button class="btn btn-success align-self-top" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#customsCollapse" aria-expanded="false" aria-controls="customsCollapse">
+                        Expand
+                    </button>
+                </div>
+                <div class="container col-12 collapse mb-2" id="customsCollapse">
+                    <div class="card card-body my-2">
+                        <div class="row py-1">
+                            <div class="col-4 col-md-3 fw-semibold">
+                                Command
+                            </div>
+                            <div class="col-8 col-md-9 fw-semibold">
+                                Description
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !score
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Calculates the current score and formats it nicely to chat.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !mc
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Displays the map count to chat. This is incremented automatically as each map is added.
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !setmaps [ # ]
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Sets the number of maps played in the tourney.<br>
+                                <span class="fst-italic">*Moderator Only*</span>
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !bestof [ # ]
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Sets the number of maps which count towards score (defaults to map count).<br>
+                                <span class="fst-italic">*Moderator Only*</span>
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !setplacement [placement string]
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Sets the placement multipliers. Example:<br>
+                                For these placement multipliers: 1st: 2x | 2nd-8th: 1.5x | 9th+: 1x<br>
+                                The format would be !setplacement 1 2 2 1.5 9 1<br>
+                                <span class="fst-italic">*Moderator Only*</span>
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !addmap [placement] [kills]
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Add a map placement. The placement and kills will be saved and used later to calculate
+                                the score.<br>
+                                If the placement string is not correct when you add a map, just use !setplacement again.
+                                The original placement and kills and stored.<br>
+                                <span class="fst-italic">*Moderator Only*</span>
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !removemap
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Remove the last added map.<br>
+                                <span class="fst-italic">*Moderator Only*</span>
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !removemap
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Clear all of the maps.<br>
+                                <span class="fst-italic">*Moderator Only*</span>
+                            </div>
+                        </div>
+                        <div class="row py-1 border-bottom">
+                            <div class="col-4 col-md-3">
+                                !customson
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Enable Custom Tourney scoring.<br>
+                                <span class="fst-italic">*Moderator Only*</span>
+                            </div>
+                        </div>
+                        <div class="row py-1">
+                            <div class="col-4 col-md-3">
+                                !customsoff
+                            </div>
+                            <div class="col-8 col-md-9">
+                                Disable Custom Tourney scoring.<br>
+                                <span class="fst-italic">*Moderator Only*</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -123,18 +665,6 @@
         const twitchBtn = document.getElementById("twitch");
         if (twitchBtn) twitchBtn.addEventListener('click', () => { twitch(); });
 
-        const btn = document.getElementById("enableBot"), btnLbl = document.getElementById("enableLabel");
-        if (btn) btn.addEventListener('click', () => { enable(); });
-
-        var enabled = false, btnLblClass = btnLbl.className;
-        if (enabled) {
-            btn.setAttribute("checked", "");
-            btnLbl.innerHTML = "Enabled";
-            btnLbl.className = btnLblClass + " text-success";
-        } else {
-            btnLbl.className = btnLblClass + " text-danger";
-        }
-
         const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
         const appendAlert = (message, type) => {
             const wrapper = document.createElement('div')
@@ -146,40 +676,6 @@
             ].join('')
 
             alertPlaceholder.append(wrapper)
-        }
-
-        async function enable() {
-            enabled = !enabled;
-            btn.setAttribute("disabled", "");
-            setTimeout(function () { btn.removeAttribute("disabled"); }, 2000);
-
-            await fetch('/enable/#channel#')
-                .then(res => {
-                    if (res.status !== 200) {
-                        if (enabled) {
-                            btn.checked = false;
-                        } else {
-                            btn.checked = true;
-                        }
-                        btnLbl.innerHTML = enabled ? "Disabled" : "Enabled";
-                        btnLbl.className = btnLblClass + (enabled ? " text-danger" : " text-success");
-                        enabled = !enabled;
-
-                        appendAlert('Fetch call in enable() has returned status code: ' + res.status, 'danger');
-                    }
-                })
-                .catch(err => {
-                    if (enabled) {
-                        btn.checked = false;
-                    } else {
-                        btn.checked = true;
-                    }
-                    btnLbl.innerHTML = enabled ? "Disabled" : "Enabled";
-                    btnLbl.className = btnLblClass + (enabled ? " text-danger" : " text-success");
-                    enabled = !enabled;
-
-                    appendAlert('Fetch call in enable() has failed due to: ' + err, 'danger');
-                });
         }
 
         async function twitch() {
