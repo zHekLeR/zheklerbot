@@ -2138,6 +2138,12 @@ app.get('/leaderboards/:channel', async (request, response) => {
       page = page.replace(/#pref_name#/g, userIds[request.params.channel]["pref_name"]);
       page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
 
+      page = page.replace(/duels = ""/g, `duels = "${JSON.stringify(await duelLb(request.params.channel))}"`);
+      page = page.replace(/rr = ""/g, `rr = "${JSON.stringify(await rrLb(request.params.channel))}"`);
+      page = page.replace(/rps = ""/g, `rps = "${JSON.stringify(await rpsLb(request.params.channel))}"`);
+      page = page.replace(/coin = ""/g, `coin = "${JSON.stringify(await coinLb(request.params.channel))}"`);
+      page = page.replace(/bigvanish = ""/g, `bigvanish = "${JSON.stringify(await bigvanishLb(request.params.channel))}"`);
+
       // Check what permissions this user has. Set up page.
       var cookies = await request.cookies;
       if (cookies["auth"]) {
@@ -2201,7 +2207,6 @@ app.get('/leaderboards/:channel', async (request, response) => {
         page = page.replace(/#channel#/g, 'zhekler');
       }
       response.send(page);
-      return;
     }
 
   } catch (err) {
@@ -2211,11 +2216,8 @@ app.get('/leaderboards/:channel', async (request, response) => {
 });
 
 
-// Duel leaderboard.
-app.get('/leaderboards/:channel/duels', async (request, response) => {
+async function duelLb(channel) {
   try {
-    request.params.channel = request.params.channel.toLowerCase();
-
     // Initialize JSON object.
     var stats = {
       "wins": {},
@@ -2226,20 +2228,35 @@ app.get('/leaderboards/:channel/duels', async (request, response) => {
     };
 
     // Fill the JSON object.
-    stats["wins"]["stream"] = await helper.dbQueryPromise(`SELECT userid, wins FROM duelduel WHERE stream = '${request.params.channel}' ORDER BY wins DESC LIMIT 10;`);
+    stats["wins"]["stream"] = await helper.dbQueryPromise(`SELECT userid, wins FROM duelduel WHERE stream = '${channel}' ORDER BY wins DESC LIMIT 10;`);
     stats["wins"]["all-time"] = await helper.dbQueryPromise(`SELECT userid, SUM(wins) as wins FROM duelduel GROUP BY userid ORDER BY wins DESC LIMIT 10;`);
 
-    stats["losses"]["stream"] = await helper.dbQueryPromise(`SELECT userid, losses FROM duelduel WHERE stream = '${request.params.channel}' ORDER BY losses DESC LIMIT 10;`);
+    stats["losses"]["stream"] = await helper.dbQueryPromise(`SELECT userid, losses FROM duelduel WHERE stream = '${channel}' ORDER BY losses DESC LIMIT 10;`);
     stats["losses"]["all-time"] = await helper.dbQueryPromise(`SELECT userid, SUM(losses) as losses FROM duelduel GROUP BY userid ORDER BY losses DESC LIMIT 10;`);
 
-    stats["streak"]["stream"] = await helper.dbQueryPromise(`SELECT userid, longest FROM duelduel WHERE stream = '${request.params.channel}' ORDER BY longest DESC LIMIT 10;`);
+    stats["streak"]["stream"] = await helper.dbQueryPromise(`SELECT userid, longest FROM duelduel WHERE stream = '${channel}' ORDER BY longest DESC LIMIT 10;`);
     stats["streak"]["all-time"] = await helper.dbQueryPromise(`SELECT userid, longest FROM duelduel ORDER BY longest DESC LIMIT 10;`);
 
-    stats["best_ratio"]["stream"] = await helper.dbQueryPromise(`SELECT userid, wins, losses, ROUND(wins * 100.0 / (wins + losses), 2) AS percent FROM (SELECT * FROM duelduel WHERE wins + losses >= 10 AND stream = '${request.params.channel}') AS duels ORDER BY percent DESC LIMIT 10;`);
+    stats["best_ratio"]["stream"] = await helper.dbQueryPromise(`SELECT userid, wins, losses, ROUND(wins * 100.0 / (wins + losses), 2) AS percent FROM (SELECT * FROM duelduel WHERE wins + losses >= 10 AND stream = '${channel}') AS duels ORDER BY percent DESC LIMIT 10;`);
     stats["best_ratio"]["all-time"] = await helper.dbQueryPromise(`SELECT userid, tot_wins as wins, tot_losses as losses, ROUND(tot_wins * 100.0 / (tot_wins + tot_losses), 2) as percent FROM (SELECT userid, SUM(wins) as tot_wins, SUM(losses) as tot_losses FROM duelduel GROUP BY userid) AS duels WHERE tot_wins + tot_losses >= 10 ORDER BY percent DESC LIMIT 10;`);
 
-    stats["worst_ratio"]["stream"] = await helper.dbQueryPromise(`SELECT userid, wins, losses, ROUND(wins * 100.0 / (wins + losses), 2) AS percent FROM (SELECT * FROM duelduel WHERE wins + losses >= 10 AND stream = '${request.params.channel}') AS duels ORDER BY percent ASC LIMIT 10;`);
+    stats["worst_ratio"]["stream"] = await helper.dbQueryPromise(`SELECT userid, wins, losses, ROUND(wins * 100.0 / (wins + losses), 2) AS percent FROM (SELECT * FROM duelduel WHERE wins + losses >= 10 AND stream = '${channel}') AS duels ORDER BY percent ASC LIMIT 10;`);
     stats["worst_ratio"]["all-time"] = await helper.dbQueryPromise(`SELECT userid, tot_wins as wins, tot_losses as losses, ROUND(tot_wins * 100.0 / (tot_wins + tot_losses), 2) AS percent FROM (SELECT userid, SUM(wins) as tot_wins, SUM(losses) as tot_losses FROM duelduel GROUP BY userid) as duels WHERE tot_wins + tot_losses >= 10 ORDER BY percent ASC LIMIT 10;`);
+
+    return stats;
+  } catch (err) {
+    helper.dumpError(err, "Duel LB error.");
+    return {};
+  }
+}
+
+
+// Duel leaderboard.
+app.get('/leaderboards/:channel/duels', async (request, response) => {
+  try {
+    request.params.channel = request.params.channel.toLowerCase();
+
+    var stats = await duelLb(request.params.channel);
 
     response.status(200);
     response.send(JSON.stringify(stats));
@@ -2250,12 +2267,8 @@ app.get('/leaderboards/:channel/duels', async (request, response) => {
 });
 
 
-// Revolver Roulette leaderboard.
-app.get('/leaderboards/:channel/rr', async (request, response) => {
+async function rrLb(channel) {
   try {
-    request.params.channel = request.params.channel.toLowerCase();
-
-    // Initialize JSON object.
     var stats = {
       "survive": {},
       "die": {},
@@ -2264,17 +2277,32 @@ app.get('/leaderboards/:channel/rr', async (request, response) => {
     }
 
     // Fill the JSON object.
-    stats["survive"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, survive FROM revolverroulette WHERE stream = '${request.params.channel}' ORDER BY survive DESC LIMIT 10;`);
+    stats["survive"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, survive FROM revolverroulette WHERE stream = '${channel}' ORDER BY survive DESC LIMIT 10;`);
     stats["survive"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, SUM(survive) as survive FROM revolverroulette GROUP BY user_id ORDER BY survive DESC LIMIT 10;`);
 
-    stats["die"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, die FROM revolverroulette WHERE stream = '${request.params.channel}' ORDER BY die DESC LIMIT 10;`);
+    stats["die"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, die FROM revolverroulette WHERE stream = '${channel}' ORDER BY die DESC LIMIT 10;`);
     stats["die"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, SUM(die) as die FROM revolverroulette GROUP BY user_id ORDER BY die DESC LIMIT 10;`);
 
-    stats["best_ratio"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, survive, die, ROUND(survive * 100.0 / (survive + die), 2) AS percent FROM (SELECT * FROM revolverroulette WHERE survive + die >= 10 AND stream = '${request.params.channel}') AS rr ORDER BY percent DESC LIMIT 10;`);
+    stats["best_ratio"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, survive, die, ROUND(survive * 100.0 / (survive + die), 2) AS percent FROM (SELECT * FROM revolverroulette WHERE survive + die >= 10 AND stream = '${channel}') AS rr ORDER BY percent DESC LIMIT 10;`);
     stats["best_ratio"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, tot_survive as survive, tot_die as die, ROUND(tot_survive * 100.0 / (tot_survive + tot_die), 2) as percent FROM (SELECT user_id, SUM(survive) as tot_survive, SUM(die) as tot_die FROM revolverroulette GROUP BY user_id) AS rr WHERE tot_survive + tot_die >= 10 ORDER BY percent DESC LIMIT 10;`);
 
-    stats["worst_ratio"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, survive, die, ROUND(survive * 100.0 / (survive + die), 2) AS percent FROM (SELECT * FROM revolverroulette WHERE survive + die >= 10 AND stream = '${request.params.channel}') AS rr ORDER BY percent ASC LIMIT 10;`);
+    stats["worst_ratio"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, survive, die, ROUND(survive * 100.0 / (survive + die), 2) AS percent FROM (SELECT * FROM revolverroulette WHERE survive + die >= 10 AND stream = '${channel}') AS rr ORDER BY percent ASC LIMIT 10;`);
     stats["worst_ratio"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, tot_survive as survive, tot_die as die, ROUND(tot_survive * 100.0 / (tot_survive + tot_die), 2) AS percent FROM (SELECT user_id, SUM(survive) as tot_survive, SUM(die) as tot_die FROM revolverroulette GROUP BY user_id) as rr WHERE tot_survive + tot_die >= 10 ORDER BY percent ASC LIMIT 10;`);
+
+    return stats;
+  } catch (err) {
+    helper.dumpError(err, "RR LB.");
+    return {};
+  }
+}
+
+
+// Revolver Roulette leaderboard.
+app.get('/leaderboards/:channel/rr', async (request, response) => {
+  try {
+    request.params.channel = request.params.channel.toLowerCase();
+
+    var stats = await rrLb(request.params.channel);
 
     response.status(200);
     response.send(JSON.stringify(stats));
@@ -2285,11 +2313,8 @@ app.get('/leaderboards/:channel/rr', async (request, response) => {
 });
 
 
-// Rock Paper Scissors leaderboard.
-app.get('/leaderboards/:channel/rps', async (request, response) => {
+async function rpsLb(channel) {
   try {
-    request.params.channel = request.params.channel.toLowerCase();
-
     // Initialize JSON object.
     var stats = {
       "win": {},
@@ -2298,14 +2323,29 @@ app.get('/leaderboards/:channel/rps', async (request, response) => {
     }
 
     // Fill the JSON object.
-    stats["win"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, win FROM rockpaperscissors WHERE stream = '${request.params.channel}' ORDER BY win DESC LIMIT 10;`);
+    stats["win"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, win FROM rockpaperscissors WHERE stream = '${channel}' ORDER BY win DESC LIMIT 10;`);
     stats["win"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, SUM(win) as win FROM rockpaperscissors GROUP BY user_id ORDER BY win DESC LIMIT 10;`);
 
-    stats["loss"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, loss FROM rockpaperscissors WHERE stream = '${request.params.channel}' ORDER BY loss DESC LIMIT 10;`);
+    stats["loss"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, loss FROM rockpaperscissors WHERE stream = '${channel}' ORDER BY loss DESC LIMIT 10;`);
     stats["loss"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, SUM(loss) as loss FROM rockpaperscissors GROUP BY user_id ORDER BY loss DESC LIMIT 10;`);
 
-    stats["tie"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, tie FROM rockpaperscissors WHERE stream = '${request.params.channel}' ORDER BY tie DESC LIMIT 10;`);
+    stats["tie"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, tie FROM rockpaperscissors WHERE stream = '${channel}' ORDER BY tie DESC LIMIT 10;`);
     stats["tie"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, SUM(tie) as tie FROM rockpaperscissors GROUP BY user_id ORDER BY tie DESC LIMIT 10;`);
+
+    return stats;
+  } catch (err) {
+    helper.dumpError(err, "RPS LB.");
+    return {};
+  }
+}
+
+
+// Rock Paper Scissors leaderboard.
+app.get('/leaderboards/:channel/rps', async (request, response) => {
+  try {
+    request.params.channel = request.params.channel.toLowerCase();
+
+    var stats = await rpsLb(request.params.channel);
 
     response.status(200);
     response.send(JSON.stringify(stats));
@@ -2316,11 +2356,8 @@ app.get('/leaderboards/:channel/rps', async (request, response) => {
 });
 
 
-// Coinflip leaderboard.
-app.get('/leaderboards/:channel/coin', async (request, response) => {
+async function coinLb(channel) {
   try {
-    request.params.channel = request.params.channel.toLowerCase();
-
     // Initialize JSON object.
     var stats = {
       "correct": {},
@@ -2328,11 +2365,26 @@ app.get('/leaderboards/:channel/coin', async (request, response) => {
     }
 
     // Fill the JSON object.
-    stats["correct"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, correct FROM coinflip WHERE stream = '${request.params.channel}' ORDER BY correct DESC LIMIT 10;`);
+    stats["correct"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, correct FROM coinflip WHERE stream = '${channel}' ORDER BY correct DESC LIMIT 10;`);
     stats["correct"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, SUM(correct) as correct FROM coinflip GROUP BY user_id ORDER BY correct DESC LIMIT 10;`);
 
-    stats["wrong"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, wrong FROM coinflip WHERE stream = '${request.params.channel}' ORDER BY wrong DESC LIMIT 10;`);
+    stats["wrong"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, wrong FROM coinflip WHERE stream = '${channel}' ORDER BY wrong DESC LIMIT 10;`);
     stats["wrong"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, SUM(wrong) as wrong FROM coinflip GROUP BY user_id ORDER BY wrong DESC LIMIT 10;`);
+
+    return stats;
+  } catch (err) {
+    helper.dumpError(err, "Coin LB.");
+    return {};
+  }
+}
+
+
+// Coinflip leaderboard.
+app.get('/leaderboards/:channel/coin', async (request, response) => {
+  try {
+    request.params.channel = request.params.channel.toLowerCase();
+
+    var stats = await coinLb(request.params.channel);
 
     response.status(200);
     response.send(JSON.stringify(stats));
@@ -2343,11 +2395,8 @@ app.get('/leaderboards/:channel/coin', async (request, response) => {
 });
 
 
-// Big Vanish leaderboard.
-app.get('/leaderboards/:channel/bigvanish', async (request, response) => {
+async function bigvanishLb(channel) {
   try {
-    request.params.channel = request.params.channel.toLowerCase();
-
     // Initialize the JSON object.
     var stats = {
       "high": {},
@@ -2355,11 +2404,26 @@ app.get('/leaderboards/:channel/bigvanish', async (request, response) => {
     }
 
     // Fill the JSON object.
-    stats["high"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, vanish FROM bigvanish WHERE stream = '${request.params.channel}' ORDER BY vanish DESC LIMIT 10;`);
+    stats["high"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, vanish FROM bigvanish WHERE stream = '${channel}' ORDER BY vanish DESC LIMIT 10;`);
     stats["high"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, vanish FROM bigvanish ORDER BY vanish DESC LIMIT 10;`);
 
-    stats["low"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, lowest FROM bigvanish WHERE stream = '${request.params.channel}' ORDER BY lowest ASC LIMIT 10;`);
+    stats["low"]["stream"] = await helper.dbQueryPromise(`SELECT user_id, lowest FROM bigvanish WHERE stream = '${channel}' ORDER BY lowest ASC LIMIT 10;`);
     stats["low"]["all-time"] = await helper.dbQueryPromise(`SELECT user_id, lowest FROM bigvanish ORDER BY lowest ASC LIMIT 10;`);
+
+    return stats;
+  } catch (err) {
+    helper.dumpError(err, "Big Vanish LB.");
+    return {};
+  }
+}
+
+
+// Big Vanish leaderboard.
+app.get('/leaderboards/:channel/bigvanish', async (request, response) => {
+  try {
+    request.params.channel = request.params.channel.toLowerCase();
+
+    var stats = bigvanishLb(request.params.channel);
 
     response.status(200);
     response.send(JSON.stringify(stats));
