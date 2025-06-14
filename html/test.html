@@ -26,8 +26,8 @@
                 <div class="navbar-nav">
                     <a href="/" class="nav-item nav-link">Home</a>
                     <a href="/commands/#channel#" class="nav-item nav-link active" aria-current="page">Commands</a>
+                    <a href="/leaderboards/#channel#" class="nav-item nav-link">Leaderboards</a>
                     <a href="/modules/#channel#" class="nav-item nav-link #disabled#">Modules</a>
-                    <a href="/leaderboards/#channel#" class="nav-item nav-link #disabled#">Leaderboards</a>
                     <a href="/twovtwo/#channel#" class="nav-item nav-link #disabled#">Two vs Two</a>
                     <a href="/editors/#channel#" class="nav-item nav-link #ownerdisabled#">Editors</a>
                     <a href="/permissions/#channel#" class="nav-item nav-link #ownerdisabled#">Permissions</a>
@@ -40,620 +40,158 @@
     <main>
         <div class="container pt-3">
             <div id="liveAlertPlaceholder"></div>
-            <h1 class="text-center pb-5">#pref_name#'s Commands</h1>
-            <div class="row align-items-center">
-                <div class="col-0 col-sm-1"></div>
-                <div class="col-6 col-sm-5 col-md-6 fs-4 fw-bold mb-2">
-                    Duels
+            <h2 class="text-center pb-3">#pref_name#'s Leaderboards</h2>
+            <div class="row flex-column flex-md-row align-items-center text-center">
+                <div class="col py-1 py-md-0">
+                    <button class="btn btn-success" id="duels">Duels</button>
                 </div>
-                <div class="col-3 col-md-2 fs-5 mb-2 text-end #duelEnabled#">
-                    #duels#
+                <div class="col py-1 py-md-0">
+                    <button class="btn btn-danger" id="rr">Revolver Roulette</button>
                 </div>
-                <div class="col-3 col-md-3 mb-2">
-                    <button class="btn btn-success align-self-top" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#duelsCollapse" aria-expanded="false" aria-controls="duelsCollapse">
-                        Expand
-                    </button>
+                <div class="col py-1 py-md-0">
+                    <button class="btn btn-danger" id="rps">Rock Paper Scissors</button>
                 </div>
-                <div class="container col-12 collapse mb-2" id="duelsCollapse">
-                    <div class="card card-body my-2">
-                        <div class="row py-1">
-                            <div class="col-4 col-md-3 fw-semibold">
-                                Command
-                            </div>
-                            <div class="col-8 col-md-9 fw-semibold">
-                                Description
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !duel [username]
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Challenge another user to a 50/50 duel. The loser will be timed out for 1 minute.<br>
-                                This has a 2 minute window for the other player to accept or deny.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !accept
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Accept another player's challenge.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !coward
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Reject another player's challenge.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !cancel
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Cancel your challenge to another user.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !duelscore
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Displays your wins, losses, and streaks.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !duelscoreother [username]
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Display another user's wins, losses, and streaks.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !duellb
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Displays the 3 users with the most wins.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !duellbratio
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Displays the 3 users with the best win / loss ratio.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !duellbratiolow
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Displays the 3 users with the worst win / loss ratio.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !duellbratiostreak
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Displays the user with the current longest streak and the user with the all-time longest
-                                streak.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !duelon
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Enable Duels.<br>
-                                <span class="fst-italic">*Moderator Only*</span>
-                            </div>
-                        </div>
-                        <div class="row py-1">
-                            <div class="col-4 col-md-3">
-                                !dueloff
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Disable Duels.<br>
-                                <span class="fst-italic">*Moderator Only*</span>
-                            </div>
-                        </div>
-                    </div>
+                <div class="col py-1 py-md-0">
+                    <button class="btn btn-danger" id="coin">Coinflip</button>
                 </div>
+                <div class="col py-1 py-md-0">
+                    <button class="btn btn-danger" id="bigvanish">Big Vanish</button>
+                </div>
+            </div>
 
-                <div class="col-0 col-sm-1"></div>
-                <div class="col-6 col-sm-5 col-md-6 fs-4 fw-bold mb-2">
-                    Revolver Roulette
-                </div>
-                <div class="col-3 col-md-2 fs-5 mb-2 text-end #rrEnabled#">
-                    #rr#
-                </div>
-                <div class="col-3 col-md-3 mb-2">
-                    <button class="btn btn-success align-self-top" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#rrCollapse" aria-expanded="false" aria-controls="revolverRouletteCollapse">
-                        Expand
-                    </button>
-                </div>
-                <div class="container col-12 collapse mb-2" id="rrCollapse">
-                    <div class="card card-body my-2">
-                        <div class="row py-1">
-                            <div class="col-4 col-md-3 fw-semibold">
-                                Command
-                            </div>
-                            <div class="col-8 col-md-9 fw-semibold">
-                                Description
-                            </div>
+            <div class="container">
+                <div class="row pt-4 pb-2 justify-content-center">
+                    <div class="col">
+                        <select class="form-select w-auto ms-auto" aria-label="Category select" id="subcat">
+                            <option id="option-1" value="table-1" selected>Wins</option>
+                            <option id="option-2" value="table-2">Losses</option>
+                            <option id="option-3" value="table-3">Longest Streak</option>
+                            <option id="option-4" value="table-4">Best Win Ratio</option>
+                            <option id="option-5" value="table-5">Worst Win Ratio</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input border-3" type="radio" name="radioPop" id="radioStream"
+                                checked>
+                            <label class="form-check-label" for="radioStream">
+                                #channel#
+                            </label>
                         </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !rr
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Play a round of Revolver Roulette. You have 2/3 chance to survive and 1/3 chance to be
-                                timed out for 5 minutes.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !rrscore
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Check your score in Revolver Roulette.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !rrscoreother [username]
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Check someone else's score in Revolver Roulette.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !rrlb
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Shows the 3 users with the most survivals in Revolver Roulette.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !rrlbdie
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Shows the 3 users with the most deaths in Revolver Roulette.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !rrlbratio
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Shows the 3 users with the best win / loss ratio in Revolver Roulette.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !rrlbratiolow
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Shows the 3 users with the worst win / loss ratio in Revolver Roulette.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !rrtotals
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Show the total survivals and deaths for all users in Revolver Roulette.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !rron
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Enable Revolver Roulette.<br>
-                                <span class="fst-italic">*Moderator Only*</span>
-                            </div>
-                        </div>
-                        <div class="row py-1">
-                            <div class="col-4 col-md-3">
-                                !rroff
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Disable Revolver Roulette.<br>
-                                <span class="fst-italic">*Moderator Only*</span>
-                            </div>
+                        <div class="form-check">
+                            <input class="form-check-input border-3" type="radio" name="radioPop" id="radioGlobal">
+                            <label class="form-check-label" for="radioGlobal">
+                                Global
+                            </label>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="col-0 col-sm-1"></div>
-                <div class="col-6 col-sm-5 col-md-6 fs-4 fw-bold mb-2">
-                    Rock Paper Scissors
-                </div>
-                <div class="col-3 col-md-2 fs-5 mb-2 text-end #rpsEnabled#">
-                    #rps#
-                </div>
-                <div class="col-3 col-md-3 mb-2">
-                    <button class="btn btn-success align-self-top" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#rpsCollapse" aria-expanded="false" aria-controls="rockPaperScissorsCollapse">
-                        Expand
-                    </button>
-                </div>
-                <div class="container col-12 collapse mb-2" id="rpsCollapse">
-                    <div class="card card-body my-2">
-                        <div class="row py-1">
-                            <div class="col-4 col-md-3 fw-semibold">
-                                Command
-                            </div>
-                            <div class="col-8 col-md-9 fw-semibold">
-                                Description
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !rps [rock / paper / scissors]
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Play Rock Paper Scissors with the bot. If you lose, you will be timed out for 1 minute.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !rpsscore
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Check your score in Rock Paper Scissors.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !rpslb
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Show the user with the most wins and the user with the most losses.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !rpson
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Enable Rock Paper Scissors.<br>
-                                <span class="fst-italic">*Moderator Only*</span>
-                            </div>
-                        </div>
-                        <div class="row py-1">
-                            <div class="col-4 col-md-3">
-                                !rpsoff
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Disable Rock Paper Scissors.<br>
-                                <span class="fst-italic">*Moderator Only*</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <table class="table table-1 max-w-50">
+                <thead>
+                    <tr>
+                        <th scope="col">Place</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Score</th>
+                    </tr>
+                </thead>
+            </table>
 
-                <div class="col-0 col-sm-1"></div>
-                <div class="col-6 col-sm-5 col-md-6 fs-4 fw-bold mb-2">
-                    Coinflip
-                </div>
-                <div class="col-3 col-md-2 fs-5 mb-2 text-end #coinEnabled#">
-                    #coin#
-                </div>
-                <div class="col-3 col-md-3 mb-2">
-                    <button class="btn btn-success align-self-top" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#coinCollapse" aria-expanded="false" aria-controls="coinflipCollapse">
-                        Expand
-                    </button>
-                </div>
-                <div class="container col-12 collapse mb-2" id="coinCollapse">
-                    <div class="card card-body my-2">
-                        <div class="row py-1">
-                            <div class="col-4 col-md-3 fw-semibold">
-                                Command
-                            </div>
-                            <div class="col-8 col-md-9 fw-semibold">
-                                Description
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !coin [heads / tails]
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Guess what side the coin is on. If you lose, you will be timed out for 1 minute.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !coinscore
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Check your score in Coinflip.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !coinlb
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Show the user with the most wins and the user with the most losses.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !coinon
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Enable Coinflip.<br>
-                                <span class="fst-italic">*Moderator Only*</span>
-                            </div>
-                        </div>
-                        <div class="row py-1">
-                            <div class="col-4 col-md-3">
-                                !coinoff
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Disable Coinflip.<br>
-                                <span class="fst-italic">*Moderator Only*</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <table class="table table-2 max-w-50" hidden="true">
+                <thead>
+                    <tr>
+                        <th scope="col">Place</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Score</th>
+                    </tr>
+                </thead>
+            </table>
 
-                <div class="col-0 col-sm-1"></div>
-                <div class="col-6 col-sm-5 col-md-6 fs-4 fw-bold mb-2">
-                    Big Vanish
-                </div>
-                <div class="col-3 col-md-2 fs-5 mb-2 text-end #bigvanishEnabled#">
-                    #bigvanish#
-                </div>
-                <div class="col-3 col-md-3 mb-2">
-                    <button class="btn btn-success align-self-top" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#bigvanishCollapse" aria-expanded="false" aria-controls="bigVanishCollapse">
-                        Expand
-                    </button>
-                </div>
-                <div class="container col-12 collapse mb-2" id="bigvanishCollapse">
-                    <div class="card card-body my-2">
-                        <div class="row py-1">
-                            <div class="col-4 col-md-3 fw-semibold">
-                                Command
-                            </div>
-                            <div class="col-8 col-md-9 fw-semibold">
-                                Description
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !bigvanish
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Get randomly timed out between 100 and 1,000,000 seconds.
-                                The timeout will automatically be removed in 3 seconds.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !bigvanishlb
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Show the 3 users with the highest timeouts from Big Vanish.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !bigvanishlblow
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Show the 3 users with the lowest timeouts from Big Vanish.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !bigvanishon
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Enable Big Vanish.<br>
-                                <span class="fst-italic">*Moderator Only*</span>
-                            </div>
-                        </div>
-                        <div class="row py-1">
-                            <div class="col-4 col-md-3">
-                                !bigvanishoff
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Disable Big Vanish.<br>
-                                <span class="fst-italic">*Moderator Only*</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <table class="table table-3 max-w-50" hidden="true">
+                <thead>
+                    <tr>
+                        <th scope="col">Place</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Score</th>
+                    </tr>
+                </thead>
+            </table>
 
-                <div class="col-0 col-sm-1"></div>
-                <div class="col-6 col-sm-5 col-md-6 fs-4 fw-bold mb-2">
-                    Two vs Two
-                </div>
-                <div class="col-3 col-md-2 fs-5 mb-2 text-end #twovtwoEnabled#">
-                    #twovtwo#
-                </div>
-                <div class="col-3 col-md-3 mb-2">
-                    <button class="btn btn-success align-self-top" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#twovtwoCollapse" aria-expanded="false" aria-controls="twovtwoCollapse">
-                        Expand
-                    </button>
-                </div>
-                <div class="container col-12 collapse mb-2" id="twovtwoCollapse">
-                    <div class="card card-body my-2">
-                        <div class="row py-1">
-                            <div class="col-4 col-md-3 fw-semibold">
-                                Command
-                            </div>
-                            <div class="col-8 col-md-9 fw-semibold">
-                                Description
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !score
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Displays the team scores in chat in the following format: 8 - 2 | Up 6<br>
-                                This is automatically sent to chat every 30 seconds if two vs twos are enabled and not
-                                currently paused
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !2v2on
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Enable Two vs Two scoring.<br>
-                                <span class="fst-italic">*Moderator Only*</span>
-                            </div>
-                        </div>
-                        <div class="row py-1">
-                            <div class="col-4 col-md-3">
-                                !2v2off
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Disable Two vs Two scoring.<br>
-                                <span class="fst-italic">*Moderator Only*</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <table class="table table-4 max-w-50" hidden="true">
+                <thead>
+                    <tr>
+                        <th scope="col">Place</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Score</th>
+                    </tr>
+                </thead>
+            </table>
 
-                <div class="col-0 col-sm-1"></div>
-                <div class="col-6 col-sm-5 col-md-6 fs-4 fw-bold mb-2">
-                    Custom Tourney
-                </div>
-                <div class="col-3 col-md-2 fs-5 mb-2 text-end #customsEnabled#">
-                    #customs#
-                </div>
-                <div class="col-3 col-md-3 mb-2">
-                    <button class="btn btn-success align-self-top" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#customsCollapse" aria-expanded="false" aria-controls="customsCollapse">
-                        Expand
-                    </button>
-                </div>
-                <div class="container col-12 collapse mb-2" id="customsCollapse">
-                    <div class="card card-body my-2">
-                        <div class="row py-1">
-                            <div class="col-4 col-md-3 fw-semibold">
-                                Command
-                            </div>
-                            <div class="col-8 col-md-9 fw-semibold">
-                                Description
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !score
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Calculates the current score and formats it nicely to chat.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !mc
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Displays the map count to chat. This is incremented automatically as each map is added.
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !setmaps [ # ]
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Sets the number of maps played in the tourney.<br>
-                                <span class="fst-italic">*Moderator Only*</span>
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !bestof [ # ]
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Sets the number of maps which count towards score (defaults to map count).<br>
-                                <span class="fst-italic">*Moderator Only*</span>
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !setplacement [placement string]
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Sets the placement multipliers. Example:<br>
-                                For these placement multipliers: 1st: 2x | 2nd-8th: 1.5x | 9th+: 1x<br>
-                                The format would be !setplacement 1 2 2 1.5 9 1<br>
-                                <span class="fst-italic">*Moderator Only*</span>
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !addmap [placement] [kills]
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Add a map placement. The placement and kills will be saved and used later to calculate
-                                the score.<br>
-                                If the placement string is not correct when you add a map, just use !setplacement again.
-                                The original placement and kills and stored.<br>
-                                <span class="fst-italic">*Moderator Only*</span>
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !removemap
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Remove the last added map.<br>
-                                <span class="fst-italic">*Moderator Only*</span>
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !removemap
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Clear all of the maps.<br>
-                                <span class="fst-italic">*Moderator Only*</span>
-                            </div>
-                        </div>
-                        <div class="row py-1 border-bottom">
-                            <div class="col-4 col-md-3">
-                                !customson
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Enable Custom Tourney scoring.<br>
-                                <span class="fst-italic">*Moderator Only*</span>
-                            </div>
-                        </div>
-                        <div class="row py-1">
-                            <div class="col-4 col-md-3">
-                                !customsoff
-                            </div>
-                            <div class="col-8 col-md-9">
-                                Disable Custom Tourney scoring.<br>
-                                <span class="fst-italic">*Moderator Only*</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <table class="table table-5 max-w-50" hidden="true">
+                <thead>
+                    <tr>
+                        <th scope="col">Place</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Score</th>
+                    </tr>
+                </thead>
+            </table>
+
+            <table class="table table-1 max-w-50" hidden="true">
+                <thead>
+                    <tr>
+                        <th scope="col">Place</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Score</th>
+                    </tr>
+                </thead>
+            </table>
+
+            <table class="table table-2 max-w-50" hidden="true">
+                <thead>
+                    <tr>
+                        <th scope="col">Place</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Score</th>
+                    </tr>
+                </thead>
+            </table>
+
+            <table class="table table-3 max-w-50" hidden="true">
+                <thead>
+                    <tr>
+                        <th scope="col">Place</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Score</th>
+                    </tr>
+                </thead>
+            </table>
+
+            <table class="table table-4 max-w-50" hidden="true">
+                <thead>
+                    <tr>
+                        <th scope="col">Place</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Score</th>
+                    </tr>
+                </thead>
+            </table>
+
+            <table class="table table-5 max-w-50" hidden="true">
+                <thead>
+                    <tr>
+                        <th scope="col">Place</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Score</th>
+                    </tr>
+                </thead>
+            </table>
+
+            <div class="container py-3">
+                <label for="searchStream" class="form-label">Search for Stream</label>
+                <input type="search" id="searchStream" class="form-control w-auto" aria-describedby="searchStream"
+                    placeholder="Enter Twitch username">
             </div>
         </div>
     </main>
@@ -678,9 +216,470 @@
             alertPlaceholder.append(wrapper)
         }
 
+        const enBtnClass = "btn btn-success";
+        const disBtnClass = "btn btn-danger";
+
+        const duelsBtn = document.getElementById("duels");
+        if (duelsBtn) duelsBtn.addEventListener('click', () => { getStuff("duels"); });
+        const rrBtn = document.getElementById("rr");
+        if (rrBtn) rrBtn.addEventListener('click', () => { getStuff("rr"); });
+        const rpsBtn = document.getElementById("rps");
+        if (rpsBtn) rpsBtn.addEventListener('click', () => { getStuff("rps"); });
+        const coinBtn = document.getElementById("coin");
+        if (coinBtn) coinBtn.addEventListener('click', () => { getStuff("coin"); });
+        const bigvanishBtn = document.getElementById("bigvanish");
+        if (bigvanishBtn) bigvanishBtn.addEventListener('click', () => { getStuff("bigvanish"); });
+
+        var duels, rr, rps, coin, bigvanish, failure;
+
+        var current = {
+            "game": "duels",
+            "option": "table-1",
+            "board": 0
+        };
+
+        var layout = `<tr>
+                         <th scope="col" class="th-1">Place</th>
+                         <th scope="col" class="th-2">Username</th>
+                         <th scope="col" class="th-3">Score</th>
+                       </tr>`;
+
+        async function getStuff(btn) {
+            if (!btn || btn === current.game) return;
+
+            let button = document.getElementById(btn);
+            document.getElementById(current.game).className = disBtnClass;
+            button.className = enBtnClass;
+            current.game = btn;
+            failure = false;
+
+            switch (btn) {
+                case "duels":
+                    if (!duels) {
+                        await fetch('/leaderboards/#channel#/duels')
+                            .then(async res => {
+                                if (res.status != 200) {
+                                    appendAlert('Fetch call for Duels has returned status code: ' + res.status, 'danger');
+                                    failure = true;
+                                }
+                                console.log(res);
+                                duels = await res.json();
+                            })
+                            .catch(err => {
+                                appendAlert('Fetch call for Duels has failed: ' + err, 'danger');
+                                failure = true;
+                            });
+                    }
+                    if (failure) return;
+
+                    for (var i = 0; i < 10; i++) {
+                        if (duels.wins.stream[i]) {
+                            var row1 = document.getElementsByClassName('table-1')[0].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = duels.wins.stream[i].userid;
+                            row1.insertCell(2).innerHTML = duels.wins.stream[i].wins;
+                        }
+
+                        if (duels.losses.stream[i]) {
+                            var row1 = document.getElementsByClassName('table-2')[0].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = duels.losses.stream[i].userid;
+                            row1.insertCell(2).innerHTML = duels.losses.stream[i].losses;
+                        }
+
+                        if (duels.streak.stream[i]) {
+                            var row1 = document.getElementsByClassName('table-3')[0].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = duels.streak.stream[i].userid;
+                            row1.insertCell(2).innerHTML = duels.streak.stream[i].longest;
+                        }
+
+                        if (duels.best_ratio.stream[i]) {
+                            var row1 = document.getElementsByClassName('table-4')[0].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = duels.best_ratio.stream[i].userid;
+                            row1.insertCell(2).innerHTML = `${duels.best_ratio.stream[i].wins} / ${parseInt(duels.best_ratio.stream[i].wins) + parseInt(duels.best_ratio.stream[i].losses)} - ${duels.best_ratio.stream[i].percent}%`;
+                        }
+
+                        if (duels.worst_ratio.stream[i]) {
+                            var row1 = document.getElementsByClassName('table-4')[0].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = duels.worst_ratio.stream[i].userid;
+                            row1.insertCell(2).innerHTML = `${duels.worst_ratio.stream[i].wins} / ${parseInt(duels.worst_ratio.stream[i].wins) + parseInt(duels.worst_ratio.stream[i].losses)} - ${duels.worst_ratio.stream[i].percent}%`;
+                        }
+
+                        if (duels.wins["all-time"][i]) {
+                            var row1 = document.getElementsByClassName('table-1')[1].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = duels.wins["all-time"][i].userid;
+                            row1.insertCell(2).innerHTML = duels.wins["all-time"][i].wins;
+                        }
+
+                        if (duels.losses["all-time"][i]) {
+                            var row1 = document.getElementsByClassName('table-2')[1].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = duels.losses["all-time"][i].userid;
+                            row1.insertCell(2).innerHTML = duels.losses["all-time"][i].losses;
+                        }
+
+                        if (duels.streak["all-time"][i]) {
+                            var row1 = document.getElementsByClassName('table-3')[1].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = duels.streak["all-time"][i].userid;
+                            row1.insertCell(2).innerHTML = duels.streak["all-time"][i].longest;
+                        }
+
+                        if (duels.best_ratio["all-time"][i]) {
+                            var row1 = document.getElementsByClassName('table-4')[1].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = duels.best_ratio["all-time"][i].userid;
+                            row1.insertCell(2).innerHTML = `${duels.best_ratio["all-time"][i].wins} / ${(parseInt(duels.best_ratio["all-time"][i].wins) + parseInt(duels.best_ratio["all-time"][i].losses))} - ${duels.best_ratio["all-time"][i].percent}%`;
+                        }
+
+                        if (duels.worst_ratio["all-time"][i]) {
+                            var row1 = document.getElementsByClassName('table-5')[1].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = duels.worst_ratio["all-time"][i].userid;
+                            row1.insertCell(2).innerHTML = `${duels.worst_ratio["all-time"][i].wins} / ${(parseInt(duels.worst_ratio["all-time"][i].wins) + parseInt(duels.worst_ratio["all-time"][i].losses))} - ${duels.worst_ratio["all-time"][i].percent}%`;
+                        }
+                    }
+
+                    document.getElementById("option-1").innerHTML = "Wins";
+                    document.getElementById("option-1").hidden = false;
+                    document.getElementById("option-1").selected = true;
+
+                    document.getElementById("option-2").innerHTML = "Losses";
+                    document.getElementById("option-2").hidden = false;
+
+                    document.getElementById("option-3").innerHTML = "Longest Streak";
+                    document.getElementById("option-3").hidden = false;
+
+                    document.getElementById("option-4").innerHTML = "Best Win Ratio";
+                    document.getElementById("option-4").hidden = false;
+
+                    document.getElementById("option-5").innerHTML = "Worst Win Ratio";
+                    document.getElementById("option-5").hidden = false;
+
+                    break;
+
+                case "rr":
+                    if (!rr) {
+                        await fetch('/leaderboards/#channel#/rr')
+                            .then(async res => {
+                                if (res.status != 200) {
+                                    appendAlert('Fetch call for Revolver Roulette has returned status code: ' + res.status, 'danger');
+                                    failure = true;
+                                }
+                                rr = await res.json();
+                                console.log(rr);
+                            })
+                            .catch(err => {
+                                appendAlert('Fetch call for Revolver Roulette has failed: ' + res.status, 'danger');
+                                failure = true;
+                            });
+                    }
+                    if (failure) return;
+
+                    for (var i = 0; i < 10; i++) {
+                        if (rr.survive.stream[i]) {
+                            var row1 = document.getElementsByClassName('table-1')[0].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = rr.survive.stream[i].user_id;
+                            row1.insertCell(2).innerHTML = rr.survive.stream[i].survive;
+                        }
+
+                        if (rr.die.stream[i]) {
+                            var row1 = document.getElementsByClassName('table-2')[0].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = rr.die.stream[i].user_id;
+                            row1.insertCell(2).innerHTML = rr.die.stream[i].die;
+                        }
+
+                        if (rr.best_ratio.stream[i]) {
+                            var row1 = document.getElementsByClassName('table-3')[0].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = rr.best_ratio.stream[i].user_id;
+                            row1.insertCell(2).innerHTML = `${rr.best_ratio.stream[i].survive} / ${(parseInt(rr.best_ratio.stream[i].survive) + parseInt(rr.best_ratio.stream[i].die))} - ${rr.best_ratio.stream[i].percent}%`;
+                        }
+
+                        if (rr.worst_ratio.stream[i]) {
+                            var row1 = document.getElementsByClassName('table-4')[0].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = rr.worst_ratio.stream[i].user_id;
+                            row1.insertCell(2).innerHTML = `${rr.worst_ratio.stream[i].survive} / ${(parseInt(rr.worst_ratio.stream[i].survive) + parseInt(rr.worst_ratio.stream[i].die))} - ${rr.worst_ratio.stream[i].percent}%`;
+                        }
+
+                        if (rr.survive["all-time"][i]) {
+                            var row1 = document.getElementsByClassName('table-1')[1].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = rr.survive["all-time"][i].user_id;
+                            row1.insertCell(2).innerHTML = rr.survive["all-time"][i].survive;
+                        }
+
+                        if (rr.die["all-time"][i]) {
+                            var row1 = document.getElementsByClassName('table-2')[1].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = rr.die["all-time"][i].user_id;
+                            row1.insertCell(2).innerHTML = rr.die["all-time"][i].die;
+                        }
+
+                        if (rr.best_ratio["all-time"][i]) {
+                            var row1 = document.getElementsByClassName('table-3')[1].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = rr.best_ratio["all-time"][i].user_id;
+                            row1.insertCell(2).innerHTML = `${rr.best_ratio["all-time"][i].survive} / ${parseInt(rr.best_ratio["all-time"][i].survive) + parseInt(rr.best_ratio["all-time"][i].die)} - ${rr.best_ratio["all-time"][i].percent}%`;
+                        }
+
+                        if (rr.worst_ratio["all-time"][i]) {
+                            var row1 = document.getElementsByClassName('table-4')[1].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = rr.worst_ratio["all-time"][i].user_id;
+                            row1.insertCell(2).innerHTML = `${rr.worst_ratio["all-time"][i].survive} / ${parseInt(rr.worst_ratio["all-time"][i].survive) + parseInt(rr.worst_ratio["all-time"][i].die)} - ${rr.worst_ratio["all-time"][i].percent}%`;
+                        }
+                    }
+
+                    document.getElementById("option-1").innerHTML = "Survivals";
+                    document.getElementById("option-1").hidden = false;
+                    document.getElementById("option-1").selected = true;
+
+                    document.getElementById("option-2").innerHTML = "Deaths";
+                    document.getElementById("option-2").hidden = false;
+
+                    document.getElementById("option-3").innerHTML = "Best Win Ratio";
+                    document.getElementById("option-3").hidden = false;
+
+                    document.getElementById("option-4").innerHTML = "Worst Win Ratio";
+                    document.getElementById("option-4").hidden = false;
+
+                    document.getElementById("option-5").hidden = true;
+
+                    break;
+
+                case "rps":
+                    if (!rps) {
+                        await fetch('/leaderboards/#channel#/rps')
+                            .then(async res => {
+                                if (res.status != 200) {
+                                    appendAlert('Fetch call for Rock Paper Scissors has returned status code: ' + res.status, 'danger');
+                                    failure = true;
+                                }
+                                rps = await res.json();
+                            })
+                            .catch(err => {
+                                appendAlert('Fetch call for Rock Paper Scissors has failed: ' + res.status, 'danger');
+                                failure = true;
+                            });
+                    }
+                    if (failure) return;
+
+                    for (var i = 0; i < 10; i++) {
+                        if (rps.win.stream[i]) {
+                            var row1 = document.getElementsByClassName('table-1')[0].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = rps.win.stream[i].user_id;
+                            row1.insertCell(2).innerHTML = rps.win.stream[i].win;
+                        }
+
+                        if (rps.loss.stream[i]) {
+                            var row1 = document.getElementsByClassName('table-2')[0].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = rps.loss.stream[i].user_id;
+                            row1.insertCell(2).innerHTML = rps.loss.stream[i].loss;
+                        }
+
+                        if (rps.tie.stream[i]) {
+                            var row1 = document.getElementsByClassName('table-3')[0].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = rps.tie.stream[i].user_id;
+                            row1.insertCell(2).innerHTML = rps.tie.stream[i].tie;
+                        }
+
+                        if (rps.win["all-time"][i]) {
+                            var row1 = document.getElementsByClassName('table-1')[1].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = rps.win["all-time"][i].user_id;
+                            row1.insertCell(2).innerHTML = rps.win["all-time"][i].win;
+                        }
+
+                        if (rps.loss["all-time"][i]) {
+                            var row1 = document.getElementsByClassName('table-2')[1].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = rps.loss["all-time"][i].user_id;
+                            row1.insertCell(2).innerHTML = rps.loss["all-time"][i].loss;
+                        }
+
+                        if (rps.tie["all-time"][i]) {
+                            var row1 = document.getElementsByClassName('table-3')[1].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = rps.tie["all-time"][i].user_id;
+                            row1.insertCell(2).innerHTML = rps.tie["all-time"][i].tie;
+                        }
+                    }
+
+                    document.getElementById("option-1").innerHTML = "Wins";
+                    document.getElementById("option-1").hidden = false;
+                    document.getElementById("option-1").selected = true;
+
+                    document.getElementById("option-2").innerHTML = "Losses";
+                    document.getElementById("option-2").hidden = false;
+
+                    document.getElementById("option-3").innerHTML = "Ties";
+                    document.getElementById("option-3").hidden = false;
+
+                    document.getElementById("option-4").hidden = true;
+                    document.getElementById("option-5").hidden = true;
+
+                    break;
+
+                case "coin":
+                    if (!coin) {
+                        await fetch('/leaderboards/#channel#/coin')
+                            .then(async res => {
+                                if (res.status != 200) {
+                                    appendAlert('Fetch call for Coinflip has returned status code: ' + res.status, 'danger');
+                                    failure = true;
+                                }
+                                coin = await res.json();
+                            })
+                            .catch(err => {
+                                appendAlert('Fetch call for Coinflip has failed: ' + res.status, 'danger');
+                                failure = true;
+                            });
+                    }
+                    if (failure) return;
+
+                    for (var i = 0; i < 10; i++) {
+                        if (coin.correct.stream[i]) {
+                            var row1 = document.getElementsByClassName('table-1')[0].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = coin.correct.stream[i].user_id;
+                            row1.insertCell(2).innerHTML = coin.correct.stream[i].correct;
+                        }
+
+                        if (coin.wrong.stream[i]) {
+                            var row1 = document.getElementsByClassName('table-2')[0].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = coin.wrong.stream[i].user_id;
+                            row1.insertCell(2).innerHTML = coin.wrong.stream[i].wrong;
+                        }
+
+                        if (coin.correct["all-time"][i]) {
+                            var row1 = document.getElementsByClassName('table-1')[1].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = coin.correct["all-time"][i].user_id;
+                            row1.insertCell(2).innerHTML = coin.correct["all-time"][i].correct;
+                        }
+
+                        if (coin.wrong["all-time"][i]) {
+                            var row1 = document.getElementsByClassName('table-2')[1].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = coin.wrong["all-time"][i].user_id;
+                            row1.insertCell(2).innerHTML = coin.wrong["all-time"][i].wrong;
+                        }
+                    }
+
+                    document.getElementById("option-1").innerHTML = "Correct Guesses";
+                    document.getElementById("option-1").hidden = false;
+                    document.getElementById("option-1").selected = true;
+
+                    document.getElementById("option-2").innerHTML = "Wrong Guesses";
+                    document.getElementById("option-2").hidden = false;
+
+                    document.getElementById("option-3").hidden = true;
+                    document.getElementById("option-4").hidden = true;
+                    document.getElementById("option-5").hidden = true;
+
+                    break;
+
+                case "bigvanish":
+                    if (!bigvanish) {
+                        await fetch('/leaderboards/#channel#/bigvanish')
+                            .then(async res => {
+                                if (res.status != 200) {
+                                    appendAlert('Fetch call for Big Vanish has returned status code: ' + res.status, 'danger');
+                                    failure = true;
+                                }
+                                bigvanish = await res.json();
+                            })
+                            .catch(err => {
+                                appendAlert('Fetch call for Big Vanish has failed: ' + res.status, 'danger');
+                                failure = true;
+                            });
+                    }
+                    if (failure) return;
+
+                    for (var i = 0; i < 10; i++) {
+                        if (bigvanish.high.stream[i]) {
+                            var row1 = document.getElementsByClassName('table-1')[0].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = bigvanish.high.stream[i].user_id;
+                            row1.insertCell(2).innerHTML = bigvanish.high.stream[i].vanish;
+                        }
+
+                        if (bigvanish.low.stream[i]) {
+                            var row1 = document.getElementsByClassName('table-2')[0].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = bigvanish.low.stream[i].user_id;
+                            row1.insertCell(2).innerHTML = bigvanish.low.stream[i].lowest;
+                        }
+
+                        if (bigvanish.high["all-time"][i]) {
+                            var row1 = document.getElementsByClassName('table-1')[1].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = bigvanish.high["all-time"][i].user_id;
+                            row1.insertCell(2).innerHTML = bigvanish.high["all-time"][i].vanish;
+                        }
+
+                        if (bigvanish.low["all-time"][i]) {
+                            var row1 = document.getElementsByClassName('table-2')[1].insertRow();
+                            row1.insertCell(0).innerHTML = i + 1;
+                            row1.insertCell(1).innerHTML = bigvanish.low["all-time"][i].user_id;
+                            row1.insertCell(2).innerHTML = bigvanish.low["all-time"][i].lowest;
+                        }
+                    }
+
+                    document.getElementById("option-1").innerHTML = "Highest Timeout";
+                    document.getElementById("option-1").hidden = false;
+                    document.getElementById("option-1").selected = true;
+
+                    document.getElementById("option-2").innerHTML = "Lowest Timeout";
+                    document.getElementById("option-2").hidden = false;
+
+                    document.getElementById("option-3").hidden = true;
+                    document.getElementById("option-4").hidden = true;
+                    document.getElementById("option-5").hidden = true;
+                    break;
+
+                default:
+                    return;
+            }
+
+            subSwitch();
+        }
+
+        function subSwitch() {
+            var option = document.getElementById('subcat').value;
+            document.getElementsByClassName(current.option)[current.board].hidden = true;
+            document.getElementsByClassName(option)[current.board].hidden = false;
+            current.option = option;
+        }
+
+        function switchBoard(board) {
+            if (current.board === board) return;
+            document.getElementsByClassName(current.option)[current.board].hidden = true;
+            document.getElementsByClassName(current.option)[board].hidden = false;
+            current.board = board;
+        }
+
+        getStuff('duels');
+
         async function twitch() {
+            var state = makeid(20);
             await fetch(`/login`, {
                 method: "GET",
+                headers: {
+                    "state": state
+                }
             })
                 .then(res => {
                     if (res.status === 200) {
