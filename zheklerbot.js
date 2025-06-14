@@ -1926,9 +1926,10 @@ app.get('/enable/:channel', async (request, response) => {
 // Page for other user.
 app.get('/edit/:channel', async (request, response) => {
   try {
+    request.params.channel = request.params.channel.toLowerCase();
 
     // Check if user has permission to use this path.
-    request.params.channel = request.params.channel.toLowerCase();
+    request.params.channel = request.params.channel;
     if (!userIds[request.params.channel]) {
       response.status(404);
       response.redirect('/');
@@ -1958,10 +1959,10 @@ app.get('/edit/:channel', async (request, response) => {
       if (res.status === 200) {
 
         // Cookie checks out. Set up the page. 
-        if (rows[1].perms.split(',').includes(request.params.channel.toLowerCase())) {
+        if (rows[1].perms.split(',').includes(request.params.channel)) {
           var page = fs.readFileSync('./html/page.html').toString('utf-8');
-          page = page.replace(/#pref_name#/g, userIds[request.params.channel.toLowerCase()].pref_name);
-          page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
+          page = page.replace(/#pref_name#/g, userIds[request.params.channel].pref_name);
+          page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
           page = page.replace(/#disabled#/g, 'disabled');
           if (userIds[request.params.channel].twitch) page = page.replace('var enabled = false', 'var enabled = true');
 
@@ -1993,57 +1994,58 @@ app.get('/edit/:channel', async (request, response) => {
 app.get('/commands/:channel', async (request, response) => {
   var page = '';
   try {
+    request.params.channel = request.params.channel.toLowerCase();
 
     // Check whether this channel is in the local cache.
-    if (Object.keys(userIds).includes(request.params.channel.toLowerCase())) {
+    if (Object.keys(userIds).includes(request.params.channel)) {
 
       // They is. Set up page.
       page = fs.readFileSync("./html/commands.html").toString('utf-8');
-      page = page.replace(/#pref_name#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
-      page = page.replace(/#channel#/g, `${request.params.channel.toLowerCase()}`);
-      if (userIds[request.params.channel.toLowerCase()].duel) {
+      page = page.replace(/#pref_name#/g, userIds[request.params.channel]["pref_name"]);
+      page = page.replace(/#channel#/g, `${request.params.channel}`);
+      if (userIds[request.params.channel].duel) {
         page = page.replace(/#duels#/g, 'Enabled');
         page = page.replace(/#duelEnabled#/g, 'text-success');
       } else {
         page = page.replace(/#duels#/g, 'Disabled');
         page = page.replace(/#duelEnabled#/g, 'text-danger');
       }
-      if (userIds[request.params.channel.toLowerCase()].revolverroulette) {
+      if (userIds[request.params.channel].revolverroulette) {
         page = page.replace(/#rr#/g, 'Enabled');
         page = page.replace(/#rrEnabled#/g, 'text-success');
       } else {
         page = page.replace(/#rr#/g, 'Disabled');
         page = page.replace(/#rrEnabled#/g, 'text-danger');
       }
-      if (userIds[request.params.channel.toLowerCase()].rps) {
+      if (userIds[request.params.channel].rps) {
         page = page.replace(/#rps#/g, 'Enabled');
         page = page.replace(/#rpsEnabled#/g, 'text-success');
       } else {
         page = page.replace(/#rps#/g, 'Disabled');
         page = page.replace(/#rpsEnabled#/g, 'text-danger');
       }
-      if (userIds[request.params.channel.toLowerCase()].coinflip) {
+      if (userIds[request.params.channel].coinflip) {
         page = page.replace(/#coin#/g, 'Enabled');
         page = page.replace(/#coinEnabled#/g, 'text-success');
       } else {
         page = page.replace(/#coin#/g, 'Disabled');
         page = page.replace(/#coinEnabled#/g, 'text-danger');
       }
-      if (userIds[request.params.channel.toLowerCase()].bigvanish) {
+      if (userIds[request.params.channel].bigvanish) {
         page = page.replace(/#bigvanish#/g, 'Enabled');
         page = page.replace(/#bigvanishEnabled#/g, 'text-success');
       } else {
         page = page.replace(/#bigvanish#/g, 'Disabled');
         page = page.replace(/#bigvanishEnabled#/g, 'text-danger');
       }
-      if (userIds[request.params.channel.toLowerCase()].two_v_two) {
+      if (userIds[request.params.channel].two_v_two) {
         page = page.replace(/#twovtwo#/g, 'Enabled');
         page = page.replace(/#twovtwoEnabled#/g, 'text-success');
       } else {
         page = page.replace(/#twovtwo#/g, 'Disabled');
         page = page.replace(/#twovtwoEnabled#/g, 'text-danger');
       }
-      if (userIds[request.params.channel.toLowerCase()].customs) {
+      if (userIds[request.params.channel].customs) {
         page = page.replace(/#customs#/g, 'Enabled');
         page = page.replace(/#customsEnabled#/g, 'text-success');
       } else {
@@ -2059,7 +2061,7 @@ app.get('/commands/:channel', async (request, response) => {
         page = page.replace('Login to Twitch', 'Logout of Twitch');
 
         try {
-          if (bearer[0] && ((bearer[1].userid === request.params.channel.toLowerCase()) || (bearer[1].perms && (bearer[1].perms === request.params.channel.toLowerCase() || bearer[1].perms?.split(',') ? bearer[1].perms.split(',').includes(request.params.channel) : false)))) {
+          if (bearer[0] && ((bearer[1].userid === request.params.channel) || (bearer[1].perms && (bearer[1].perms === request.params.channel || bearer[1].perms?.split(',') ? bearer[1].perms.split(',').includes(request.params.channel) : false)))) {
             page = page.replace(/#disabled#/g, '');
           } else {
             page = page.replace(/#disabled#/g, 'disabled');
@@ -2122,9 +2124,10 @@ app.get('/commands/:channel', async (request, response) => {
 app.get('/leaderboards/:channel', async (request, response) => {
   var page = '';
   try {
+    request.params.channel = request.params.channel.toLowerCase();
 
     // Check whether this channel is in the local cache.
-    if (Object.keys(userIds).includes(request.params.channel.toLowerCase())) {
+    if (Object.keys(userIds).includes(request.params.channel)) {
       var purpose = request.header('purpose');
       if (purpose && purpose === 'check') {
         response.sendStatus(200);
@@ -2132,8 +2135,8 @@ app.get('/leaderboards/:channel', async (request, response) => {
       }
 
       page = fs.readFileSync("./html/leaderboards.html").toString('utf-8');
-      page = page.replace(/#pref_name#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
-      page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
+      page = page.replace(/#pref_name#/g, userIds[request.params.channel]["pref_name"]);
+      page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
 
       // Check what permissions this user has. Set up page.
       var cookies = await request.cookies;
@@ -2143,7 +2146,7 @@ app.get('/leaderboards/:channel', async (request, response) => {
         page = page.replace('Login to Twitch', 'Logout of Twitch');
 
         try {
-          if (bearer[0] && ((bearer[1].userid === request.params.channel.toLowerCase()) || (bearer[1].perms && (bearer[1].perms === request.params.channel || bearer[1].perms.split(',') ? bearer[1].perms.split(',').includes(request.params.channel) : false)))) {
+          if (bearer[0] && ((bearer[1].userid === request.params.channel) || (bearer[1].perms && (bearer[1].perms === request.params.channel || bearer[1].perms.split(',') ? bearer[1].perms.split(',').includes(request.params.channel) : false)))) {
             page = page.replace(/#disabled#/g, '');
           } else {
             page = page.replace(/#disabled#/g, 'disabled');
@@ -2717,19 +2720,19 @@ app.get('/modules/:channel', async (request, response) => {
 
     // Set up page.
     var page = fs.readFileSync('./html/modules.html').toString('utf-8');
-    page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
+    page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
     page = page.replace(/Login to Twitch/g, "Logout of Twitch");
     page = page.replace('var tabsEnabled = {};', `var tabsEnabled = {
-      'Revolver Roulette': ${userIds[request.params.channel.toLowerCase()].revolverroulette},
-      'Coinflip': ${userIds[request.params.channel.toLowerCase()].coinflip},
-      'Rock Paper Scissors': ${userIds[request.params.channel.toLowerCase()].rps},
-      'Big Vanish': ${userIds[request.params.channel.toLowerCase()].bigvanish},
-      'Custom Tourney': ${userIds[request.params.channel.toLowerCase()].customs},
-      'Two vs Two': ${userIds[request.params.channel.toLowerCase()]["two_v_two"]},
-      'Duels': ${userIds[request.params.channel.toLowerCase()].duel}
+      'Revolver Roulette': ${userIds[request.params.channel].revolverroulette},
+      'Coinflip': ${userIds[request.params.channel].coinflip},
+      'Rock Paper Scissors': ${userIds[request.params.channel].rps},
+      'Big Vanish': ${userIds[request.params.channel].bigvanish},
+      'Custom Tourney': ${userIds[request.params.channel].customs},
+      'Two vs Two': ${userIds[request.params.channel]["two_v_two"]},
+      'Duels': ${userIds[request.params.channel].duel}
     };`);
-    page = page.replace(/#acti#/g, userIds[request.params.channel.toLowerCase()] && userIds[request.params.channel.toLowerCase()].acti_id ? `value="${userIds[request.params.channel.toLowerCase()].acti_id}"` : 'placeholder="Activision ID"');
-    page = page.replace(/#pref_name#/g, userIds[request.params.channel.toLowerCase()].pref_name || '');
+    page = page.replace(/#acti#/g, userIds[request.params.channel] && userIds[request.params.channel].acti_id ? `value="${userIds[request.params.channel].acti_id}"` : 'placeholder="Activision ID"');
+    page = page.replace(/#pref_name#/g, userIds[request.params.channel].pref_name || '');
 
     // Editors can't access the editors and permissions for this channel.
     if (bearer[1].userid === request.params.channel) {
@@ -3613,15 +3616,15 @@ app.get('/post/:channel/reset', async (request, response) => {
     // Reset values in DB.
     helper.dbQuery(`UPDATE twovtwo SET hKills = 0, tKills = 0, o1Kills = 0, o2Kills = 0 WHERE userid = '${request.params.channel}';`);
     // @ts-ignore
-    if (userIds[request.get('tname')] && userIds[request.get('tname')]["two_v_two"] && rows[1].perms.split(',').includes(request.params.channel.toLowerCase())) {
+    if (userIds[request.get('tname')] && userIds[request.get('tname')]["two_v_two"] && rows[1].perms.split(',').includes(request.params.channel)) {
       helper.dbQuery(`UPDATE twovtwo SET hKills = 0, tKills = 0, o1Kills = 0, o2Kills = 0 WHERE userid = '${request.get('tname')}';`)
     }
     // @ts-ignore
-    if (userIds[request.get('o1name')] && userIds[request.get('o1name')]["two_v_two"] && rows[1].perms.split(',').includes(request.params.channel.toLowerCase())) {
+    if (userIds[request.get('o1name')] && userIds[request.get('o1name')]["two_v_two"] && rows[1].perms.split(',').includes(request.params.channel)) {
       helper.dbQuery(`UPDATE twovtwo SET hKills = 0, tKills = 0, o1Kills = 0, o2Kills = 0 WHERE userid = '${request.get('tname')}';`)
     }
     // @ts-ignore
-    if (userIds[request.get('o2name')] && userIds[request.get('o2name')]["two_v_two"] && rows[1].perms.split(',').includes(request.params.channel.toLowerCase())) {
+    if (userIds[request.get('o2name')] && userIds[request.get('o2name')]["two_v_two"] && rows[1].perms.split(',').includes(request.params.channel)) {
       helper.dbQuery(`UPDATE twovtwo SET hKills = 0, tKills = 0, o1Kills = 0, o2Kills = 0 WHERE userid = '${request.get('tname')}';`)
     }
 
@@ -3769,7 +3772,7 @@ app.get('/send/:channel/:hKills/:tKills/:o1Kills/:o2Kills', async (request, resp
 
     // Update scores in DB and put message to chat.
     await helper.dbQueryPromise(`UPDATE twovtwo SET hkills = ${request.params.hKills}, tkills = ${request.params.tKills}, o1kills = ${request.params.o1Kills}, o2kills = ${request.params.o2Kills}, tname = '${request.get('tname')}', o1name = '${request.get('o1name')}', o2name = '${request.get('o2name')}', mapreset = ${parseInt(request.get('mapreset') || '0')} WHERE userid = '${request.params.channel}';`);
-    await tvtscores(request.params.channel.toLowerCase(), rows);
+    await tvtscores(request.params.channel, rows);
 
     // @ts-ignore
     if (request.get('tstatus') === 'true' && userIds[request.get('tname')] && userIds[request.get('tname')]["two_v_two"] && rows[1].perms.split(',').includes(request.get('tname'))) {
@@ -3981,7 +3984,7 @@ app.get('/customs/:channel', async (request, response) => {
     // Set up page.
     var page = fs.readFileSync('./html/customs2.html').toString('utf-8');
     page = page.replace(/Login to Twitch/g, "Logout of Twitch");
-    page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
+    page = page.replace(/#Placeholder#/g, userIds[request.params.channel]["pref_name"]);
     page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
 
     if (bearer[1].userid === request.params.channel) {
