@@ -2138,11 +2138,11 @@ app.get('/leaderboards/:channel', async (request, response) => {
       page = page.replace(/#pref_name#/g, userIds[request.params.channel]["pref_name"]);
       page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
 
-      page = page.replace(/duels = ""/g, `duels = \`${JSON.stringify(await duelLb(request.params.channel))}\``);
-      page = page.replace(/rr = ""/g, `rr = \`${JSON.stringify(await rrLb(request.params.channel))}\``);
-      page = page.replace(/rps = ""/g, `rps = \`${JSON.stringify(await rpsLb(request.params.channel))}\``);
-      page = page.replace(/coin = ""/g, `coin = \`${JSON.stringify(await coinLb(request.params.channel))}\``);
-      page = page.replace(/bigvanish = ""/g, `bigvanish = \`${JSON.stringify(await bigvanishLb(request.params.channel))}\``);
+      page = page.replace(/duels = ""/g, `duels = JSON.parse(\`${JSON.stringify(await duelLb(request.params.channel))}\`)`);
+      page = page.replace(/rr = ""/g, `rr = JSON.parse(\`${JSON.stringify(await rrLb(request.params.channel))}\`)`);
+      page = page.replace(/rps = ""/g, `rps = JSON.parse(\`${JSON.stringify(await rpsLb(request.params.channel))}\`)`);
+      page = page.replace(/coin = ""/g, `coin = JSON.parse(\`${JSON.stringify(await coinLb(request.params.channel))}\`)`);
+      page = page.replace(/bigvanish = ""/g, `bigvanish = JSON.parse(\`${JSON.stringify(await bigvanishLb(request.params.channel))}\`)`);
 
       // Check what permissions this user has. Set up page.
       var cookies = await request.cookies;
