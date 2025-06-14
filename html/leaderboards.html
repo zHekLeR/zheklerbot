@@ -74,7 +74,7 @@
                   <div class="form-check">
                      <input class="form-check-input border-3" type="radio" name="radioPop" id="radioStream" checked>
                      <label class="form-check-label" for="radioStream">
-                        #channel#
+                        #pref_name#
                      </label>
                   </div>
                   <div class="form-check">
@@ -181,6 +181,8 @@
                } else if (res.status != 200) {
                   appendAlert('Fetch call for Revolver Roulette has returned status code: ' + res.status, 'danger');
                   failure = true;
+               } else {
+                  window.location.href = `/leaderboards/${searchInput.value}`
                }
             })
             .catch(err => {
