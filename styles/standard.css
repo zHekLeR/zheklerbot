@@ -15,3 +15,9 @@
     font-size: 1.25rem;
     margin-left: 0.5rem;
 }
+
+@media (min-width: 576px) {
+    .w-sm-100 {
+        width: 100%;
+    }
+}
