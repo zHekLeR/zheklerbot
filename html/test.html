@@ -207,6 +207,7 @@
                             });
                     }
                     if (failure) return;
+                    console.log(JSON.stringify(duels));
 
                     for (var i = 0; i < 10; i++) {
                         if (duels.wins.stream[i]) {
@@ -238,7 +239,7 @@
                         }
 
                         if (duels.worst_ratio.stream[i]) {
-                            var row1 = document.getElementsByClassName('table-4')[0].insertRow();
+                            var row1 = document.getElementsByClassName('table-5')[0].insertRow();
                             row1.insertCell(0).innerHTML = i + 1;
                             row1.insertCell(1).innerHTML = duels.worst_ratio.stream[i].userid;
                             row1.insertCell(2).innerHTML = `${duels.worst_ratio.stream[i].wins} / ${parseInt(duels.worst_ratio.stream[i].wins) + parseInt(duels.worst_ratio.stream[i].losses)} - ${duels.worst_ratio.stream[i].percent}%`;
@@ -314,6 +315,7 @@
                             });
                     }
                     if (failure) return;
+                    console.log(JSON.stringify(rr));
 
                     for (var i = 0; i < 10; i++) {
                         if (rr.survive.stream[i]) {
