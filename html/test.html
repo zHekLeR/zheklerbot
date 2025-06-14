@@ -256,7 +256,7 @@
             switch (btn) {
                 case "duels":
                     if (!duels) {
-                        await fetch('/leaderboards/#channel#/duels')
+                        await fetch('/leaderboards/zhekler/duels')
                             .then(async res => {
                                 if (res.status != 200) {
                                     appendAlert('Fetch call for Duels has returned status code: ' + res.status, 'danger');
@@ -364,7 +364,7 @@
 
                 case "rr":
                     if (!rr) {
-                        await fetch('/leaderboards/#channel#/rr')
+                        await fetch('/leaderboards/zhekler/rr')
                             .then(async res => {
                                 if (res.status != 200) {
                                     appendAlert('Fetch call for Revolver Roulette has returned status code: ' + res.status, 'danger');
@@ -374,7 +374,7 @@
                                 console.log(rr);
                             })
                             .catch(err => {
-                                appendAlert('Fetch call for Revolver Roulette has failed: ' + res.status, 'danger');
+                                appendAlert('Fetch call for Revolver Roulette has failed: ' + err, 'danger');
                                 failure = true;
                             });
                     }
@@ -457,7 +457,7 @@
 
                 case "rps":
                     if (!rps) {
-                        await fetch('/leaderboards/#channel#/rps')
+                        await fetch('/leaderboards/zhekler/rps')
                             .then(async res => {
                                 if (res.status != 200) {
                                     appendAlert('Fetch call for Rock Paper Scissors has returned status code: ' + res.status, 'danger');
@@ -466,7 +466,7 @@
                                 rps = await res.json();
                             })
                             .catch(err => {
-                                appendAlert('Fetch call for Rock Paper Scissors has failed: ' + res.status, 'danger');
+                                appendAlert('Fetch call for Rock Paper Scissors has failed: ' + err, 'danger');
                                 failure = true;
                             });
                     }
@@ -533,7 +533,7 @@
 
                 case "coin":
                     if (!coin) {
-                        await fetch('/leaderboards/#channel#/coin')
+                        await fetch('/leaderboards/zhekler/coin')
                             .then(async res => {
                                 if (res.status != 200) {
                                     appendAlert('Fetch call for Coinflip has returned status code: ' + res.status, 'danger');
@@ -542,7 +542,7 @@
                                 coin = await res.json();
                             })
                             .catch(err => {
-                                appendAlert('Fetch call for Coinflip has failed: ' + res.status, 'danger');
+                                appendAlert('Fetch call for Coinflip has failed: ' + err, 'danger');
                                 failure = true;
                             });
                     }
@@ -593,7 +593,7 @@
 
                 case "bigvanish":
                     if (!bigvanish) {
-                        await fetch('/leaderboards/#channel#/bigvanish')
+                        await fetch('/leaderboards/zhekler/bigvanish')
                             .then(async res => {
                                 if (res.status != 200) {
                                     appendAlert('Fetch call for Big Vanish has returned status code: ' + res.status, 'danger');
@@ -602,7 +602,7 @@
                                 bigvanish = await res.json();
                             })
                             .catch(err => {
-                                appendAlert('Fetch call for Big Vanish has failed: ' + res.status, 'danger');
+                                appendAlert('Fetch call for Big Vanish has failed: ' + err, 'danger');
                                 failure = true;
                             });
                     }
