@@ -109,10 +109,14 @@
 
          <div class="container py-3">
             <label for="searchInput" class="form-label">Find another stream</label>
-            <div class="input-group ">
-               <input type="text" id="searchInput" class="form-control" aria-describedby="searchStream"
-                  placeholder="Enter Twitch username">
-               <button type="button" class="btn btn-success" id="searchBtn">Search</button>
+            <div class="row">
+               <div class="col-12 col-md-6 col-lg-5 col-xl-4">
+                  <div class="input-group ">
+                     <input type="text" id="searchInput" class="form-control" aria-describedby="searchStream"
+                        placeholder="Enter Twitch username">
+                     <button type="button" class="btn btn-success" id="searchBtn">Search</button>
+                  </div>
+               </div>
             </div>
          </div>
       </div>
@@ -170,7 +174,7 @@
       });
 
       async function search() {
-         await fetch(`/leaderboards/${searchInput.value}`, {
+         await fetch(`/leaderboards/${searchInput.value.toLowerCase()}`, {
             headers: {
                "purpose": "check",
             }
@@ -182,7 +186,7 @@
                   appendAlert('Fetch call for Revolver Roulette has returned status code: ' + res.status, 'danger');
                   failure = true;
                } else {
-                  window.location.href = `/leaderboards/${searchInput.value}`
+                  window.location.href = `/leaderboards/${searchInput.value.toLowerCase()}`
                }
             })
             .catch(err => {
