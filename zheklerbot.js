@@ -2057,6 +2057,7 @@ app.get('/commands/:channel', async (request, response) => {
         var bearer = await helper.checkBearer(cookies["auth"]);
 
         page = page.replace('Login to Twitch', 'Logout of Twitch');
+        console.log(JSON.stringify(bearer[1]));
 
         try {
           if (bearer[0] && ((bearer[1].userid === request.params.channel.toLowerCase()) || (bearer[1].perms & (bearer[1].perms === request.params.channel.toLowerCase() || bearer[1].perms?.split(',') ? bearer[1].perms.split(',').includes(request.params.channel) : false)))) {
