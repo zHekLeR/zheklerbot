@@ -40,7 +40,7 @@
    <main>
       <div class="container pt-3">
          <div id="liveAlertPlaceholder"></div>
-         <h1 class="text-center pb-5">#pref_name#'s Commands</h1>
+         <h2 class="text-center pb-5">#pref_name#'s Commands</h2>
          <div class="row align-items-center">
             <div class="col-0 col-sm-1"></div>
             <div class="col-6 col-sm-5 col-md-6 fs-4 fw-bold mb-2">
@@ -679,8 +679,12 @@
       }
 
       async function twitch() {
+         var state = makeid(20);
          await fetch(`/login`, {
             method: "GET",
+            headers: {
+               "state": state
+            }
          })
             .then(res => {
                if (res.status === 200) {
