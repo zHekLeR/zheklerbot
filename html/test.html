@@ -240,6 +240,13 @@
         const bigvanishBtn = document.getElementById("bigvanish");
         if (bigvanishBtn) bigvanishBtn.addEventListener('click', () => { getStuff("bigvanish"); });
 
+        const selectBtn = document.getElementById("subcat");
+        if (selectBtn) selectBtn.addEventListener('change', () => { subSwitch(); })
+        const streamBtn = document.getElementById("radioStream");
+        if (streamBtn) streamBtn.addEventListener('click', () => { switchBoard(0); })
+        const globalBtn = document.getElementById("radioGlobal");
+        if (globalBtn) globalBtn.addEventListener('click', () => { switchBoard(1); })
+
         var duels, rr, rps, coin, bigvanish, failure;
 
         var current = {
