@@ -2082,7 +2082,32 @@ app.get('/commands/:channel', async (request, response) => {
       response.send(page);
     } else {
       response.status(404);
-      response.redirect('/not-found');
+      var page = fs.readFileSync("./html/not_found.html").toString('utf-8');
+
+      let cookies = await request.cookies;
+
+      if (cookies["auth"]) {
+        page = page.replace('Login to Twitch', 'Logout of Twitch');
+
+        let rows = await helper.checkBearer(cookies["auth"]);
+        if (!rows[0]) {
+          response.clearCookie('auth', {
+            'domain': '.zhekbot.com',
+            secure: true,
+            httpOnly: true
+          });
+          page = page.replace(/#disabled#/g, 'disabled')
+          page = page.replace(/#channel#/g, 'zhekler');
+        } else {
+          page = page.replace('Login to Twitch', 'Logout of Twitch');
+          page = page.replace(/#disabled#/g, '')
+          page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
+        }
+      } else {
+        page = page.replace(/#disabled#/g, 'disabled')
+        page = page.replace(/#channel#/g, 'zhekler');
+      }
+      response.send(page);
       return;
     }
 
@@ -2100,6 +2125,12 @@ app.get('/leaderboards/:channel', async (request, response) => {
 
     // Check whether this channel is in the local cache.
     if (Object.keys(userIds).includes(request.params.channel.toLowerCase())) {
+      var purpose = request.header('purpose');
+      if (purpose && purpose === 'check') {
+        response.sendStatus(200);
+        return;
+      }
+
       page = fs.readFileSync("./html/leaderboards.html").toString('utf-8');
       page = page.replace(/#pref_name#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
       page = page.replace(/#channel#/g, userIds[request.params.channel.toLowerCase()].user_id);
@@ -2134,8 +2165,39 @@ app.get('/leaderboards/:channel', async (request, response) => {
 
       response.send(page);
     } else {
+      var purpose = request.header('purpose');
+      if (purpose && purpose === 'check') {
+        response.sendStatus(404);
+        return;
+      }
+
       response.status(404);
-      response.redirect('/not-found');
+      var page = fs.readFileSync("./html/not_found.html").toString('utf-8');
+
+      let cookies = await request.cookies;
+
+      if (cookies["auth"]) {
+        page = page.replace('Login to Twitch', 'Logout of Twitch');
+
+        let rows = await helper.checkBearer(cookies["auth"]);
+        if (!rows[0]) {
+          response.clearCookie('auth', {
+            'domain': '.zhekbot.com',
+            secure: true,
+            httpOnly: true
+          });
+          page = page.replace(/#disabled#/g, 'disabled')
+          page = page.replace(/#channel#/g, 'zhekler');
+        } else {
+          page = page.replace('Login to Twitch', 'Logout of Twitch');
+          page = page.replace(/#disabled#/g, '')
+          page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
+        }
+      } else {
+        page = page.replace(/#disabled#/g, 'disabled')
+        page = page.replace(/#channel#/g, 'zhekler');
+      }
+      response.send(page);
       return;
     }
 
@@ -2313,7 +2375,32 @@ app.get('/editors/:channel', async (request, response) => {
     // Check whether this channel is in local cache.
     if (!userIds[request.params.channel]) {
       response.status(404);
-      response.redirect('/not-found');
+      var page = fs.readFileSync("./html/not_found.html").toString('utf-8');
+
+      let cookies = await request.cookies;
+
+      if (cookies["auth"]) {
+        page = page.replace('Login to Twitch', 'Logout of Twitch');
+
+        let rows = await helper.checkBearer(cookies["auth"]);
+        if (!rows[0]) {
+          response.clearCookie('auth', {
+            'domain': '.zhekbot.com',
+            secure: true,
+            httpOnly: true
+          });
+          page = page.replace(/#disabled#/g, 'disabled')
+          page = page.replace(/#channel#/g, 'zhekler');
+        } else {
+          page = page.replace('Login to Twitch', 'Logout of Twitch');
+          page = page.replace(/#disabled#/g, '')
+          page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
+        }
+      } else {
+        page = page.replace(/#disabled#/g, 'disabled')
+        page = page.replace(/#channel#/g, 'zhekler');
+      }
+      response.send(page);
       return;
     }
 
@@ -2364,7 +2451,32 @@ app.get('/addeditor/:channel', async (request, response) => {
     // Check whether this channel is in the local cache.
     if (!userIds[request.params.channel] || !request.get('editor')) {
       response.status(404);
-      response.redirect('/not-found');
+      var page = fs.readFileSync("./html/not_found.html").toString('utf-8');
+
+      let cookies = await request.cookies;
+
+      if (cookies["auth"]) {
+        page = page.replace('Login to Twitch', 'Logout of Twitch');
+
+        let rows = await helper.checkBearer(cookies["auth"]);
+        if (!rows[0]) {
+          response.clearCookie('auth', {
+            'domain': '.zhekbot.com',
+            secure: true,
+            httpOnly: true
+          });
+          page = page.replace(/#disabled#/g, 'disabled')
+          page = page.replace(/#channel#/g, 'zhekler');
+        } else {
+          page = page.replace('Login to Twitch', 'Logout of Twitch');
+          page = page.replace(/#disabled#/g, '')
+          page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
+        }
+      } else {
+        page = page.replace(/#disabled#/g, 'disabled')
+        page = page.replace(/#channel#/g, 'zhekler');
+      }
+      response.send(page);
       return;
     }
 
@@ -2409,7 +2521,32 @@ app.get('/removeeditor/:channel', async (request, response) => {
     // Check whether this channel is in the local cache.
     if (!userIds[request.params.channel]) {
       response.status(404);
-      response.redirect('/not-found');
+      var page = fs.readFileSync("./html/not_found.html").toString('utf-8');
+
+      let cookies = await request.cookies;
+
+      if (cookies["auth"]) {
+        page = page.replace('Login to Twitch', 'Logout of Twitch');
+
+        let rows = await helper.checkBearer(cookies["auth"]);
+        if (!rows[0]) {
+          response.clearCookie('auth', {
+            'domain': '.zhekbot.com',
+            secure: true,
+            httpOnly: true
+          });
+          page = page.replace(/#disabled#/g, 'disabled')
+          page = page.replace(/#channel#/g, 'zhekler');
+        } else {
+          page = page.replace('Login to Twitch', 'Logout of Twitch');
+          page = page.replace(/#disabled#/g, '')
+          page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
+        }
+      } else {
+        page = page.replace(/#disabled#/g, 'disabled')
+        page = page.replace(/#channel#/g, 'zhekler');
+      }
+      response.send(page);
       return;
     }
 
@@ -2456,7 +2593,32 @@ app.get('/permissions/:channel', async (request, response) => {
     // Check whether this channel is in the local cache.
     if (!userIds[request.params.channel]) {
       response.status(404);
-      response.redirect('/not-found');
+      var page = fs.readFileSync("./html/not_found.html").toString('utf-8');
+
+      let cookies = await request.cookies;
+
+      if (cookies["auth"]) {
+        page = page.replace('Login to Twitch', 'Logout of Twitch');
+
+        let rows = await helper.checkBearer(cookies["auth"]);
+        if (!rows[0]) {
+          response.clearCookie('auth', {
+            'domain': '.zhekbot.com',
+            secure: true,
+            httpOnly: true
+          });
+          page = page.replace(/#disabled#/g, 'disabled')
+          page = page.replace(/#channel#/g, 'zhekler');
+        } else {
+          page = page.replace('Login to Twitch', 'Logout of Twitch');
+          page = page.replace(/#disabled#/g, '')
+          page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
+        }
+      } else {
+        page = page.replace(/#disabled#/g, 'disabled')
+        page = page.replace(/#channel#/g, 'zhekler');
+      }
+      response.send(page);
       return;
     }
 
@@ -2508,7 +2670,32 @@ app.get('/modules/:channel', async (request, response) => {
     // Check whether this channel is in the local cache.
     if (!userIds[request.params.channel]) {
       response.status(404);
-      response.redirect('/not-found');
+      var page = fs.readFileSync("./html/not_found.html").toString('utf-8');
+
+      let cookies = await request.cookies;
+
+      if (cookies["auth"]) {
+        page = page.replace('Login to Twitch', 'Logout of Twitch');
+
+        let rows = await helper.checkBearer(cookies["auth"]);
+        if (!rows[0]) {
+          response.clearCookie('auth', {
+            'domain': '.zhekbot.com',
+            secure: true,
+            httpOnly: true
+          });
+          page = page.replace(/#disabled#/g, 'disabled')
+          page = page.replace(/#channel#/g, 'zhekler');
+        } else {
+          page = page.replace('Login to Twitch', 'Logout of Twitch');
+          page = page.replace(/#disabled#/g, '')
+          page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
+        }
+      } else {
+        page = page.replace(/#disabled#/g, 'disabled')
+        page = page.replace(/#channel#/g, 'zhekler');
+      }
+      response.send(page);
       return;
     }
 
@@ -2569,7 +2756,32 @@ app.get('/modules/:channel/:module', async (request, response) => {
     // Check whether this channel is in the local cache.
     if (!userIds[request.params.channel]) {
       response.status(404);
-      response.redirect('/not-found');
+      var page = fs.readFileSync("./html/not_found.html").toString('utf-8');
+
+      let cookies = await request.cookies;
+
+      if (cookies["auth"]) {
+        page = page.replace('Login to Twitch', 'Logout of Twitch');
+
+        let rows = await helper.checkBearer(cookies["auth"]);
+        if (!rows[0]) {
+          response.clearCookie('auth', {
+            'domain': '.zhekbot.com',
+            secure: true,
+            httpOnly: true
+          });
+          page = page.replace(/#disabled#/g, 'disabled')
+          page = page.replace(/#channel#/g, 'zhekler');
+        } else {
+          page = page.replace('Login to Twitch', 'Logout of Twitch');
+          page = page.replace(/#disabled#/g, '')
+          page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
+        }
+      } else {
+        page = page.replace(/#disabled#/g, 'disabled')
+        page = page.replace(/#channel#/g, 'zhekler');
+      }
+      response.send(page);
       return;
     }
 
@@ -2749,9 +2961,34 @@ app.get('/modules/:channel/:module', async (request, response) => {
 
 //     // Check whether this channel is in the local cache.
 //     if (!userIds[request.params.channel]) {
-//       response.status(404);
-//       response.redirect('/not-found');
-//       return;
+//     response.status(404);
+//     var page = fs.readFileSync("./html/not_found.html").toString('utf-8');
+
+//     let cookies = await request.cookies;
+
+//     if (cookies["auth"]) {
+//       page = page.replace('Login to Twitch', 'Logout of Twitch');
+
+//       let rows = await helper.checkBearer(cookies["auth"]);
+//       if (!rows[0]) {
+//         response.clearCookie('auth', {
+//           'domain': '.zhekbot.com',
+//           secure: true,
+//           httpOnly: true
+//         });
+//         page = page.replace(/#disabled#/g, 'disabled')
+//         page = page.replace(/#channel#/g, 'zhekler');
+//       } else {
+//         page = page.replace('Login to Twitch', 'Logout of Twitch');
+//         page = page.replace(/#disabled#/g, '')
+//         page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
+//       }
+//     } else {
+//       page = page.replace(/#disabled#/g, 'disabled')
+//       page = page.replace(/#channel#/g, 'zhekler');
+//     }
+//     response.send(page);
+//     return;
 //     }
 
 //     // Check permissions. Editors and channel owner may use this path.
@@ -2796,7 +3033,32 @@ app.get('/newname/:channel', async (request, response) => {
     // Check whether this channel is in the local cache.
     if (!userIds[request.params.channel]) {
       response.status(404);
-      response.redirect('/not-found');
+      var page = fs.readFileSync("./html/not_found.html").toString('utf-8');
+
+      let cookies = await request.cookies;
+
+      if (cookies["auth"]) {
+        page = page.replace('Login to Twitch', 'Logout of Twitch');
+
+        let rows = await helper.checkBearer(cookies["auth"]);
+        if (!rows[0]) {
+          response.clearCookie('auth', {
+            'domain': '.zhekbot.com',
+            secure: true,
+            httpOnly: true
+          });
+          page = page.replace(/#disabled#/g, 'disabled')
+          page = page.replace(/#channel#/g, 'zhekler');
+        } else {
+          page = page.replace('Login to Twitch', 'Logout of Twitch');
+          page = page.replace(/#disabled#/g, '')
+          page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
+        }
+      } else {
+        page = page.replace(/#disabled#/g, 'disabled')
+        page = page.replace(/#channel#/g, 'zhekler');
+      }
+      response.send(page);
       return;
     }
 
@@ -3060,7 +3322,32 @@ app.get('/twovtwo/:channel', async (request, response) => {
     // Check whether this channel is in the local cache.
     if (!userIds[request.params.channel]) {
       response.status(404);
-      response.redirect('/not-found');
+      var page = fs.readFileSync("./html/not_found.html").toString('utf-8');
+
+      let cookies = await request.cookies;
+
+      if (cookies["auth"]) {
+        page = page.replace('Login to Twitch', 'Logout of Twitch');
+
+        let rows = await helper.checkBearer(cookies["auth"]);
+        if (!rows[0]) {
+          response.clearCookie('auth', {
+            'domain': '.zhekbot.com',
+            secure: true,
+            httpOnly: true
+          });
+          page = page.replace(/#disabled#/g, 'disabled')
+          page = page.replace(/#channel#/g, 'zhekler');
+        } else {
+          page = page.replace('Login to Twitch', 'Logout of Twitch');
+          page = page.replace(/#disabled#/g, '')
+          page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
+        }
+      } else {
+        page = page.replace(/#disabled#/g, 'disabled')
+        page = page.replace(/#channel#/g, 'zhekler');
+      }
+      response.send(page);
       return;
     }
 
@@ -3203,7 +3490,32 @@ app.get('/twovtwoscores/:channel', async (request, response) => {
     // Check whether this user is in the local cache and has zHekBot enabled.
     if (!userIds[request.params.channel] || !userIds[request.params.channel].twitch) {
       response.status(404);
-      response.redirect('/not-found');
+      var page = fs.readFileSync("./html/not_found.html").toString('utf-8');
+
+      let cookies = await request.cookies;
+
+      if (cookies["auth"]) {
+        page = page.replace('Login to Twitch', 'Logout of Twitch');
+
+        let rows = await helper.checkBearer(cookies["auth"]);
+        if (!rows[0]) {
+          response.clearCookie('auth', {
+            'domain': '.zhekbot.com',
+            secure: true,
+            httpOnly: true
+          });
+          page = page.replace(/#disabled#/g, 'disabled')
+          page = page.replace(/#channel#/g, 'zhekler');
+        } else {
+          page = page.replace('Login to Twitch', 'Logout of Twitch');
+          page = page.replace(/#disabled#/g, '')
+          page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
+        }
+      } else {
+        page = page.replace(/#disabled#/g, 'disabled')
+        page = page.replace(/#channel#/g, 'zhekler');
+      }
+      response.send(page);
       return;
     }
 
@@ -3254,7 +3566,32 @@ app.get('/post/:channel/reset', async (request, response) => {
     // Check whether this user is in the local cache and has zHekBot enabled.
     if (!userIds[request.params.channel] || !userIds[request.params.channel].twitch) {
       response.status(404);
-      response.redirect('/not-found');
+      var page = fs.readFileSync("./html/not_found.html").toString('utf-8');
+
+      let cookies = await request.cookies;
+
+      if (cookies["auth"]) {
+        page = page.replace('Login to Twitch', 'Logout of Twitch');
+
+        let rows = await helper.checkBearer(cookies["auth"]);
+        if (!rows[0]) {
+          response.clearCookie('auth', {
+            'domain': '.zhekbot.com',
+            secure: true,
+            httpOnly: true
+          });
+          page = page.replace(/#disabled#/g, 'disabled')
+          page = page.replace(/#channel#/g, 'zhekler');
+        } else {
+          page = page.replace('Login to Twitch', 'Logout of Twitch');
+          page = page.replace(/#disabled#/g, '')
+          page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
+        }
+      } else {
+        page = page.replace(/#disabled#/g, 'disabled')
+        page = page.replace(/#channel#/g, 'zhekler');
+      }
+      response.send(page);
       return;
     }
 
@@ -3308,7 +3645,32 @@ app.get('/post/:channel/enable', jsonParser, async (request, response) => {
     // Check whether this user is in the local cache and has zHekBot enabled.
     if (!userIds[request.params.channel] || !userIds[request.params.channel].twitch) {
       response.status(404);
-      response.redirect('/not-found');
+      var page = fs.readFileSync("./html/not_found.html").toString('utf-8');
+
+      let cookies = await request.cookies;
+
+      if (cookies["auth"]) {
+        page = page.replace('Login to Twitch', 'Logout of Twitch');
+
+        let rows = await helper.checkBearer(cookies["auth"]);
+        if (!rows[0]) {
+          response.clearCookie('auth', {
+            'domain': '.zhekbot.com',
+            secure: true,
+            httpOnly: true
+          });
+          page = page.replace(/#disabled#/g, 'disabled')
+          page = page.replace(/#channel#/g, 'zhekler');
+        } else {
+          page = page.replace('Login to Twitch', 'Logout of Twitch');
+          page = page.replace(/#disabled#/g, '')
+          page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
+        }
+      } else {
+        page = page.replace(/#disabled#/g, 'disabled')
+        page = page.replace(/#channel#/g, 'zhekler');
+      }
+      response.send(page);
       return;
     }
 
@@ -3361,7 +3723,32 @@ app.get('/send/:channel/:hKills/:tKills/:o1Kills/:o2Kills', async (request, resp
     // Check whether this channel is in the local cache.
     if (!userIds[request.params.channel] || !userIds[request.params.channel].twitch) {
       response.status(404);
-      response.redirect('/not-found');
+      var page = fs.readFileSync("./html/not_found.html").toString('utf-8');
+
+      let cookies = await request.cookies;
+
+      if (cookies["auth"]) {
+        page = page.replace('Login to Twitch', 'Logout of Twitch');
+
+        let rows = await helper.checkBearer(cookies["auth"]);
+        if (!rows[0]) {
+          response.clearCookie('auth', {
+            'domain': '.zhekbot.com',
+            secure: true,
+            httpOnly: true
+          });
+          page = page.replace(/#disabled#/g, 'disabled')
+          page = page.replace(/#channel#/g, 'zhekler');
+        } else {
+          page = page.replace('Login to Twitch', 'Logout of Twitch');
+          page = page.replace(/#disabled#/g, '')
+          page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
+        }
+      } else {
+        page = page.replace(/#disabled#/g, 'disabled')
+        page = page.replace(/#channel#/g, 'zhekler');
+      }
+      response.send(page);
       return;
     }
 
@@ -3424,7 +3811,32 @@ app.get('/twovtwo/:channel/mescore', async (request, response) => {
     // Check whether this channel is in the local cache.
     if (!userIds[request.params.channel] || !userIds[request.params.channel].twitch) {
       response.status(404);
-      response.redirect('/not-found');
+      var page = fs.readFileSync("./html/not_found.html").toString('utf-8');
+
+      let cookies = await request.cookies;
+
+      if (cookies["auth"]) {
+        page = page.replace('Login to Twitch', 'Logout of Twitch');
+
+        let rows = await helper.checkBearer(cookies["auth"]);
+        if (!rows[0]) {
+          response.clearCookie('auth', {
+            'domain': '.zhekbot.com',
+            secure: true,
+            httpOnly: true
+          });
+          page = page.replace(/#disabled#/g, 'disabled')
+          page = page.replace(/#channel#/g, 'zhekler');
+        } else {
+          page = page.replace('Login to Twitch', 'Logout of Twitch');
+          page = page.replace(/#disabled#/g, '')
+          page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
+        }
+      } else {
+        page = page.replace(/#disabled#/g, 'disabled')
+        page = page.replace(/#channel#/g, 'zhekler');
+      }
+      response.send(page);
       return;
     }
 
@@ -3522,7 +3934,32 @@ app.get('/customs/:channel', async (request, response) => {
     // Check whether this channel is in the local cache.
     if (!userIds[request.params.channel]) {
       response.status(404);
-      response.redirect('/not-found');
+      var page = fs.readFileSync("./html/not_found.html").toString('utf-8');
+
+      let cookies = await request.cookies;
+
+      if (cookies["auth"]) {
+        page = page.replace('Login to Twitch', 'Logout of Twitch');
+
+        let rows = await helper.checkBearer(cookies["auth"]);
+        if (!rows[0]) {
+          response.clearCookie('auth', {
+            'domain': '.zhekbot.com',
+            secure: true,
+            httpOnly: true
+          });
+          page = page.replace(/#disabled#/g, 'disabled')
+          page = page.replace(/#channel#/g, 'zhekler');
+        } else {
+          page = page.replace('Login to Twitch', 'Logout of Twitch');
+          page = page.replace(/#disabled#/g, '')
+          page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
+        }
+      } else {
+        page = page.replace(/#disabled#/g, 'disabled')
+        page = page.replace(/#channel#/g, 'zhekler');
+      }
+      response.send(page);
       return;
     }
 
@@ -3597,7 +4034,32 @@ app.get('/customs/update/:channel', async (request, response) => {
     // Check whether this channel is in the database and has zHekBot in chat.
     if (!userIds[request.params.channel] || !userIds[request.params.channel].twitch) {
       response.status(404);
-      response.redirect('/not-found');
+      var page = fs.readFileSync("./html/not_found.html").toString('utf-8');
+
+      let cookies = await request.cookies;
+
+      if (cookies["auth"]) {
+        page = page.replace('Login to Twitch', 'Logout of Twitch');
+
+        let rows = await helper.checkBearer(cookies["auth"]);
+        if (!rows[0]) {
+          response.clearCookie('auth', {
+            'domain': '.zhekbot.com',
+            secure: true,
+            httpOnly: true
+          });
+          page = page.replace(/#disabled#/g, 'disabled')
+          page = page.replace(/#channel#/g, 'zhekler');
+        } else {
+          page = page.replace('Login to Twitch', 'Logout of Twitch');
+          page = page.replace(/#disabled#/g, '')
+          page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
+        }
+      } else {
+        page = page.replace(/#disabled#/g, 'disabled')
+        page = page.replace(/#channel#/g, 'zhekler');
+      }
+      response.send(page);
       return;
     }
 
