@@ -3142,7 +3142,7 @@ app.get('/newname/:channel', async (request, response) => {
     }
 
     // Check new preferred name.
-    if (profanity.isProfane(request.get('pref_name') + '')) throw new Error('No profanity allowed.');
+    if (profanity.isProfane(request.get('pref_name') + '')) throw new Error('No profanity allowed. ' + request.get('pref_name'));
     userIds[request.params.channel].pref_name = request.get('pref_name');
 
     helper.dbQuery(`UPDATE allusers SET pref_name = '${request.get('pref_name')}' WHERE user_id = '${request.params.channel}';`);

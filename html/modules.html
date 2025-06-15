@@ -263,6 +263,7 @@
                         return;
                     }
                     prefName = name;
+                    document.getElementById("topHeader").innerHTML = `${name}'s zHekBot`;
                 })
                 .catch((err) => {
                     appendAlert('Fetch call in newname() has failed due to: ' + err, 'danger');
