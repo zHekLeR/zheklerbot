@@ -2456,7 +2456,7 @@ app.get('/editors/:channel', async (request, response) => {
             secure: true,
             httpOnly: true
           });
-          page = page.replace(/#disabled#/g, 'disabled')
+          page = page.replace(/#disabled#/g, 'disabled');
           page = page.replace(/#channel#/g, 'zhekler');
         } else {
           page = page.replace('Login to Twitch', 'Logout of Twitch');
@@ -2464,7 +2464,7 @@ app.get('/editors/:channel', async (request, response) => {
           page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
         }
       } else {
-        page = page.replace(/#disabled#/g, 'disabled')
+        page = page.replace(/#disabled#/g, 'disabled');
         page = page.replace(/#channel#/g, 'zhekler');
       }
       response.send(page);
@@ -2532,7 +2532,7 @@ app.get('/addeditor/:channel', async (request, response) => {
             secure: true,
             httpOnly: true
           });
-          page = page.replace(/#disabled#/g, 'disabled')
+          page = page.replace(/#disabled#/g, 'disabled');
           page = page.replace(/#channel#/g, 'zhekler');
         } else {
           page = page.replace('Login to Twitch', 'Logout of Twitch');
@@ -2540,7 +2540,7 @@ app.get('/addeditor/:channel', async (request, response) => {
           page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
         }
       } else {
-        page = page.replace(/#disabled#/g, 'disabled')
+        page = page.replace(/#disabled#/g, 'disabled');
         page = page.replace(/#channel#/g, 'zhekler');
       }
       response.send(page);
@@ -2602,7 +2602,7 @@ app.get('/removeeditor/:channel', async (request, response) => {
             secure: true,
             httpOnly: true
           });
-          page = page.replace(/#disabled#/g, 'disabled')
+          page = page.replace(/#disabled#/g, 'disabled');
           page = page.replace(/#channel#/g, 'zhekler');
         } else {
           page = page.replace('Login to Twitch', 'Logout of Twitch');
@@ -2610,7 +2610,7 @@ app.get('/removeeditor/:channel', async (request, response) => {
           page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
         }
       } else {
-        page = page.replace(/#disabled#/g, 'disabled')
+        page = page.replace(/#disabled#/g, 'disabled');
         page = page.replace(/#channel#/g, 'zhekler');
       }
       response.send(page);
@@ -2682,7 +2682,7 @@ app.get('/permissions/:channel', async (request, response) => {
           page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
         }
       } else {
-        page = page.replace(/#disabled#/g, 'disabled')
+        page = page.replace(/#disabled#/g, 'disabled');
         page = page.replace(/#channel#/g, 'zhekler');
       }
       response.send(page);
@@ -2751,7 +2751,7 @@ app.get('/modules/:channel', async (request, response) => {
             secure: true,
             httpOnly: true
           });
-          page = page.replace(/#disabled#/g, 'disabled')
+          page = page.replace(/#disabled#/g, 'disabled');
           page = page.replace(/#channel#/g, 'zhekler');
         } else {
           page = page.replace('Login to Twitch', 'Logout of Twitch');
@@ -2759,7 +2759,7 @@ app.get('/modules/:channel', async (request, response) => {
           page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
         }
       } else {
-        page = page.replace(/#disabled#/g, 'disabled')
+        page = page.replace(/#disabled#/g, 'disabled');
         page = page.replace(/#channel#/g, 'zhekler');
       }
       response.send(page);
@@ -2785,26 +2785,22 @@ app.get('/modules/:channel', async (request, response) => {
     // Set up page.
     var page = fs.readFileSync('./html/modules.html').toString('utf-8');
     page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
-    page = page.replace(/Login to Twitch/g, "Logout of Twitch");
     page = page.replace('var tabsEnabled = {};', `var tabsEnabled = {
-      'Revolver Roulette': ${userIds[request.params.channel].revolverroulette},
-      'Coinflip': ${userIds[request.params.channel].coinflip},
-      'Rock Paper Scissors': ${userIds[request.params.channel].rps},
-      'Big Vanish': ${userIds[request.params.channel].bigvanish},
-      'Custom Tourney': ${userIds[request.params.channel].customs},
-      'Two vs Two': ${userIds[request.params.channel]["two_v_two"]},
-      'Duels': ${userIds[request.params.channel].duel}
+      'revolverroulette': ${userIds[request.params.channel].revolverroulette},
+      'coinflip': ${userIds[request.params.channel].coinflip},
+      'rps': ${userIds[request.params.channel].rps},
+      'bigvanish': ${userIds[request.params.channel].bigvanish},
+      'customs': ${userIds[request.params.channel].customs},
+      'twovtwo': ${userIds[request.params.channel]["two_v_two"]},
+      'duel': ${userIds[request.params.channel].duel}
     };`);
-    page = page.replace(/#acti#/g, userIds[request.params.channel] && userIds[request.params.channel].acti_id ? `value="${userIds[request.params.channel].acti_id}"` : 'placeholder="Activision ID"');
     page = page.replace(/#pref_name#/g, userIds[request.params.channel].pref_name || '');
 
     // Editors can't access the editors and permissions for this channel.
     if (bearer[1].userid === request.params.channel) {
-      page = page.replace(/#editors#/g, `href="/editors/${request.params.channel}"`);
-      page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel}"`);
+      page = page.replace(/#disabled#/g, '');
     } else {
-      page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
-      page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#disabled#/g, 'disabled');
     }
 
     response.send(page);
@@ -2837,7 +2833,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
             secure: true,
             httpOnly: true
           });
-          page = page.replace(/#disabled#/g, 'disabled')
+          page = page.replace(/#disabled#/g, 'disabled');
           page = page.replace(/#channel#/g, 'zhekler');
         } else {
           page = page.replace('Login to Twitch', 'Logout of Twitch');
@@ -2845,7 +2841,7 @@ app.get('/modules/:channel/:module', async (request, response) => {
           page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
         }
       } else {
-        page = page.replace(/#disabled#/g, 'disabled')
+        page = page.replace(/#disabled#/g, 'disabled');
         page = page.replace(/#channel#/g, 'zhekler');
       }
       response.send(page);
@@ -3114,7 +3110,7 @@ app.get('/newname/:channel', async (request, response) => {
             secure: true,
             httpOnly: true
           });
-          page = page.replace(/#disabled#/g, 'disabled')
+          page = page.replace(/#disabled#/g, 'disabled');
           page = page.replace(/#channel#/g, 'zhekler');
         } else {
           page = page.replace('Login to Twitch', 'Logout of Twitch');
@@ -3122,7 +3118,7 @@ app.get('/newname/:channel', async (request, response) => {
           page = page.replace(/#channel#/g, rows[1].userid.toLowerCase());
         }
       } else {
-        page = page.replace(/#disabled#/g, 'disabled')
+        page = page.replace(/#disabled#/g, 'disabled');
         page = page.replace(/#channel#/g, 'zhekler');
       }
       response.send(page);

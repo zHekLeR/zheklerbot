@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaderboards - zHekBot</title>
+    <title>Home - zHekBot</title>
     <script src="https://kit.fontawesome.com/439a9315b4.js" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
@@ -24,97 +24,79 @@
             </button>
             <div class="collapse navbar-collapse mx-2" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
-                    <a href="/" class="nav-item nav-link">Home</a>
+                    <a href="/" class="nav-item nav-link active" aria-current="page">Home</a>
                     <a href="/commands/#channel#" class="nav-item nav-link">Commands</a>
-                    <a href="/leaderboards/#channel#" class="nav-item nav-link active"
-                        aria-current="page">Leaderboards</a>
-                    <a href="/modules/#channel#" class="nav-item nav-link #disabled#">Modules</a>
-                    <a href="/twovtwo/#channel#" class="nav-item nav-link #disabled#">Two vs Two</a>
-                    <a href="/editors/#channel#" class="nav-item nav-link #ownerdisabled#">Editors</a>
-                    <a href="/permissions/#channel#" class="nav-item nav-link #ownerdisabled#">Permissions</a>
+                    <a href="/leaderboards/#channel#" class="nav-item nav-link">Leaderboards</a>
+                    <a href="/modules/#channel#" class="nav-item nav-link">Modules</a>
+                    <a href="/twovtwo/#channel#" class="nav-item nav-link">Two vs Two</a>
+                    <a href="/editors/#channel#" class="nav-item nav-link #disabled#">Editors</a>
+                    <a href="/permissions/#channel#" class="nav-item nav-link #disabled#">Permissions</a>
                 </div>
                 <button type="button" class="btn btn-success ms-auto me-2" id="twitch"><i
-                        class="fa-brands fa-twitch"></i>Login to Twitch</button>
+                        class="fa-brands fa-twitch"></i>Logout of Twitch</button>
             </div>
         </nav>
     </header>
     <main>
         <div class="container pt-3">
             <div id="liveAlertPlaceholder"></div>
-            <h2 class="text-center pb-3">#pref_name#'s Leaderboards</h2>
-            <div class="row flex-column flex-md-row align-items-center text-center">
-                <div class="col py-1 py-md-0">
-                    <button class="btn btn-success" id="duels">Duels</button>
-                </div>
-                <div class="col py-1 py-md-0">
-                    <button class="btn btn-danger" id="rr">Revolver Roulette</button>
-                </div>
-                <div class="col py-1 py-md-0">
-                    <button class="btn btn-danger" id="rps">Rock Paper Scissors</button>
-                </div>
-                <div class="col py-1 py-md-0">
-                    <button class="btn btn-danger" id="coin">Coinflip</button>
-                </div>
-                <div class="col py-1 py-md-0">
-                    <button class="btn btn-danger" id="bigvanish">Big Vanish</button>
-                </div>
+            <h2 class="text-center" id="topHeader">#pref_name#'s zHekBot</h2>
+            <div class="form-switch form-switch-lg text-center">
+                <input type="checkbox" class="form-check-input border-3" role="switch" id="enableBot">
+                <label class="form-check-label" for="enableBot" id="enableLabel">Disabled</label>
             </div>
-
-            <div class="container">
-                <div class="row pt-4 pb-2 justify-content-center">
-                    <div class="col">
-                        <select class="form-select w-auto ms-auto" aria-label="Category select" id="subcat">
-                            <option id="option-1" value="table-1" selected>Wins</option>
-                            <option id="option-2" value="table-2">Losses</option>
-                            <option id="option-3" value="table-3">Longest Streak</option>
-                            <option id="option-4" value="table-4">Best Win Ratio</option>
-                            <option id="option-5" value="table-5">Worst Win Ratio</option>
-                        </select>
-                    </div>
-                    <div class="col">
-                        <div class="form-check">
-                            <input class="form-check-input border-3" type="radio" name="radioPop" id="radioStream"
-                                checked>
-                            <label class="form-check-label" for="radioStream">
-                                #channel#
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input border-3" type="radio" name="radioPop" id="radioGlobal">
-                            <label class="form-check-label" for="radioGlobal">
-                                Global
-                            </label>
-                        </div>
-                    </div>
+            <div class="row align-items-center py-4">
+                <div class="col-6 fw-semibold text-end my-2">
+                    Duels
                 </div>
-            </div>
-
-            <table class="table max-w-50">
-                <thead>
-                    <tr>
-                        <th scope="col">Place</th>
-                        <th scope="col">Username</th>
-                        <th scope="col">Score</th>
-                    </tr>
-                </thead>
-                <tbody class="table-1"></tbody>
-                <tbody class="table-2" hidden="true"></tbody>
-                <tbody class="table-3" hidden="true"></tbody>
-                <tbody class="table-4" hidden="true"></tbody>
-                <tbody class="table-5" hidden="true"></tbody>
-                <tbody class="table-1" hidden="true"></tbody>
-                <tbody class="table-2" hidden="true"></tbody>
-                <tbody class="table-3" hidden="true"></tbody>
-                <tbody class="table-4" hidden="true"></tbody>
-                <tbody class="table-5" hidden="true"></tbody>
-            </table>
-
-            <div class="container py-3">
-                <label for="searchInput" class="form-label">Find another stream</label>
-                <div class="input-group ">
-                    <input type="text" id="searchInput" class="form-control" aria-describedby="searchStream"
-                        placeholder="Enter Twitch username">
-                    <button type="button" class="btn btn-success" id="searchBtn">Search</button>
+                <div class="col-6">
+                    <button type="button" class="btn btn-danger my-2" id="duel">Disabled</button>
+                </div>
+                <div class="col-6 fw-semibold text-end my-2">
+                    Revolver Roulette
+                </div>
+                <div class="col-6">
+                    <button type="button" class="btn btn-danger my-2" id="revolverroulette">Disabled</button>
+                </div>
+                <div class="col-6 fw-semibold text-end my-2">
+                    Rock Paper Scissors
+                </div>
+                <div class="col-6">
+                    <button type="button" class="btn btn-danger my-2" id="rps">Disabled</button>
+                </div>
+                <div class="col-6 fw-semibold text-end my-2">
+                    Coinflip
+                </div>
+                <div class="col-6">
+                    <button type="button" class="btn btn-danger my-2" id="coinflip">Disabled</button>
+                </div>
+                <div class="col-6 fw-semibold text-end my-2">
+                    Big Vanish
+                </div>
+                <div class="col-6">
+                    <button type="button" class="btn btn-danger my-2" id="bigvanish">Disabled</button>
+                </div>
+                <div class="col-6 fw-semibold text-end my-2">
+                    Two vs Two
+                </div>
+                <div class="col-6">
+                    <button type="button" class="btn btn-danger my-2" id="two_v_two">Disabled</button>
+                </div>
+                <div class="col-6 fw-semibold text-end my-2">
+                    Customs
+                </div>
+                <div class="col-6">
+                    <button type="button" class="btn btn-danger my-2" id="customs">Disabled</button>
+                </div>
+                <div class="col-6 fw-semibold text-end my-2">
+                    Preferred Name
+                </div>
+                <div class="col-6 col-lg-4 col-xl-3 my-2">
+                    <div class="input-group w-auto">
+                        <input type="text" id="updatePrefName" class="form-control"
+                            aria-describedby="updatePreferredName" placeholder="#pref_name#">
+                        <button type="button" class="btn btn-success" id="updatePrefBtn">Update</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -126,6 +108,18 @@
     <script>
         const twitchBtn = document.getElementById("twitch");
         if (twitchBtn) twitchBtn.addEventListener('click', () => { twitch(); });
+
+        const btn = document.getElementById("enableBot"), btnLbl = document.getElementById("enableLabel");
+        if (btn) btn.addEventListener('click', () => { enable(); });
+
+        var enabled = false, btnLblClass = btnLbl.className;
+        if (enabled) {
+            btn.setAttribute("checked", "");
+            btnLbl.innerHTML = "Enabled";
+            btnLbl.className = btnLblClass + " text-success";
+        } else {
+            btnLbl.className = btnLblClass + " text-danger";
+        }
 
         const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
         const appendAlert = (message, type) => {
@@ -140,512 +134,142 @@
             alertPlaceholder.append(wrapper)
         }
 
+        const updatePrefBtn = document.getElementById("updatePrefBtn");
+        if (updatePrefBtn) updatePrefBtn.addEventListener('click', () => { newname(); });
+
         const enBtnClass = "btn btn-success";
         const disBtnClass = "btn btn-danger";
 
-        const duelsBtn = document.getElementById("duels");
-        if (duelsBtn) duelsBtn.addEventListener('click', () => { getStuff("duels"); });
-        const rrBtn = document.getElementById("rr");
-        if (rrBtn) rrBtn.addEventListener('click', () => { getStuff("rr"); });
+        const duelBtn = document.getElementById("duel");
+        if (duelBtn) duelBtn.addEventListener('click', () => { enableMod('duel'); });
+        const rrBtn = document.getElementById("revolverroulette");
+        if (rrBtn) rrBtn.addEventListener('click', () => { enableMod('revolverroulette'); });
         const rpsBtn = document.getElementById("rps");
-        if (rpsBtn) rpsBtn.addEventListener('click', () => { getStuff("rps"); });
-        const coinBtn = document.getElementById("coin");
-        if (coinBtn) coinBtn.addEventListener('click', () => { getStuff("coin"); });
+        if (rpsBtn) rpsBtn.addEventListener('click', () => { enableMod('rps'); });
+        const coinBtn = document.getElementById("coinflip");
+        if (coinBtn) coinBtn.addEventListener('click', () => { enableMod('coinflip'); });
         const bigvanishBtn = document.getElementById("bigvanish");
-        if (bigvanishBtn) bigvanishBtn.addEventListener('click', () => { getStuff("bigvanish"); });
+        if (bigvanishBtn) bigvanishBtn.addEventListener('click', () => { enableMod('bigvanish'); });
+        const twovtwoBtn = document.getElementById("two_v_two");
+        if (twovtwoBtn) twovtwoBtn.addEventListener('click', () => { enableMod('two_v_two'); });
+        const customsBtn = document.getElementById("customs");
+        if (customsBtn) customsBtn.addEventListener('click', () => { enableMod('customs'); });
 
-        const selectBtn = document.getElementById("subcat");
-        if (selectBtn) selectBtn.addEventListener('change', () => { subSwitch(); });
-        const streamBtn = document.getElementById("radioStream");
-        if (streamBtn) streamBtn.addEventListener('click', () => { switchBoard(0); });
-        const globalBtn = document.getElementById("radioGlobal");
-        if (globalBtn) globalBtn.addEventListener('click', () => { switchBoard(1); });
+        var tabsEnabled = {};
 
-        const searchBtn = document.getElementById("searchBtn");
-        if (searchBtn) searchBtn.addEventListener('click', () => { search(); });
-        const searchInput = document.getElementById("searchInput");
-        if (searchInput) searchInput.addEventListener('keypress', function (e) {
-            if (e.key === "Enter") {
-                event.preventDefault();
-                document.getElementById("searchBtn").click();
-            };
-        });
+        var tabs = Object.keys(tabsEnabled);
+        for (var i = 0; i < tabs.length; i++) {
+            var elem = document.getElementById(tabs[i]);
+            if (tabsEnabled[tabs[i]]) {
+                elem.className = enBtnClass;
+                elem.innerHTML = "Enabled"
+            }
+        }
 
-        async function search() {
-            await fetch(`/leaderboards/${searchInput.value}`)
-                .then(async res => {
-                    if (res.status == 404) {
-                        appendAlert(`We couldn't find that stream.`, 'danger');
-                    } else if (res.status != 200) {
-                        appendAlert('Fetch call for Revolver Roulette has returned status code: ' + res.status, 'danger');
-                        failure = true;
+        var prefName = document.getElementById("updatePrefName").value;
+
+        async function enable() {
+            enabled = !enabled;
+            btn.setAttribute("disabled", "");
+            setTimeout(function () { btn.removeAttribute("disabled"); }, 2000);
+
+            await fetch('/enable/#channel#')
+                .then(res => {
+                    if (res.status !== 200) {
+                        if (enabled) {
+                            btn.checked = false;
+                        } else {
+                            btn.checked = true;
+                        }
+                        btnLbl.innerHTML = enabled ? "Disabled" : "Enabled";
+                        btnLbl.className = btnLblClass + (enabled ? " text-danger" : " text-success");
+                        enabled = !enabled;
+
+                        appendAlert('Fetch call in enable() has returned status code: ' + res.status, 'danger');
+                    } else {
+                        btnLbl.innerHTML = enabled ? "Enabled" : "Disabled";
+                        btnLbl.className = btnLblClass + (enabled ? " text-success" : " text-danger");
                     }
                 })
                 .catch(err => {
-                    appendAlert('Fetch call for Revolver Roulette has failed: ' + err, 'danger');
-                    failure = true;
+                    if (enabled) {
+                        btn.checked = false;
+                    } else {
+                        btn.checked = true;
+                    }
+                    btnLbl.innerHTML = enabled ? "Disabled" : "Enabled";
+                    btnLbl.className = btnLblClass + (enabled ? " text-danger" : " text-success");
+                    enabled = !enabled;
+
+                    appendAlert('Fetch call in enable() has failed due to: ' + err, 'danger');
                 });
         }
 
-        var duels, rr, rps, coin, bigvanish, failure;
+        async function enableMod(module) {
+            var button = document.getElementById(module);
 
-        var current = {
-            "game": "duels",
-            "option": "table-1",
-            "board": 0
-        };
+            button.setAttribute("disabled", "");
+            setTimeout(function () { button.removeAttribute("disabled"); }, 2000);
 
-        var layout = `<tr>
-                         <th scope="col" class="th-1">Place</th>
-                         <th scope="col" class="th-2">Username</th>
-                         <th scope="col" class="th-3">Score</th>
-                       </tr>`;
-
-        async function getStuff(btn) {
-            let button = document.getElementById(btn);
-            document.getElementById(current.game).className = disBtnClass;
-            button.className = enBtnClass;
-            current.game = btn;
-            failure = false;
-
-            document.getElementsByClassName('table-1')[0].innerHTML = '';
-            document.getElementsByClassName('table-2')[0].innerHTML = '';
-            document.getElementsByClassName('table-3')[0].innerHTML = '';
-            document.getElementsByClassName('table-4')[0].innerHTML = '';
-            document.getElementsByClassName('table-5')[0].innerHTML = '';
-
-            document.getElementsByClassName('table-1')[1].innerHTML = '';
-            document.getElementsByClassName('table-2')[1].innerHTML = '';
-            document.getElementsByClassName('table-3')[1].innerHTML = '';
-            document.getElementsByClassName('table-4')[1].innerHTML = '';
-            document.getElementsByClassName('table-5')[1].innerHTML = '';
-
-            switch (btn) {
-                case "duels":
-                    if (!duels) {
-                        await fetch('/leaderboards/#channel#/duels')
-                            .then(async res => {
-                                if (res.status != 200) {
-                                    appendAlert('Fetch call for Duels has returned status code: ' + res.status, 'danger');
-                                    failure = true;
-                                }
-                                duels = await res.json();
-                            })
-                            .catch(err => {
-                                appendAlert('Fetch call for Duels has failed: ' + err, 'danger');
-                                failure = true;
-                            });
-                    }
-                    if (failure) return;
-
-                    for (var i = 0; i < 10; i++) {
-                        if (duels.wins.stream[i]) {
-                            var row1 = document.getElementsByClassName('table-1')[0].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = duels.wins.stream[i].userid;
-                            row1.insertCell(2).innerHTML = duels.wins.stream[i].wins;
+            if (tabsEnabled[module]) {
+                await fetch(`/modules/#channel#/${module}`)
+                    .then((res) => {
+                        if (res.status == 200) {
+                            button.innerHTML = "Disabled";
+                            button.className = disBtnClass;
+                            tabsEnabled[module] = false;
+                        } else {
+                            appendAlert(res.status == 401 ? "Account is private." : res.status == 404 ? "Account not found." : res.status == 405 ? "Bot is not enabled." : ("Fetch status code in enableMod: " + status), 'danger');
                         }
-
-                        if (duels.losses.stream[i]) {
-                            var row1 = document.getElementsByClassName('table-2')[0].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = duels.losses.stream[i].userid;
-                            row1.insertCell(2).innerHTML = duels.losses.stream[i].losses;
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        alert(err.message);
+                    });
+            } else {
+                await fetch(`/modules/#channel#/${module}`)
+                    .then((res) => {
+                        if (res.status == 200) {
+                            button.innerHTML = "Enabled";
+                            button.className = enBtnClass;
+                            tabsEnabled[module] = true;
+                        } else {
+                            appendAlert(res.status == 401 ? "Account is private." : res.status == 404 ? "Account not found." : res.status == 405 ? "Bot is not enabled." : ("Fetch status code in enableMod: " + status), 'danger');
                         }
+                    })
+                    .catch((err) => {
+                        appendAlert('Fetch call in enableMod() has failed due to: ' + err, 'danger');
+                    });
+            }
+        }
 
-                        if (duels.streak.stream[i]) {
-                            var row1 = document.getElementsByClassName('table-3')[0].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = duels.streak.stream[i].userid;
-                            row1.insertCell(2).innerHTML = duels.streak.stream[i].longest;
-                        }
+        async function newname() {
+            updatePrefBtn.setAttribute("disabled", "");
+            setTimeout(function () { updatePrefBtn.removeAttribute("disabled"); }, 2000);
 
-                        if (duels.best_ratio.stream[i]) {
-                            var row1 = document.getElementsByClassName('table-4')[0].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = duels.best_ratio.stream[i].userid;
-                            row1.insertCell(2).innerHTML = `${duels.best_ratio.stream[i].wins} / ${parseInt(duels.best_ratio.stream[i].wins) + parseInt(duels.best_ratio.stream[i].losses)} - ${duels.best_ratio.stream[i].percent}%`;
-                        }
+            var name = document.getElementById("updatePrefName").value;
 
-                        if (duels.worst_ratio.stream[i]) {
-                            var row1 = document.getElementsByClassName('table-5')[0].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = duels.worst_ratio.stream[i].userid;
-                            row1.insertCell(2).innerHTML = `${duels.worst_ratio.stream[i].wins} / ${parseInt(duels.worst_ratio.stream[i].wins) + parseInt(duels.worst_ratio.stream[i].losses)} - ${duels.worst_ratio.stream[i].percent}%`;
-                        }
-
-                        if (duels.wins["all-time"][i]) {
-                            var row1 = document.getElementsByClassName('table-1')[1].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = duels.wins["all-time"][i].userid;
-                            row1.insertCell(2).innerHTML = duels.wins["all-time"][i].wins;
-                        }
-
-                        if (duels.losses["all-time"][i]) {
-                            var row1 = document.getElementsByClassName('table-2')[1].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = duels.losses["all-time"][i].userid;
-                            row1.insertCell(2).innerHTML = duels.losses["all-time"][i].losses;
-                        }
-
-                        if (duels.streak["all-time"][i]) {
-                            var row1 = document.getElementsByClassName('table-3')[1].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = duels.streak["all-time"][i].userid;
-                            row1.insertCell(2).innerHTML = duels.streak["all-time"][i].longest;
-                        }
-
-                        if (duels.best_ratio["all-time"][i]) {
-                            var row1 = document.getElementsByClassName('table-4')[1].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = duels.best_ratio["all-time"][i].userid;
-                            row1.insertCell(2).innerHTML = `${duels.best_ratio["all-time"][i].wins} / ${(parseInt(duels.best_ratio["all-time"][i].wins) + parseInt(duels.best_ratio["all-time"][i].losses))} - ${duels.best_ratio["all-time"][i].percent}%`;
-                        }
-
-                        if (duels.worst_ratio["all-time"][i]) {
-                            var row1 = document.getElementsByClassName('table-5')[1].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = duels.worst_ratio["all-time"][i].userid;
-                            row1.insertCell(2).innerHTML = `${duels.worst_ratio["all-time"][i].wins} / ${(parseInt(duels.worst_ratio["all-time"][i].wins) + parseInt(duels.worst_ratio["all-time"][i].losses))} - ${duels.worst_ratio["all-time"][i].percent}%`;
-                        }
-                    }
-
-                    document.getElementById("option-1").innerHTML = "Wins";
-                    document.getElementById("option-1").hidden = false;
-                    document.getElementById("option-1").selected = true;
-
-                    document.getElementById("option-2").innerHTML = "Losses";
-                    document.getElementById("option-2").hidden = false;
-
-                    document.getElementById("option-3").innerHTML = "Longest Streak";
-                    document.getElementById("option-3").hidden = false;
-
-                    document.getElementById("option-4").innerHTML = "Best Win Ratio";
-                    document.getElementById("option-4").hidden = false;
-
-                    document.getElementById("option-5").innerHTML = "Worst Win Ratio";
-                    document.getElementById("option-5").hidden = false;
-
-                    break;
-
-                case "rr":
-                    if (!rr) {
-                        await fetch('/leaderboards/#channel#/rr')
-                            .then(async res => {
-                                if (res.status != 200) {
-                                    appendAlert('Fetch call for Revolver Roulette has returned status code: ' + res.status, 'danger');
-                                    failure = true;
-                                }
-                                rr = await res.json();
-                            })
-                            .catch(err => {
-                                appendAlert('Fetch call for Revolver Roulette has failed: ' + err, 'danger');
-                                failure = true;
-                            });
-                    }
-                    if (failure) return;
-                    console.log(JSON.stringify(rr));
-
-                    for (var i = 0; i < 10; i++) {
-                        if (rr.survive.stream[i]) {
-                            var row1 = document.getElementsByClassName('table-1')[0].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = rr.survive.stream[i].user_id;
-                            row1.insertCell(2).innerHTML = rr.survive.stream[i].survive;
-                        }
-
-                        if (rr.die.stream[i]) {
-                            var row1 = document.getElementsByClassName('table-2')[0].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = rr.die.stream[i].user_id;
-                            row1.insertCell(2).innerHTML = rr.die.stream[i].die;
-                        }
-
-                        if (rr.best_ratio.stream[i]) {
-                            var row1 = document.getElementsByClassName('table-3')[0].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = rr.best_ratio.stream[i].user_id;
-                            row1.insertCell(2).innerHTML = `${rr.best_ratio.stream[i].survive} / ${(parseInt(rr.best_ratio.stream[i].survive) + parseInt(rr.best_ratio.stream[i].die))} - ${rr.best_ratio.stream[i].percent}%`;
-                        }
-
-                        if (rr.worst_ratio.stream[i]) {
-                            var row1 = document.getElementsByClassName('table-4')[0].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = rr.worst_ratio.stream[i].user_id;
-                            row1.insertCell(2).innerHTML = `${rr.worst_ratio.stream[i].survive} / ${(parseInt(rr.worst_ratio.stream[i].survive) + parseInt(rr.worst_ratio.stream[i].die))} - ${rr.worst_ratio.stream[i].percent}%`;
-                        }
-
-                        if (rr.survive["all-time"][i]) {
-                            var row1 = document.getElementsByClassName('table-1')[1].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = rr.survive["all-time"][i].user_id;
-                            row1.insertCell(2).innerHTML = rr.survive["all-time"][i].survive;
-                        }
-
-                        if (rr.die["all-time"][i]) {
-                            var row1 = document.getElementsByClassName('table-2')[1].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = rr.die["all-time"][i].user_id;
-                            row1.insertCell(2).innerHTML = rr.die["all-time"][i].die;
-                        }
-
-                        if (rr.best_ratio["all-time"][i]) {
-                            var row1 = document.getElementsByClassName('table-3')[1].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = rr.best_ratio["all-time"][i].user_id;
-                            row1.insertCell(2).innerHTML = `${rr.best_ratio["all-time"][i].survive} / ${parseInt(rr.best_ratio["all-time"][i].survive) + parseInt(rr.best_ratio["all-time"][i].die)} - ${rr.best_ratio["all-time"][i].percent}%`;
-                        }
-
-                        if (rr.worst_ratio["all-time"][i]) {
-                            var row1 = document.getElementsByClassName('table-4')[1].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = rr.worst_ratio["all-time"][i].user_id;
-                            row1.insertCell(2).innerHTML = `${rr.worst_ratio["all-time"][i].survive} / ${parseInt(rr.worst_ratio["all-time"][i].survive) + parseInt(rr.worst_ratio["all-time"][i].die)} - ${rr.worst_ratio["all-time"][i].percent}%`;
-                        }
-                    }
-
-                    document.getElementById("option-1").innerHTML = "Survivals";
-                    document.getElementById("option-1").hidden = false;
-                    document.getElementById("option-1").selected = true;
-
-                    document.getElementById("option-2").innerHTML = "Deaths";
-                    document.getElementById("option-2").hidden = false;
-
-                    document.getElementById("option-3").innerHTML = "Best Win Ratio";
-                    document.getElementById("option-3").hidden = false;
-
-                    document.getElementById("option-4").innerHTML = "Worst Win Ratio";
-                    document.getElementById("option-4").hidden = false;
-
-                    document.getElementById("option-5").hidden = true;
-
-                    break;
-
-                case "rps":
-                    if (!rps) {
-                        await fetch('/leaderboards/#channel#/rps')
-                            .then(async res => {
-                                if (res.status != 200) {
-                                    appendAlert('Fetch call for Rock Paper Scissors has returned status code: ' + res.status, 'danger');
-                                    failure = true;
-                                }
-                                rps = await res.json();
-                            })
-                            .catch(err => {
-                                appendAlert('Fetch call for Rock Paper Scissors has failed: ' + err, 'danger');
-                                failure = true;
-                            });
-                    }
-                    if (failure) return;
-
-                    for (var i = 0; i < 10; i++) {
-                        if (rps.win.stream[i]) {
-                            var row1 = document.getElementsByClassName('table-1')[0].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = rps.win.stream[i].user_id;
-                            row1.insertCell(2).innerHTML = rps.win.stream[i].win;
-                        }
-
-                        if (rps.loss.stream[i]) {
-                            var row1 = document.getElementsByClassName('table-2')[0].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = rps.loss.stream[i].user_id;
-                            row1.insertCell(2).innerHTML = rps.loss.stream[i].loss;
-                        }
-
-                        if (rps.tie.stream[i]) {
-                            var row1 = document.getElementsByClassName('table-3')[0].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = rps.tie.stream[i].user_id;
-                            row1.insertCell(2).innerHTML = rps.tie.stream[i].tie;
-                        }
-
-                        if (rps.win["all-time"][i]) {
-                            var row1 = document.getElementsByClassName('table-1')[1].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = rps.win["all-time"][i].user_id;
-                            row1.insertCell(2).innerHTML = rps.win["all-time"][i].win;
-                        }
-
-                        if (rps.loss["all-time"][i]) {
-                            var row1 = document.getElementsByClassName('table-2')[1].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = rps.loss["all-time"][i].user_id;
-                            row1.insertCell(2).innerHTML = rps.loss["all-time"][i].loss;
-                        }
-
-                        if (rps.tie["all-time"][i]) {
-                            var row1 = document.getElementsByClassName('table-3')[1].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = rps.tie["all-time"][i].user_id;
-                            row1.insertCell(2).innerHTML = rps.tie["all-time"][i].tie;
-                        }
-                    }
-
-                    document.getElementById("option-1").innerHTML = "Wins";
-                    document.getElementById("option-1").hidden = false;
-                    document.getElementById("option-1").selected = true;
-
-                    document.getElementById("option-2").innerHTML = "Losses";
-                    document.getElementById("option-2").hidden = false;
-
-                    document.getElementById("option-3").innerHTML = "Ties";
-                    document.getElementById("option-3").hidden = false;
-
-                    document.getElementById("option-4").hidden = true;
-                    document.getElementById("option-5").hidden = true;
-
-                    break;
-
-                case "coin":
-                    if (!coin) {
-                        await fetch('/leaderboards/#channel#/coin')
-                            .then(async res => {
-                                if (res.status != 200) {
-                                    appendAlert('Fetch call for Coinflip has returned status code: ' + res.status, 'danger');
-                                    failure = true;
-                                }
-                                coin = await res.json();
-                            })
-                            .catch(err => {
-                                appendAlert('Fetch call for Coinflip has failed: ' + err, 'danger');
-                                failure = true;
-                            });
-                    }
-                    if (failure) return;
-
-                    for (var i = 0; i < 10; i++) {
-                        if (coin.correct.stream[i]) {
-                            var row1 = document.getElementsByClassName('table-1')[0].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = coin.correct.stream[i].user_id;
-                            row1.insertCell(2).innerHTML = coin.correct.stream[i].correct;
-                        }
-
-                        if (coin.wrong.stream[i]) {
-                            var row1 = document.getElementsByClassName('table-2')[0].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = coin.wrong.stream[i].user_id;
-                            row1.insertCell(2).innerHTML = coin.wrong.stream[i].wrong;
-                        }
-
-                        if (coin.correct["all-time"][i]) {
-                            var row1 = document.getElementsByClassName('table-1')[1].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = coin.correct["all-time"][i].user_id;
-                            row1.insertCell(2).innerHTML = coin.correct["all-time"][i].correct;
-                        }
-
-                        if (coin.wrong["all-time"][i]) {
-                            var row1 = document.getElementsByClassName('table-2')[1].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = coin.wrong["all-time"][i].user_id;
-                            row1.insertCell(2).innerHTML = coin.wrong["all-time"][i].wrong;
-                        }
-                    }
-
-                    document.getElementById("option-1").innerHTML = "Correct Guesses";
-                    document.getElementById("option-1").hidden = false;
-                    document.getElementById("option-1").selected = true;
-
-                    document.getElementById("option-2").innerHTML = "Wrong Guesses";
-                    document.getElementById("option-2").hidden = false;
-
-                    document.getElementById("option-3").hidden = true;
-                    document.getElementById("option-4").hidden = true;
-                    document.getElementById("option-5").hidden = true;
-
-                    break;
-
-                case "bigvanish":
-                    if (!bigvanish) {
-                        await fetch('/leaderboards/#channel#/bigvanish')
-                            .then(async res => {
-                                if (res.status != 200) {
-                                    appendAlert('Fetch call for Big Vanish has returned status code: ' + res.status, 'danger');
-                                    failure = true;
-                                }
-                                bigvanish = await res.json();
-                            })
-                            .catch(err => {
-                                appendAlert('Fetch call for Big Vanish has failed: ' + err, 'danger');
-                                failure = true;
-                            });
-                    }
-                    if (failure) return;
-
-                    for (var i = 0; i < 10; i++) {
-                        if (bigvanish.high.stream[i]) {
-                            var row1 = document.getElementsByClassName('table-1')[0].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = bigvanish.high.stream[i].user_id;
-                            row1.insertCell(2).innerHTML = bigvanish.high.stream[i].vanish;
-                        }
-
-                        if (bigvanish.low.stream[i]) {
-                            var row1 = document.getElementsByClassName('table-2')[0].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = bigvanish.low.stream[i].user_id;
-                            row1.insertCell(2).innerHTML = bigvanish.low.stream[i].lowest;
-                        }
-
-                        if (bigvanish.high["all-time"][i]) {
-                            var row1 = document.getElementsByClassName('table-1')[1].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = bigvanish.high["all-time"][i].user_id;
-                            row1.insertCell(2).innerHTML = bigvanish.high["all-time"][i].vanish;
-                        }
-
-                        if (bigvanish.low["all-time"][i]) {
-                            var row1 = document.getElementsByClassName('table-2')[1].insertRow();
-                            row1.insertCell(0).innerHTML = i + 1;
-                            row1.insertCell(1).innerHTML = bigvanish.low["all-time"][i].user_id;
-                            row1.insertCell(2).innerHTML = bigvanish.low["all-time"][i].lowest;
-                        }
-                    }
-
-                    document.getElementById("option-1").innerHTML = "Highest Timeout";
-                    document.getElementById("option-1").hidden = false;
-                    document.getElementById("option-1").selected = true;
-
-                    document.getElementById("option-2").innerHTML = "Lowest Timeout";
-                    document.getElementById("option-2").hidden = false;
-
-                    document.getElementById("option-3").hidden = true;
-                    document.getElementById("option-4").hidden = true;
-                    document.getElementById("option-5").hidden = true;
-                    break;
-
-                default:
-                    return;
+            if (name === prefName) {
+                appendAlert('This is already your preferred name.', 'danger');
+                return;
             }
 
-            subSwitch();
+            await fetch(`/newname/#channel#`, { headers: { "pref_name": encodeURIComponent(name) } })
+                .then((res) => {
+                    if (res.status != 200) {
+                        appendAlert('Fetch call in newname() has returned status code: ' + res.status, 'danger');
+                        return;
+                    }
+                    prefName = name;
+                })
+                .catch((err) => {
+                    appendAlert('Fetch call in newname() has failed due to: ' + err, 'danger');
+                });
         }
-
-        function subSwitch() {
-            var option = document.getElementById('subcat').value;
-            document.getElementsByClassName(current.option)[current.board].hidden = true;
-            document.getElementsByClassName(option)[current.board].hidden = false;
-            current.option = option;
-        }
-
-        function switchBoard(board) {
-            if (current.board === board) return;
-            document.getElementsByClassName(current.option)[current.board].hidden = true;
-            document.getElementsByClassName(current.option)[board].hidden = false;
-            current.board = board;
-        }
-
-        getStuff('duels');
 
         async function twitch() {
-            var state = makeid(20);
             await fetch(`/login`, {
                 method: "GET",
-                headers: {
-                    "state": state
-                }
             })
                 .then(res => {
                     if (res.status === 200) {
@@ -662,17 +286,6 @@
                     appendAlert('Fetch call in twitch() has failed due to: ' + err, 'danger');
                 });
         };
-
-        // Random string.
-        function makeid(length) {
-            var result = '';
-            var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            var charactersLength = characters.length;
-            for (var i = 0; i < length; i++) {
-                result += characters.charAt(Math.floor(Math.random() * charactersLength));
-            }
-            return result;
-        }
     </script>
 </body>
 
