@@ -2791,7 +2791,7 @@ app.get('/modules/:channel', async (request, response) => {
       'rps': ${userIds[request.params.channel].rps},
       'bigvanish': ${userIds[request.params.channel].bigvanish},
       'customs': ${userIds[request.params.channel].customs},
-      'twovtwo': ${userIds[request.params.channel]["two_v_two"]},
+      'two_v_two': ${userIds[request.params.channel]["two_v_two"]},
       'duel': ${userIds[request.params.channel].duel}
     };`);
     page = page.replace(/#pref_name#/g, userIds[request.params.channel].pref_name || '');
