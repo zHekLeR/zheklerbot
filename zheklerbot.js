@@ -2795,6 +2795,7 @@ app.get('/modules/:channel', async (request, response) => {
       'duel': ${userIds[request.params.channel].duel}
     };`);
     page = page.replace(/#pref_name#/g, userIds[request.params.channel].pref_name || '');
+    if (userIds[request.params.channel].twitch) page = page.replace('var enabled = false', 'var enabled = true');
 
     // Editors can't access the editors and permissions for this channel.
     if (bearer[1].userid === request.params.channel) {

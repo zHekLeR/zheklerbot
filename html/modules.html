@@ -252,6 +252,8 @@
             if (name === prefName) {
                 appendAlert('This is already your preferred name.', 'danger');
                 return;
+            } else if (name === '' || name.charAt(0) === ' ') {
+                return;
             }
 
             await fetch(`/newname/#channel#`, { headers: { "pref_name": encodeURIComponent(name) } })
