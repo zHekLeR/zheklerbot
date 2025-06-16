@@ -164,7 +164,11 @@
       if (globalBtn) globalBtn.addEventListener('click', () => { switchBoard(1); });
 
       const searchBtn = document.getElementById("searchBtn");
-      if (searchBtn) searchBtn.addEventListener('click', () => { search(); });
+      if (searchBtn) searchBtn.addEventListener('click', () => {
+         searchBtn.classList.add('disabled');
+         let retCode = search();
+         if (retCode) setTimeout(function () { searchBtn.classList.remove('disabled'); }, 2000);
+      });
       const searchInput = document.getElementById("searchInput");
       if (searchInput) searchInput.addEventListener('keypress', function (e) {
          if (e.key === "Enter") {

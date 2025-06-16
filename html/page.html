@@ -169,8 +169,8 @@
 
       async function enable() {
          enabled = !enabled;
-         btn.setAttribute("disabled", "");
-         setTimeout(function () { btn.removeAttribute("disabled"); }, 2000);
+         btn.classList.add('disabled');
+         setTimeout(function () { btn.classList.remove('disabled'); }, 2000);
 
          await fetch('/enable/#channel#')
             .then(res => {

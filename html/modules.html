@@ -184,8 +184,8 @@
 
         async function enable() {
             enabled = !enabled;
-            btn.setAttribute("disabled", "");
-            setTimeout(function () { btn.removeAttribute("disabled"); }, 2000);
+            btn.classList.add('disabled');
+            setTimeout(function () { btn.classList.remove('disabled'); }, 2000);
 
             await fetch('/enable/#channel#')
                 .then(res => {
@@ -222,8 +222,8 @@
         async function enableMod(module) {
             var button = document.getElementById(module);
 
-            button.setAttribute("disabled", "");
-            setTimeout(function () { button.removeAttribute("disabled"); }, 2000);
+            button.classList.add('disabled');
+            setTimeout(function () { button.classList.remove('disabled'); }, 2000);
 
             if (tabsEnabled[module]) {
                 await fetch(`/modules/#channel#/${module}`)
@@ -258,8 +258,8 @@
         }
 
         async function newname() {
-            updatePrefBtn.setAttribute("disabled", "");
-            setTimeout(function () { updatePrefBtn.removeAttribute("disabled"); }, 2000);
+            updatePrefBtn.classList.add('disabled');
+            setTimeout(function () { updatePrefBtn.classList.remove('disabled'); }, 2000);
 
             var name = document.getElementById("updatePrefName").value;
 

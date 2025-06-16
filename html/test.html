@@ -91,15 +91,15 @@
         for (let i = 0; i < removeBtns.length; i++) {
             let editor = removeBtns[i].parentNode.parentNode;
             removeBtns[i].addEventListener('click', () => {
-                removeBtns[i].setAttribute("disabled", "");
+                removeBtns[i].classList.add('disabled');
                 let retCode = remove(editor);
-                if (retCode) setTimeout(function () { removeBtns[i].removeAttribute("disabled"); }, 2000);
+                if (retCode) setTimeout(function () { removeBtns[i].classList.remove('disabled'); }, 2000);
             });
         }
 
         async function add() {
-            addEditorBtn.setAttribute("disabled", "");
-            setTimeout(function () { addEditorBtn.removeAttribute("disabled"); }, 2000);
+            addEditorBtn.classList.add('disabled');
+            setTimeout(function () { addEditorBtn.classList.remove('disabled'); }, 2000);
 
             let toadd = document.getElementById('addEditor').value.toLowerCase();
 
@@ -117,13 +117,13 @@
             await fetch('/addeditor/#channel#', { headers: { 'editor': toadd } })
                 .then(res => {
                     if (res.status == 200) {
-                        let row = document.getElementById("editors").insertRow();
-                        row.innerHTML = `<div class="row align-items-center pt-4" id="editor-${toadd}">
-                                            <div class="col-6 text-end"><span class="border border-3 py-1 px-2">${toadd}</span></div>
-                                            <div class="col-6">
-                                                <button class="btn btn-danger remove-editor">Remove</button>
-                                            </div>
-                                        </div>`
+                        let row = document.createElement('div');
+                        row.className = 'row align-items-center pt-4';
+                        row.id = `editor-${toadd}`;
+                        row.innerHTML = `<div class="col-6 text-end"><span class="border border-3 py-1 px-2">${toadd}</span></div>
+                                    <div class="col-6">
+                                       <button class="btn btn-danger remove-editor">Remove</button>
+                                    </div>`
                         removeBtns = document.getElementsByClassName('remove-editor');
                         removeBtns[removeBtns.length - 1].addEventListener('click', () => {
                             removeBtns[removeBtns.length - 1].setAttribute("disabled", "");

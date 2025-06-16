@@ -91,15 +91,15 @@
       for (let i = 0; i < removeBtns.length; i++) {
          let editor = removeBtns[i].parentNode.parentNode;
          removeBtns[i].addEventListener('click', () => {
-            removeBtns[i].setAttribute("disabled", "");
+            removeBtns[i].classList.add('disabled');
             let retCode = remove(editor);
-            if (retCode) setTimeout(function () { removeBtns[i].removeAttribute("disabled"); }, 2000);
+            if (retCode) setTimeout(function () { removeBtns[i].classList.remove('disabled'); }, 2000);
          });
       }
 
       async function add() {
-         addEditorBtn.setAttribute("disabled", "");
-         setTimeout(function () { addEditorBtn.removeAttribute("disabled"); }, 2000);
+         addEditorBtn.classList.add('disabled');
+         setTimeout(function () { addEditorBtn.classList.remove('disabled'); }, 2000);
 
          let toadd = document.getElementById('addEditor').value.toLowerCase();
 
