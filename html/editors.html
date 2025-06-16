@@ -124,6 +124,8 @@
          await fetch('/addeditor/#channel#', { headers: { 'editor': toadd } })
             .then(res => {
                if (res.status == 200) {
+                  editors[editors.length] = toadd;
+
                   let row = document.createElement('div');
                   row.className = 'row align-items-center pt-4';
                   row.id = `editor-${toadd}`;
