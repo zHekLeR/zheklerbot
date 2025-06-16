@@ -155,6 +155,7 @@
          await fetch('/removeeditor/#channel#', { headers: { 'editor': btn.id.substring(7) } })
             .then(res => {
                if (res.status == 200) {
+                  editors.splice(editors.indexOf(btn.id.substring(7)));
                   btn.parentNode.removeChild(btn);
                   return 0;
                } else {
