@@ -55,7 +55,7 @@
                works best if "zHekLeR" is a mod in the channel.
             </div>
          </div>
-         <div class="row py-4">
+         <div class="row pt-4">
             <div class="col-12">
                Here is a brief explanation of each tab above.
             </div>
@@ -66,14 +66,16 @@
             <div class="col-9 col-md-10 pt-2">
                This page.
             </div>
-
+         </div>
+         <div class="row">
             <div class="col-3 col-md-2 fw-bold pt-2">
                Commands
             </div>
             <div class="col-9 col-md-10 pt-2">
                A list of the commands available for each module and a description of what they do.
             </div>
-
+         </div>
+         <div class="row">
             <div class="col-3 col-md-2 fw-bold pt-2">
                Leaderboards
             </div>
@@ -83,14 +85,16 @@
                here.
             </div>
             <div class="col-0 col-md-2"></div>
-
+         </div>
+         <div class="row">
             <div class="col-3 col-md-2 fw-bold pt-2">
                Modules
             </div>
             <div class="col-9 col-md-10 pt-2">
                Enable or disable the different games and modules.
             </div>
-
+         </div>
+         <div class="row">
             <div class="col-3 col-md-2 fw-bold pt-2">
                Two vs Two
             </div>
@@ -100,7 +104,8 @@
                you can + or - the scores and send them to chat.
             </div>
             <div class="col-0 col-md-2"></div>
-
+         </div>
+         <div class="row">
             <div class="col-3 col-md-2 fw-bold pt-2">
                Editors
             </div>
@@ -108,7 +113,8 @@
                Add or remove people that can adjust your module settings and use the two-vs-two scorekeeping
                module.
             </div>
-
+         </div>
+         <div class="row">
             <div class="col-3 col-md-2 fw-bold pt-2">
                Permissions
             </div>
@@ -116,7 +122,7 @@
                See whose channels you are an editor for and go to their pages.
             </div>
          </div>
-         <div class="row">
+         <div class="row py-4">
             <div class="col-12">
                If you have any questions on the bot,
                recommendations, or issues, the easiest place to reach me is on <a
@@ -199,22 +205,17 @@
       }
 
       async function twitch() {
-         await fetch(`/login`, {
-            method: "GET",
-         })
+         await fetch(`/logout`)
             .then(res => {
-               if (res.status === 200) {
-                  res.text().then(res => {
-                     window.location.href = res;
-                  });
-               } else if (res.status === 201) {
+               if (res.status === 201) {
                   window.location.href = "/";
                } else {
-                  appendAlert('Fetch call in twitch() has returned status code: ' + res.status, 'danger');
+                  throw new Error("Unknown status code on /login: " + res.status);
                }
             })
             .catch(err => {
-               appendAlert('Fetch call in twitch() has failed due to: ' + err, 'danger');
+               console.log(err);
+               alert(err);
             });
       };
    </script>

@@ -2489,18 +2489,24 @@ app.get('/editors/:channel', async (request, response) => {
     // Set up page.
     var page = fs.readFileSync('./html/editors.html').toString('utf-8');
     var rows = await helper.dbQueryPromise(`SELECT * FROM permissions WHERE perms LIKE '%${request.params.channel}%';`);
-    var str = '';
+    var str = '', str2 = '';
 
     for (var i = 0; i < rows.length; i++) {
       var perms = rows[i].perms.split(',');
       if (perms.includes(request.params.channel)) {
-        str += `<tr id="editor-${rows[i].userid}"><td style="border: 1px solid gray; padding: 0.2vh 0.2vw; text-align: center;">${rows[i].userid}</td><td style="border: 1px solid gray; padding: 0.2vh 0.2vw; text-align: center;")"><a class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary" onclick="rem('editor-${rows[i].userid}')">Remove</a></td></tr><tr>&emsp;</tr>`;
+        str += `<div class="row align-items-center pt-4" id="editor-${rows[i].userid}">
+                    <div class="col-6 text-end"><span class="border border-3 py-1 px-2">${rows[i].userid}</span></div>
+                    <div class="col-6">
+                        <button class="btn btn-danger remove-editor">Remove</button>
+                    </div>
+                </div>`;
+        str2 += str2.length ? `, "${rows[i].userid}"` : `"${rows[i].userid}"`;
       }
     }
 
     page = page.replace(/#editors#/g, str);
+    page = page.replace(/var editors = []/g, `var editors = [ ${str2} ]`);
     page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
-    page = page.replace(/Login to Twitch/g, "Logout of Twitch");
 
     response.send(page);
   } catch (err) {
@@ -4043,7 +4049,7 @@ app.get('/customs/:channel', async (request, response) => {
     }
 
     // Set up page.
-    var page = fs.readFileSync('./html/customs2.html').toString('utf-8');
+    var page = fs.readFileSync('./html/customs.html').toString('utf-8');
     page = page.replace(/Login to Twitch/g, "Logout of Twitch");
     page = page.replace(/#Placeholder#/g, userIds[request.params.channel]["pref_name"]);
     page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
