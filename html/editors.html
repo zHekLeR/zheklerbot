@@ -136,7 +136,7 @@
                   removeBtns = document.getElementsByClassName('remove-editor');
                   removeBtns[removeBtns.length - 1].addEventListener('click', () => {
                      removeBtns[removeBtns.length - 1].setAttribute("disabled", "");
-                     let retCode = remove(editor);
+                     let retCode = remove(removeBtns[removeBtns.length - 1].parentNode.parentNode);
                      if (retCode) setTimeout(function () { removeBtns[removeBtns.length - 1].removeAttribute("disabled"); }, 2000);
                   });
 
