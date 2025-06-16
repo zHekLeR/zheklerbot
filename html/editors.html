@@ -86,6 +86,13 @@
 
       const addEditorBtn = document.getElementById("addEditorBtn");
       if (addEditorBtn) addEditorBtn.addEventListener('click', () => { add(); });
+      const addInput = document.getElementById("addEditor");
+      if (addInput) addInput.addEventListener('keypress', function (e) {
+         if (e.key === "Enter") {
+            event.preventDefault();
+            document.getElementById("addEditorBtn").click();
+         };
+      });
 
       var removeBtns = document.getElementsByClassName("remove-editor");
       for (let i = 0; i < removeBtns.length; i++) {
@@ -123,7 +130,9 @@
                   row.innerHTML = `<div class="col-6 text-end"><span class="border border-3 py-1 px-2">${toadd}</span></div>
                                     <div class="col-6">
                                        <button class="btn btn-danger remove-editor">Remove</button>
-                                    </div>`
+                                    </div>`;
+                  document.getElementById('editors').appendChild(row);
+
                   removeBtns = document.getElementsByClassName('remove-editor');
                   removeBtns[removeBtns.length - 1].addEventListener('click', () => {
                      removeBtns[removeBtns.length - 1].setAttribute("disabled", "");
