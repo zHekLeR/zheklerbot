@@ -2507,6 +2507,7 @@ app.get('/editors/:channel', async (request, response) => {
     page = page.replace(/#editors#/g, str);
     page = page.replace(/var editors = []/g, `var editors = [ ${str2} ]`);
     page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
+    page = page.replace(/#pref_name#/g, userIds[request.params.channel].pref_name);
 
     response.send(page);
   } catch (err) {
