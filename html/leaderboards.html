@@ -166,8 +166,8 @@
       const searchBtn = document.getElementById("searchBtn");
       if (searchBtn) searchBtn.addEventListener('click', () => {
          searchBtn.classList.add('disabled');
-         let retCode = search();
-         if (retCode) setTimeout(function () { searchBtn.classList.remove('disabled'); }, 2000);
+         setTimeout(function () { searchBtn.classList.remove('disabled'); }, 2000);
+         search();
       });
       const searchInput = document.getElementById("searchInput");
       if (searchInput) searchInput.addEventListener('keypress', function (e) {
@@ -188,18 +188,16 @@
                   appendAlert(`We couldn't find that stream.`, 'danger');
                } else if (res.status != 200) {
                   appendAlert('Fetch call for Revolver Roulette has returned status code: ' + res.status, 'danger');
-                  failure = true;
                } else {
                   window.location.href = `/leaderboards/${searchInput.value.toLowerCase()}`
                }
             })
             .catch(err => {
                appendAlert('Fetch call for Revolver Roulette has failed: ' + err, 'danger');
-               failure = true;
             });
       }
 
-      var duels = "", rr = "", rps = "", coin = "", bigvanish = "", failure;
+      var duels = "", rr = "", rps = "", coin = "", bigvanish = "";
 
       var current = {
          "game": "duels",

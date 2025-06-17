@@ -98,9 +98,7 @@
       for (let i = 0; i < removeBtns.length; i++) {
          let editor = removeBtns[i].parentNode.parentNode;
          removeBtns[i].addEventListener('click', () => {
-            removeBtns[i].classList.add('disabled');
-            let retCode = remove(editor);
-            if (retCode) setTimeout(function () { console.log("retCode " + retCode); removeBtns[i].classList.remove('disabled'); }, 2000);
+            remove(editor);
          });
       }
 
@@ -157,15 +155,15 @@
                if (res.status == 200) {
                   editors.splice(editors.indexOf(btn.id.substring(7)));
                   btn.parentNode.removeChild(btn);
-                  return 0;
+                  return;
                } else {
                   appendAlert(`Fetch in remove call returned status code: ` + res.status, 'danger');
-                  return 1;
+                  return;
                }
             })
             .catch(err => {
                appendAlert(`Fetch in remove call failed with: ` + err, 'danger');
-               return 2;
+               return;
             });
       }
 
