@@ -2714,8 +2714,8 @@ app.get('/permissions/:channel', async (request, response) => {
 
     // Set up page.
     var page = fs.readFileSync('./html/permissions.html').toString('utf-8');
-    page = page.replace(/Login to Twitch/g, "Logout of Twitch");
     page = page.replace(/#channel#/g, rows[1].userid);
+    page = page.replace(/#pref_name#/g, userIds[request.params.channel].pref_name)
 
     var perms = rows[1].perms ? rows[1].perms.split(',') : '';
     if (!perms.length) {
@@ -2723,7 +2723,9 @@ app.get('/permissions/:channel', async (request, response) => {
     } else {
       var str = '<h3 style="width: 100%; text-align: center;">Permissions:</h3>';
       for (var i = 0; i < perms.length; i++) {
-        str += `<tr><td style="padding: 2px; text-align: center;"><a href="/edit/${perms[i]}" class="btn btn--border theme-btn--primary-inverse sqs-button-element--primary">${userIds[perms[i]].pref_name}</a></td></tr><tr>&emsp;</tr>`;
+        str += `<div class="col-6 col-sm-4 col-md-3 col-xl-2 pt-3">
+                    <a class="btn btn-success" type="button" href="/edit/${perms[i]}">${userIds[perms[i]].pref_name}</a>
+                </div>`;
       }
       page = page.replace(/#permissions#/g, str);
     }
