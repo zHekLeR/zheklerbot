@@ -100,7 +100,7 @@
          removeBtns[i].addEventListener('click', () => {
             removeBtns[i].classList.add('disabled');
             let retCode = remove(editor);
-            if (retCode) setTimeout(function () { removeBtns[i].classList.remove('disabled'); }, 2000);
+            if (retCode) setTimeout(function () { console.log("retCode " + retCode); removeBtns[i].classList.remove('disabled'); }, 2000);
          });
       }
 

@@ -2650,6 +2650,7 @@ app.get('/removeeditor/:channel', async (request, response) => {
     var perms = rows[0].perms ? rows[0].perms.split(',') : "";
     perms.splice(rows[0].perms.indexOf(request.params.channel), 1);
     helper.dbQuery(`UPDATE permissions SET perms = '${perms.join(',')}' WHERE userid = '${request.get('editor')}';`);
+    console.log(rows, perms);
 
     response.sendStatus(200);
   } catch (err) {
