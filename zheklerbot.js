@@ -1945,7 +1945,7 @@ app.get('/edit/:channel', async (request, response) => {
         return;
       }
     } else {
-      response.sendStatus(401);
+      response.status(401);
       response.redirect('/');
       return;
     }
