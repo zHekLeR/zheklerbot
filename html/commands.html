@@ -510,9 +510,7 @@
                         !score
                      </div>
                      <div class="col-8 col-md-9">
-                        Displays the team scores in chat in the following format: 8 - 2 | Up 6<br>
-                        This is automatically sent to chat every 30 seconds if two vs twos are enabled and not
-                        currently paused
+                        Displays the team scores in chat in the following format: 8 - 2 | Up 6
                      </div>
                   </div>
                   <div class="row py-1 border-bottom">
@@ -694,11 +692,11 @@
                } else if (res.status === 201) {
                   window.location.href = "/";
                } else {
-                  appendAlert('Fetch call in twitch() has returned status code: ' + res.status, 'danger');
+                  appendAlert('Fetch in twitch call has returned status code: ' + res.status, 'danger');
                }
             })
             .catch(err => {
-               appendAlert('Fetch call in twitch() has failed due to: ' + err, 'danger');
+               appendAlert('Fetch in twitch call has failed due to: ' + err, 'danger');
             });
       };
 

@@ -3442,17 +3442,17 @@ app.get('/twovtwo/:channel', async (request, response) => {
 
     // Set up page.
     var page = fs.readFileSync('./html/two_v_two.html').toString('utf-8');
-    page = page.replace(/Login to Twitch/g, "Logout of Twitch");
-    page = page.replace(/#Placeholder#/g, userIds[request.params.channel.toLowerCase()]["pref_name"]);
+    page = page.replace(/#pref_name#/g, userIds[request.params.channel]["pref_name"]);
     page = page.replace(/#channel#/g, userIds[request.params.channel].user_id);
 
     if (bearer[1].userid === request.params.channel) {
-      page = page.replace(/#editors#/g, `href="/editors/${request.params.channel}"`);
-      page = page.replace(/#permissions#/g, `href="/permissions/${request.params.channel}"`);
+      page = page.replace(/#disabled#/g, '');
     } else {
-      page = page.replace(/#editors#/g, 'style="color: grey; pointer-events: none;"');
-      page = page.replace(/#permissions#/g, 'style="color: grey; pointer-events: none;"');
+      page = page.replace(/#disabled#/g, 'disabled');
     }
+
+
+    /********** Enabling score updates from the scorekeeper's Twitch account. Maybe reimplemented later **********/
 
     // if (scoreBots[bearer[1].userid] && scoreBots[bearer[1].userid].channels && !scoreBots[bearer[1].userid].channels.includes(request.params.channel)) {
     //   scoreBots[bearer[1].userid].scoreBot.join(request.params.channel);
@@ -3623,6 +3623,7 @@ app.get('/twovtwoscores/:channel', async (request, response) => {
       helper.dbQuery(`INSERT INTO twovtwo(userid, hkills, tkills, o1kills, o2kills, tname, o1name, o2name, mapreset) VALUES ('${request.params.channel}', 0, 0, 0, 0, '', '', '', 0);`);
     }
 
+    response.status(200);
     response.send(`${res[0].hkills},${res[0].tkills},${res[0].o1kills},${res[0].o2kills},${res[0].tname},${res[0].o1name},${res[0].o2name},${userIds[res[0].userid] && userIds[res[0].userid]["two_v_two"]},${userIds[res[0].tname] && userIds[res[0].tname]["two_v_two"] && rows[1].perms && rows[1].perms.split(',').includes(res[0].tname.toLowerCase())},${userIds[res[0].o1name] && userIds[res[0].o1name]["two_v_two"] && rows[1].perms && rows[1].perms.split(',').includes(res[0].o1name.toLowerCase())},${userIds[res[0].o2name] && userIds[res[0].o2name]["two_v_two"] && rows[1].perms && rows[1].perms.split(',').includes(res[0].o2name.toLowerCase())},${res[0].mapreset}`);
   } catch (err) {
     helper.dumpError(err, `2v2 scores.`);

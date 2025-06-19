@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Permissions - zHekBot</title>
+    <title>Two vs Two - zHekBot</title>
     <script src="https://kit.fontawesome.com/439a9315b4.js" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
@@ -28,10 +28,9 @@
                     <a href="/commands/#channel#" class="nav-item nav-link">Commands</a>
                     <a href="/leaderboards/#channel#" class="nav-item nav-link">Leaderboards</a>
                     <a href="/modules/#channel#" class="nav-item nav-link">Modules</a>
-                    <a href="/twovtwo/#channel#" class="nav-item nav-link">Two vs Two</a>
-                    <a href="/editors/#channel#" class="nav-item nav-link">Editors</a>
-                    <a href="/permissions/#channel#" class="nav-item nav-link active"
-                        aria-current="page">Permissions</a>
+                    <a href="/twovtwo/#channel#" class="nav-item nav-link active" aria-current="page">Two vs Two</a>
+                    <a href="/editors/#channel#" class="nav-item nav-link #disabled#">Editors</a>
+                    <a href="/permissions/#channel#" class="nav-item nav-link #disabled#">Permissions</a>
                 </div>
                 <button type="button" class="btn btn-success ms-auto me-2" id="twitch"><i
                         class="fa-brands fa-twitch"></i>Logout of Twitch</button>
@@ -41,12 +40,108 @@
     <main>
         <div class="container py-3 text-center justify-content-center">
             <div id="liveAlertPlaceholder"></div>
-            <h2 id="topHeader">#pref_name#'s Permissions</h2>
+            <h2 id="topHeader">#pref_name#'s Two vs Two</h2>
             <div class="container pt-4">
-                These are the channels to which you have editor acccess.
+                Clicking the 'Send Scores' button will update the current scores and put them in chat.
+                If you have the box beside a stream checked, the bot will respond to !score when it is typed in the
+                chat.
+                Note that the name provided must be the Twitch stream (and you must have permissions for that
+                stream).<br>
+                If the map is reset but the current scores will carry over, you can enter this in the Map Reset input
+                and it will be accounted for.
             </div>
-            <div class="row justify-content-center" id="permissions">
-
+            <div class="container pt-4">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-5 col-lg-2">
+                        <button id="send" class="btn btn-success" type="button">Send Scores</button>
+                    </div>
+                    <div class="col-3 col-lg-2"></div>
+                    <div class="col-4 col-lg-2">Respond to Score</div>
+                </div>
+                <div class="row align-items-center justify-content-center my-2">
+                    <div class="col-4 col-lg-2">
+                        <input type="text" class="form-control ms-auto" id="hName" value="#channel#" disabled>
+                    </div>
+                    <div class="col-5 col-lg-2">Kills: <button class="btn btn-success btn-square-md ms-1 changeSub"
+                            type="button">-</button><span id="hKills" class="mx-1">0</span><button
+                            class="btn btn-success btn-square-md changeAdd" type="button">+</button></div>
+                    <div class="col-3 col-lg-2">
+                        <div class="form-check text-start">
+                            <input id="hStatus" class="form-check-input border-4" type="checkbox" value="">
+                            <label class="form-check-label" for="hStatus">
+                                Enabled
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row align-items-center justify-content-center my-2">
+                    <div class="col-4 col-lg-2">
+                        <input type="text" class="form-control ms-auto" id="tName" placeholder="Teammate">
+                    </div>
+                    <div class="col-5 col-lg-2">Kills: <button class="btn btn-success btn-square-md ms-1 changeSub"
+                            type="button">-</button><span id="tKills" class="mx-1">0</span><button
+                            class="btn btn-success btn-square-md changeAdd" type="button">+</button></div>
+                    <div class="col-3 col-lg-2">
+                        <div class="form-check text-start">
+                            <input id="tStatus" class="form-check-input border-4" type="checkbox" value="">
+                            <label class="form-check-label" for="tStatus">
+                                Enabled
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row align-items-center justify-content-center my-2">
+                    <div class="col-4 col-lg-2">
+                        <input type="text" class="form-control ms-auto" id="o1Name" placeholder="Opponent 1">
+                    </div>
+                    <div class="col-5 col-lg-2">Kills: <button class="btn btn-success btn-square-md ms-1 changeSub"
+                            type="button">-</button><span id="o1Kills" class="mx-1">0</span><button
+                            class="btn btn-success btn-square-md changeAdd" type="button">+</button></div>
+                    <div class="col-3 col-lg-2">
+                        <div class="form-check text-start">
+                            <input id="o1Status" class="form-check-input border-4" type="checkbox" value="">
+                            <label class="form-check-label" for="o1Status">
+                                Enabled
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row align-items-center justify-content-center my-2">
+                    <div class="col-4 col-lg-2">
+                        <input type="text" class="form-control ms-auto" id="o2Name" placeholder="Opponent 2">
+                    </div>
+                    <div class="col-5 col-lg-2">Kills: <button class="btn btn-success btn-square-md ms-1 changeSub"
+                            type="button">-</button><span id="o2Kills" class="mx-1">0</span><button
+                            class="btn btn-success btn-square-md changeAdd" type="button">+</button></div>
+                    <div class="col-3 col-lg-2">
+                        <div class="form-check text-start">
+                            <input id="o2Status" class="form-check-input border-4" type="checkbox" value="">
+                            <label class="form-check-label" for="o2Status">
+                                Enabled
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row align-items-center justify-content-center my-4">
+                    <div class="col">
+                        <button id="resetBtn" class="btn btn-success" type="button">Reset All</button>
+                    </div>
+                </div>
+                <div class="row align-items-center justify-content-center my-1">
+                    <div class="col">
+                        Map Reset (carry scores over):
+                    </div>
+                </div>
+                <div class="row align-items-center justify-content-center mt-1 mb-4">
+                    <div class="col-6 col-lg-3 text-end">
+                        <button class="btn btn-success btn-square-md ms-1 me-2 changeSub" type="button">-</button>
+                        <button id="zeroBtn" class="btn btn-success btn-height-32">Zero</span>
+                            <button class="btn btn-success btn-square-md ms-2 changeAdd" type="button">+</button>
+                    </div>
+                    <div class="col-4 col-lg-2 text-start" id="updown">
+                        0
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -55,6 +150,8 @@
         integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
         crossorigin="anonymous"></script>
     <script>
+        var resetvalue = 0;
+
         const twitchBtn = document.getElementById("twitch");
         if (twitchBtn) twitchBtn.addEventListener('click', () => { twitch(); });
 
@@ -69,6 +166,195 @@
             ].join('')
 
             alertPlaceholder.append(wrapper)
+        }
+
+        const sendBtn = document.getElementById('send');
+        if (sendBtn) sendBtn.addEventListener('click', () => { sendScore(); });
+
+        var addBtns = document.getElementsByClassName('changeAdd');
+        for (let i = 0; i < addBtns.length; i++) {
+            switch (i) {
+                case 0:
+                    addBtns[i].addEventListener('click', () => { add('hKills'); });
+                    break;
+                case 1:
+                    addBtns[i].addEventListener('click', () => { add('tKills'); });
+                    break;
+                case 2:
+                    addBtns[i].addEventListener('click', () => { add('o1Kills'); });
+                    break;
+                case 3:
+                    addBtns[i].addEventListener('click', () => { add('o2Kills'); });
+                    break;
+                case 4:
+                    addBtns[i].addEventListener('click', () => { mapreset(1); });
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        var subBtns = document.getElementsByClassName('changeSub');
+        for (let i = 0; i < addBtns.length; i++) {
+            switch (i) {
+                case 0:
+                    subBtns[i].addEventListener('click', () => { sub('hKills'); });
+                    break;
+                case 1:
+                    subBtns[i].addEventListener('click', () => { sub('tKills'); });
+                    break;
+                case 2:
+                    subBtns[i].addEventListener('click', () => { sub('o1Kills'); });
+                    subBtns;
+                case 3:
+                    subBtns[i].addEventListener('click', () => { sub('o2Kills'); });
+                    break;
+                case 4:
+                    subBtns[i].addEventListener('click', () => { mapreset(-1); });
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        const zeroBtn = document.getElementById('zeroBtn');
+        if (zeroBtn) zeroBtn.addEventListener('click', () => { mapreset(0); });
+
+        const resetBtn = document.getElementById('resetBtn');
+        if (resetBtn) resetBtn.addEventListener('click', () => { reset(); });
+
+        const hStatusBtn = document.getElementById("hStatus");
+        if (hStatusBtn) hStatusBtn.addEventListener('click', () => { upStatus('hName', 'hStatus'); });
+        const tStatusBtn = document.getElementById("tStatus");
+        if (tStatusBtn) tStatusBtn.addEventListener('click', () => { upStatus('tName', 'tStatus'); });
+        const o1StatusBtn = document.getElementById("o1Status");
+        if (o1StatusBtn) o1StatusBtn.addEventListener('click', () => { upStatus('o1Name', 'o1Status'); });
+        const o2StatusBtn = document.getElementById("o2Status");
+        if (o2StatusBtn) o2StatusBtn.addEventListener('click', () => { upStatus('o2Name', 'o2Status'); });
+
+        (function first() {
+            var channel = document.getElementById('hName').value;
+            fetch(`/twovtwoscores/${channel.toLowerCase()}`, {
+                method: "GET"
+            }).then(res => res.text())
+                .then(body => {
+                    if (res.status !== 200) {
+                        appendAlert('Fetch in first call has returned status code: ' + res.status, 'danger');
+                        return;
+                    }
+
+                    scores = body.split(',');
+
+                    if (scores.length == 12) {
+                        document.getElementById('hKills').innerHTML = parseInt(scores[0]);
+                        document.getElementById('tKills').innerHTML = parseInt(scores[1]);
+                        document.getElementById('o1Kills').innerHTML = parseInt(scores[2]);
+                        document.getElementById('o2Kills').innerHTML = parseInt(scores[3]);
+                        if (scores[4]) document.getElementById('tName').value = scores[4];
+                        if (scores[5]) document.getElementById('o1Name').value = scores[5];
+                        if (scores[6]) document.getElementById('o2Name').value = scores[6];
+                        document.getElementById('hStatus').checked = scores[7] === 'true';
+                        document.getElementById('tStatus').checked = scores[8] === 'true';
+                        document.getElementById('o1Status').checked = scores[9] === 'true';
+                        document.getElementById('o2Status').checked = scores[10] === 'true';
+                        resetvalue = parseInt(scores[11]);
+                        document.getElementById('updown').innerHTML = (resetvalue > 0 ? 'Up' : resetvalue < 0 ? 'Down' : '') + ` ${Math.abs(resetvalue)}`;
+                    }
+                }).catch(err => {
+                    appendAlert('Fetch in first call has failed with: ' + err, 'danger');
+                })
+        })();
+
+        async function upStatus(setStat, stat) {
+            var elem = document.getElementById(stat);
+            if (document.getElementById(setStat).value.length == 0) {
+                elem.checked = !elem.checked;
+                return;
+            }
+            elem.disabled = true;
+            setTimeout(function () { elem.disabled = false; }, 2000)
+            await fetch(`/post/${document.getElementById(setStat).value.toLowerCase()}/enable`, {
+                headers: {
+                    enabled: elem.checked
+                }
+            })
+                .then(res => {
+                    if (res.status !== 200) {
+                        elem.checked = !elem.checked;
+                        appendAlert('Fetch in upStatus call has returned status code: ' + res.status, 'danger');
+                    }
+                })
+                .catch(err => {
+                    elem.checked = !elem.checked;
+                    appendAlert('Fetch in upStatus has failed with: ' + err, 'danger');
+                });
+        }
+
+        async function sendScore() {
+            try {
+                document.getElementById("send").disabled = true;
+                setTimeout(function () { document.getElementById("send").disabled = false; }, 1000);
+
+                await fetch(`/send/${document.getElementById('hName').value.toLowerCase()}/${document.getElementById('hKills').innerHTML}/${document.getElementById('tKills').innerHTML}/${document.getElementById('o1Kills').innerHTML}/${document.getElementById('o2Kills').innerHTML}`, {
+                    method: "GET",
+                    headers: {
+                        tname: document.getElementById('tName').value.toLowerCase(),
+                        o1name: document.getElementById('o1Name').value.toLowerCase(),
+                        o2name: document.getElementById('o2Name').value.toLowerCase(),
+                        mapreset: resetvalue,
+                        tstatus: document.getElementById(`tStatus`).checked,
+                        o1status: document.getElementById(`o1Status`).checked,
+                        o2status: document.getElementById(`o2Status`).checked
+                    }
+                }).then(res => {
+                    if (res.status != 200) {
+                        appendAlert(`Fetch in sendScore call returned status code: ` + res.status, 'danger');
+                    }
+                }).catch(err => {
+                    appendAlert(`Fetch in sendScore call faield with: ` + err, 'danger');
+                });
+            } catch (err) {
+                appendAlert(`The sendScore call faield with: ` + err, 'danger');
+            }
+        }
+
+        function add(id) {
+            document.getElementById(id).innerHTML = parseInt(document.getElementById(id).innerHTML) + 1;
+        }
+
+        function sub(id) {
+            var x = document.getElementById(id);
+            x.innerHTML = parseInt(x.innerHTML) == 0 ? 0 : parseInt(x.innerHTML) - 1;
+        }
+
+        async function reset() {
+            try {
+                await fetch(`/post/${document.getElementById('hName').value.toLowerCase()}/reset`, {
+                    method: "GET",
+                    headers: {
+                        tname: document.getElementById('tName').value.toLowerCase(),
+                        o1name: document.getElementById('o1Name').value.toLowerCase(),
+                        o2name: document.getElementById('o2Name').value.toLowerCase()
+                    }
+                }).then(res => {
+                    if (res.status !== 200) {
+                        appendAlert(`The reset call returned status code: ` + res.status, 'danger');
+                    }
+                    document.getElementById('hKills').innerHTML = 0;
+                    document.getElementById('tKills').innerHTML = 0;
+                    document.getElementById('o1Kills').innerHTML = 0;
+                    document.getElementById('o2Kills').innerHTML = 0;
+                }).catch(err => {
+                    appendAlert(`The reset call faield with: ` + err, 'danger');
+                });
+            } catch (err) {
+                appendAlert(`The reset call faield with: ` + err, 'danger');
+            }
+        }
+
+        function mapreset(change) {
+            resetvalue = change == 0 ? 0 : resetvalue + change;
+            document.getElementById('updown').innerHTML = (resetvalue > 0 ? 'Up' : resetvalue < 0 ? 'Down' : '') + ` ${Math.abs(resetvalue)}`;
         }
 
         async function twitch() {
