@@ -238,11 +238,6 @@
             method: "GET"
          }).then(res => res.text())
             .then(body => {
-               if (res.status !== 200) {
-                  appendAlert('Fetch in first call has returned status code: ' + res.status, 'danger');
-                  return;
-               }
-
                scores = body.split(',');
 
                if (scores.length == 12) {
