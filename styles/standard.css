@@ -17,17 +17,17 @@
 }
 
 .btn-square-md {
-    width: 32px !important;
+    width: 30px !important;
     max-width: 100% !important;
     max-height: 100% !important;
-    height: 32px !important;
+    height: 30px !important;
     text-align: center;
     padding: 0px;
     font-size: 12px;
 }
 
 .btn-height-32 {
-    height: 32px !important;
-    line-height: 16px;
+    height: 30px !important;
+    line-height: 15px;
     text-align: center;
 }
