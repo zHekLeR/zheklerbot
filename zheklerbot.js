@@ -5198,7 +5198,7 @@ var intervals = [];
 
           if (!userIds[userdata[i].login]?.twitch) continue;
 
-          await new Promise(resolve => setTimeout(resolve, 500));
+          await new Promise(resolve => setTimeout(resolve, 550));
           await bot.join(userdata[i].login)
             .then(() => {
               console.log(`Joined channel: ${userdata[i].login}.`);
