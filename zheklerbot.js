@@ -140,6 +140,12 @@ async function timeout(channel, user, user_id, game, duration, reason) {
     let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
     if (!rows || !rows[0].access_token) throw new Error("No access token for timeout.");
 
+    if (!userIds[channel].broadcaster_id) {
+      let broadcaster_id = await getUser(channel);
+      userIds[channel].broadcaster_id = broadcaster_id;
+      helper.dbQuery(`UPDATE allusers SET broadcaster_id = '${broadcaster_id}' WHERE user_id = '${channel}';`);
+    }
+
     await axios.post(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140`,
       `{
       "data": {
@@ -213,6 +219,12 @@ async function untimeout(channel, user, user_id) {
 
     let rows = await helper.dbQueryPromise(`SELECT * FROM access_tokens WHERE userid = 'zhekler' AND scope = 'moderator:manage:banned_users';`);
     if (!rows || !rows[0].access_token) throw new Error("No access token for untimeout.");
+
+    if (!userIds[channel].broadcaster_id) {
+      let broadcaster_id = await getUser(channel);
+      userIds[channel].broadcaster_id = broadcaster_id;
+      helper.dbQuery(`UPDATE allusers SET broadcaster_id = '${broadcaster_id}' WHERE user_id = '${channel}';`);
+    }
 
     await axios.delete(`https://api.twitch.tv/helix/moderation/bans?broadcaster_id=${userIds[channel].broadcaster_id}&moderator_id=27376140&user_id=${user_id}`,
       {
@@ -3314,6 +3326,12 @@ app.get('/verify', (request, response) => {
 
             // Set up standard pieces.
             if (!userIds[details[0]["display_name"].toLowerCase()]) {
+              if (!details[0]["id"]) {
+                console.log("No broadcaster ID.");
+                let user_id = await getUser(details[0]["display_name"].toLowerCase());
+                details[0]["id"] = user_id;
+              }
+
               userIds[details[0]["display_name"].toLowerCase()] = {
                 "user_id": details[0]["display_name"].toLowerCase(),
                 "uno_id": '',
@@ -5174,7 +5192,7 @@ var intervals = [];
 
         if (temp[i].twitch) gcd[temp[i].user_id] = {};
 
-        if ((users.length >= 100) || (i + 1 === temp.length)) {
+        if (((users.length >= 100) || (i + 1 === temp.length)) && users.length > 0) {
           let tempusers = await getUsers(users.join('&id='));
           userdata.push.apply(userdata, tempusers);
           users = [];
