@@ -2736,7 +2736,7 @@ app.get('/permissions/:channel', async (request, response) => {
       var str = '<h3 style="width: 100%; text-align: center;">Permissions:</h3>';
       for (var i = 0; i < perms.length; i++) {
         str += `<div class="col-6 col-sm-4 col-md-3 col-xl-2 pt-3">
-                    <a class="btn btn-success" type="button" href="/edit/${perms[i]}">${userIds[perms[i]].pref_name}</a>
+                    <a class="btn btn-success" type="button" href="/edit/${perms[i]}">${userIds[perms[i]].pref_name ? userIds[perms[i]].pref_name : perms[i]}</a>
                 </div>`;
       }
       page = page.replace(/#permissions#/g, str);
