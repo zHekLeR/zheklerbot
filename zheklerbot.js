@@ -78,7 +78,7 @@ const account_config = {
 const vips = 'davidtheslayerrr, thunderclap60, neosog, guppii, lululuvely, officialgloriouspcgr, tannerslays, itsthiccchick, craftyjoseph, thanks4dying, mateocrafter1304, hannahnicole4300, stormen, thomdez, fuzwuz, cklaas, triv, zxch, airy_z, bumbobboi, twisttedt, meerko, confire, geesh, missnaruka, gmoe003, femsteph, gdolphn, patriotic, rknhd, rogue_frank, crowder, vileagony, safecojoe, biazar, notjustjohnny, meesterhauns, kurt, midone, muffinwithnobrim, mikedrop39, bronny, swagg, stableronaldo, willo7891, hitstreak, scump, n8brotherwolf, cloakzy, chickitv, karma, soapwingo, joewo, hoffensnieg, deeksjr, tiensochill, gloliva, destroy, its_iron, imr_sa, ochocinco, magalonn, artesianbuilds, azsnakeb1t3, hasham_33, alextumay, pat_o_, nicewigg, 1chilldawg, hideouts_, scummn, momskerrs, p90queen, drawrj, jefedejeff, methodz, valorash_, tyrannymedia, lablakers24, antdavis3, almxnd, jgod_gaming, mafiia_niko, liamferrari, timthetatman, feldubb, holyman, kentb57, l3xu55, bbreadman, sinnerrrr, aydan, unrational, wagnificent, davidtheslayerrr, tommey, zsmit, drakota, mvs_11, ndolok, janegoatt'.split(', ');
 
 // Create the Twitch bot.
-const bot = new tmi.Client({
+var bot = new tmi.Client({
   connection: {
     reconnect: true,
     secure: true
@@ -1917,12 +1917,12 @@ app.get('/enable/:channel', async (request, response) => {
     if (userIds[request.params.channel].twitch) {
       bot.join(request.params.channel)
         .catch(err => {
-          helper.dumpError(err, "Twitch enable.");
+          helper.dumpError(err, `Twitch enable - ${request.params.channel}. `);
         });
     } else {
       bot.part(request.params.channel)
         .catch(err => {
-          helper.dumpError(err, "Twitch enable.");
+          helper.dumpError(err, `Twitch enable - ${request.params.channel}. `);
         });;
     }
 
@@ -5202,6 +5202,8 @@ var intervals = [];
 
     setInterval(function () { duelExpiration(); }, 5000);
 
+
+    bot.identity.password = `oauth:${newToken}`;
     // Connect to Twitch channels.
     var updateUsers = false;
     await bot.connect()
