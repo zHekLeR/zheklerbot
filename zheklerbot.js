@@ -82,7 +82,7 @@ var bot = new tmi.Client({
   },
   identity: {
     username: 'zhekler',
-    password: process.env.ACCESS_TOKEN
+    password: process.env.TWITCH_BOT
   },
   channels: []
 });
