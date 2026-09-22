@@ -378,11 +378,6 @@ var tvtUpdate = {};
 var tracing = {};
 
 
-// Logs the Twitch bot being initialized.
-bot.on('logon', () => {
-  console.log("Twitch bot logged on.");
-});
-
 // Check for commands and respond appropriately.
 bot.on('chat', async (channel, tags, message) => {
   try {
@@ -5202,6 +5197,11 @@ var intervals = [];
         password: newToken
       },
       channels: []
+    });
+
+    // Logs the Twitch bot being initialized.
+    bot.on('logon', () => {
+      console.log("Twitch bot logged on.");
     });
 
     // Connect to Twitch channels.
